@@ -1,0 +1,174 @@
+.card {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 15px;
+  background: #0b0708;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 13px;
+  background: linear-gradient(135deg, #dd0912 0%, #5d0608 100%);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+.titleBlock {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 13.7px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: -0.14px;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  padding: 3px 7px;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #4ade9a;
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.statusDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.cell {
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cellLabel {
+  margin: 0;
+  font-size: 10px;
+  line-height: 14px;
+  color: #6e6a6c;
+}
+
+.cellValue {
+  margin: 4px 0 0;
+  font-size: 11.9px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.signal {
+  color: #4ade9a;
+}
+
+.cta {
+  width: 100%;
+  margin-top: 15px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #dd0912 0%, #a10406 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13.7px;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.14px;
+  cursor: pointer;
+}
+
+.proCard {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 15px;
+  background: #121011;
+}
+
+.proIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  border-radius: 9px;
+  background: #dd0101;
+}
+
+.proIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.proCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.proTitle {
+  margin: 0;
+  font-size: 11.9px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.proExpiry {
+  margin: 2px 0 0;
+  font-size: 10px;
+  line-height: 14px;
+  color: #6e6a6c;
+}
+
+.manageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #dd0101;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.manageChevron {
+  width: 13px;
+  height: 13px;
+}

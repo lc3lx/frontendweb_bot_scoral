@@ -1,0 +1,102 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 20px;
+  width: 226px;
+  padding: 22px 15px;
+  background: #0b0708;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 58px;
+}
+
+.brandMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(136deg, #dd0912 0%, #5d0608 100%);
+}
+
+.brandIcon {
+  width: 23px;
+  height: 19px;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brandTextTop {
+  width: 100px;
+  height: 17px;
+}
+
+.brandTextBottom {
+  width: 97px;
+  height: 10px;
+}
+
+.nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: #8a8688;
+  font-family: inherit;
+  font-size: 12.8px;
+  font-weight: 500;
+  line-height: 19px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navItemActive {
+  background: #dd0101;
+  color: #f5f5f5;
+  font-weight: 600;
+}
+
+.navItemActive::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 1px;
+  top: 50%;
+  width: 4px;
+  height: 22px;
+  border-radius: 999px;
+  background: #dd0912;
+  transform: translateY(-50%);
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.logout {
+  color: #dd0101;
+}

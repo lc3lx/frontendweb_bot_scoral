@@ -1,0 +1,181 @@
+import { useNavigate } from 'react-router-dom';
+
+import { accountAssets } from '@assets';
+import { useI18n } from '@i18n';
+import { ROUTES } from '@router/routes';
+
+import { ACCOUNT_PROFILE } from './data/account.mock';
+import styles from './AccountPage.module.css';
+
+type AccountContentProps = {
+  figmaNode: string;
+};
+
+export function AccountContent({ figmaNode }: AccountContentProps) {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const profile = ACCOUNT_PROFILE;
+
+  return (
+    <div className={styles.page} data-figma-node={figmaNode}>
+      <header className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>{t.account.header.title}</h1>
+        <p className={styles.pageSubtitle}>{t.account.header.subtitle}</p>
+      </header>
+
+      <div className={styles.accountLayout}>
+        <div className={styles.accountLeft}>
+          <section className={styles.profileCard}>
+            <div className={styles.profileHead}>
+              <div className={styles.profileAvatar}>
+                <img
+                  className={styles.profileAvatarIcon}
+                  src={accountAssets.iconProfile}
+                  alt=""
+                  width={32}
+                  height={32}
+                  aria-hidden="true"
+                />
+              </div>
+              <div className={styles.profileInfo}>
+                <p className={styles.profileName}>{profile.fullName}</p>
+                <p className={styles.profileEmail}>{profile.email}</p>
+              </div>
+            </div>
+            <div className={styles.profileBadges}>
+              <span className={`${styles.badge} ${styles.badgeApproved}`}>
+                <span className={styles.badgeDot} aria-hidden="true" />
+                {t.account.profile.approved}
+              </span>
+              <span className={`${styles.badge} ${styles.badgePlan}`}>
+                <span className={`${styles.badgeDot} ${styles.badgeDotPlan}`} aria-hidden="true" />
+                {t.account.profile.alphaPro}
+              </span>
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionLabel}>{t.account.sections.accountDetails}</h2>
+            <div className={styles.detailCard}>
+              <div className={styles.detailRow}>
+                <div className={styles.detailIconWrap}>
+                  <img src={accountAssets.iconCountry} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.detailLabel}>{t.account.fields.country}</span>
+                <span className={styles.detailValue}>{profile.country}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <div className={styles.detailIconWrap}>
+                  <img src={accountAssets.iconTelegram} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.detailLabel}>{t.account.fields.telegram}</span>
+                <span className={styles.detailValue}>{profile.telegram}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <div className={styles.detailIconWrap}>
+                  <img src={accountAssets.iconBinolla} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.detailLabel}>{t.account.fields.binollaId}</span>
+                <span className={styles.detailValue}>{profile.binollaId}</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className={styles.accountRight}>
+          <section className={styles.section}>
+            <h2 className={styles.sectionLabel}>{t.account.sections.settings}</h2>
+            <div className={styles.settingsCard}>
+              <button
+                type="button"
+                className={styles.settingsRow}
+                onClick={() => navigate(ROUTES.accountEditProfile)}
+              >
+                <div className={styles.settingsIconWrap}>
+                  <img src={accountAssets.iconEdit} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.settingsLabel}>{t.account.settings.editProfile}</span>
+                <img
+                  className={styles.settingsChevron}
+                  src={accountAssets.iconChevron}
+                  alt=""
+                  width={16}
+                  height={16}
+                  data-flip-rtl="true"
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                type="button"
+                className={styles.settingsRow}
+                onClick={() => navigate(ROUTES.accountChangePassword)}
+              >
+                <div className={styles.settingsIconWrap}>
+                  <img src={accountAssets.iconPassword} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.settingsLabel}>{t.account.settings.changePassword}</span>
+                <img
+                  className={styles.settingsChevron}
+                  src={accountAssets.iconChevron}
+                  alt=""
+                  width={16}
+                  height={16}
+                  data-flip-rtl="true"
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                type="button"
+                className={styles.settingsRow}
+                onClick={() => navigate(ROUTES.accountNotifications)}
+              >
+                <div className={styles.settingsIconWrap}>
+                  <img src={accountAssets.iconNotifications} alt="" width={18} height={18} aria-hidden="true" />
+                </div>
+                <span className={styles.settingsLabel}>{t.account.settings.notifications}</span>
+                <span className={`${styles.badge} ${styles.badgeCount}`}>
+                  <span className={`${styles.badgeDot} ${styles.badgeDotPlan}`} aria-hidden="true" />
+                  {profile.unreadNotifications}
+                </span>
+                <img
+                  className={styles.settingsChevron}
+                  src={accountAssets.iconChevron}
+                  alt=""
+                  width={16}
+                  height={16}
+                  data-flip-rtl="true"
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionLabel}>{t.account.sections.session}</h2>
+            <button
+              type="button"
+              className={styles.logoutRow}
+              onClick={() => navigate(ROUTES.login)}
+            >
+              <div className={styles.logoutIconWrap}>
+                <img src={accountAssets.iconSessionLogout} alt="" width={18} height={18} aria-hidden="true" />
+              </div>
+              <span className={styles.logoutLabel}>{t.account.actions.logout}</span>
+              <img
+                className={styles.settingsChevron}
+                src={accountAssets.iconSessionChevron}
+                alt=""
+                width={16}
+                height={16}
+                data-flip-rtl="true"
+                aria-hidden="true"
+              />
+            </button>
+          </section>
+
+          <p className={styles.versionFooter}>{t.account.footer.version}</p>
+        </div>
+      </div>
+    </div>
+  );
+}

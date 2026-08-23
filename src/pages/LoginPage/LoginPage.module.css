@@ -1,0 +1,779 @@
+/** Login page — Figma 574:975 (1440×1024). */
+
+.page {
+
+  position: relative;
+
+  min-height: 100vh;
+
+  min-height: 100dvh;
+
+  overflow: hidden;
+
+  background:
+
+    radial-gradient(
+
+      ellipse 112% 56% at 10% -20%,
+
+      rgba(221, 9, 18, 0.12) 0%,
+
+      transparent 60%
+
+    ),
+
+    radial-gradient(
+
+      ellipse 75% 56% at 100% 0%,
+
+      rgba(93, 6, 8, 0.18) 0%,
+
+      transparent 60%
+
+    ),
+
+    linear-gradient(90deg, var(--color-bg-primary) 0%, var(--color-bg-primary) 100%);
+
+}
+
+
+
+.bgPattern {
+
+  position: absolute;
+
+  inset: -12% -17% auto;
+
+  width: 133%;
+
+  height: auto;
+
+  min-height: 100%;
+
+  pointer-events: none;
+
+  opacity: 0.9;
+
+}
+
+
+
+.decorChart {
+
+  position: absolute;
+
+  inset-inline: 0;
+
+  inset-block-end: 0;
+
+  width: 100%;
+
+  height: auto;
+
+  max-height: 42vh;
+
+  object-fit: cover;
+
+  object-position: bottom center;
+
+  pointer-events: none;
+
+}
+
+
+
+.layout {
+
+  position: relative;
+
+  z-index: 1;
+
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 31.25rem);
+
+  align-items: center;
+
+  gap: clamp(2rem, 5vw, 4rem);
+
+  width: min(100%, 90rem);
+
+  min-height: 100vh;
+
+  min-height: 100dvh;
+
+  margin: 0 auto;
+
+  padding: clamp(5rem, 8vh, 6.5rem) clamp(1.5rem, 6.8vw, 6.125rem)
+
+    clamp(2rem, 5vh, 3rem);
+
+}
+
+
+
+.hero {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0;
+
+  max-width: 38.75rem;
+
+}
+
+
+
+.heroTitle {
+
+  margin: 0;
+
+  font-size: clamp(2.25rem, 4.3vw, 3.875rem);
+
+  font-weight: 800;
+
+  line-height: 1.08;
+
+  letter-spacing: -0.025em;
+
+  color: var(--color-text-primary);
+
+}
+
+
+
+.heroTitleLine {
+
+  display: block;
+
+}
+
+
+
+.heroTitleHighlight {
+
+  color: var(--color-red-accent);
+
+}
+
+
+
+.heroSubtitle {
+
+  margin: 0;
+
+  max-width: 33.75rem;
+
+  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+
+  font-size: clamp(0.9375rem, 1.2vw, 1rem);
+
+  line-height: 1.62;
+
+  color: var(--color-text-secondary);
+
+}
+
+
+
+.features {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1.75rem;
+
+  margin: 0;
+
+  padding: clamp(1.5rem, 3vw, 1.875rem) 0 0;
+
+  list-style: none;
+
+}
+
+
+
+.feature {
+
+  display: flex;
+
+  gap: 1rem;
+
+  align-items: start;
+
+}
+
+
+
+.featureIconWrap {
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  width: 2.75rem;
+
+  height: 2.75rem;
+
+  border: 1px solid var(--color-feature-border);
+
+  border-radius: 0.875rem;
+
+  background: var(--color-feature-bg);
+
+}
+
+
+
+.featureIcon {
+
+  width: 1.125rem;
+
+  height: 1.125rem;
+
+}
+
+
+
+.featureCopy {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.25rem;
+
+  padding-top: 0.125rem;
+
+}
+
+
+
+.featureTitle {
+
+  margin: 0;
+
+  font-size: 0.9375rem;
+
+  font-weight: 600;
+
+  line-height: 1.5;
+
+  letter-spacing: -0.01em;
+
+  color: var(--color-text-primary);
+
+}
+
+
+
+.featureDescription {
+
+  margin: 0;
+
+  font-size: 0.8125rem;
+
+  line-height: 1.5;
+
+  color: var(--color-text-muted);
+
+}
+
+
+
+.heroCopyright {
+
+  margin: 0;
+
+  padding-top: clamp(1.5rem, 3vw, 1.875rem);
+
+  font-size: 0.75rem;
+
+  line-height: 1.5;
+
+  color: var(--color-text-faint);
+
+}
+
+
+
+.loginCard {
+
+  width: 100%;
+
+  max-width: 31.25rem;
+
+  justify-self: end;
+
+  border: 1px solid var(--color-border-subtle);
+
+  border-radius: 1.625rem;
+
+  background: var(--color-bg-card);
+
+  box-shadow: 0 1.5rem 4.375rem -2.1875rem rgba(0, 0, 0, 0.9);
+
+}
+
+
+
+.loginCardInner {
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+
+}
+
+
+
+.brandMark {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+}
+
+
+
+.brandIconWrap {
+
+  display: grid;
+
+  place-items: center;
+
+  width: 2.71rem;
+
+  height: 2.63rem;
+
+  border-radius: 0.82rem;
+
+  background: linear-gradient(136deg, var(--color-red-primary) 0%, var(--color-red-deep) 100%);
+
+}
+
+
+
+.brandIcon {
+
+  width: 1.47rem;
+
+  height: 1.17rem;
+
+}
+
+
+
+.brandText {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.125rem;
+
+  width: 6.37rem;
+
+  height: 2.04rem;
+
+}
+
+
+
+.brandTextTop,
+
+.brandTextBottom {
+
+  display: block;
+
+  width: 100%;
+
+  height: auto;
+
+}
+
+
+
+.formHeader {
+
+  padding-top: 2.25rem;
+
+}
+
+
+
+.formTitle {
+
+  margin: 0;
+
+  font-size: 2rem;
+
+  font-weight: 700;
+
+  line-height: 1.5;
+
+  letter-spacing: -0.02em;
+
+  color: var(--color-text-primary);
+
+}
+
+
+
+.formSubtitle {
+
+  margin: 0;
+
+  padding-top: 0.625rem;
+
+  font-size: 0.875rem;
+
+  line-height: 1.5;
+
+  color: var(--color-text-muted);
+
+}
+
+
+
+.form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding-top: 2rem;
+
+}
+
+
+
+.field {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.375rem;
+
+}
+
+
+
+.field + .field {
+
+  padding-top: 1.25rem;
+
+}
+
+
+
+.label {
+
+  font-size: 0.8125rem;
+
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  color: var(--color-text-label);
+
+}
+
+
+
+.input {
+
+  width: 100%;
+
+  height: 3.40625rem;
+
+  padding: 0.9375rem 1rem;
+
+  border: 1px solid var(--color-border-subtle);
+
+  border-radius: 0.75rem;
+
+  background: var(--color-bg-input);
+
+  color: var(--color-text-primary);
+
+  font-size: 0.9375rem;
+
+  font-weight: 500;
+
+  line-height: 1.5;
+
+}
+
+
+
+.input::placeholder {
+
+  color: rgba(245, 245, 245, 0.42);
+
+}
+
+
+
+.input:focus-visible {
+
+  border-color: rgba(221, 9, 18, 0.45);
+
+  outline: none;
+
+  box-shadow: 0 0 0 2px rgba(221, 9, 18, 0.18);
+
+}
+
+
+
+.passwordWrap {
+
+  position: relative;
+
+}
+
+
+
+.passwordInput {
+
+  padding-inline-end: 3rem;
+
+}
+
+
+
+.togglePassword {
+
+  position: absolute;
+
+  inset-inline-end: 0.6875rem;
+
+  top: 50%;
+
+  display: grid;
+
+  place-items: center;
+
+  width: 2rem;
+
+  height: 2rem;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 0.625rem;
+
+  background: transparent;
+
+}
+
+
+
+.togglePasswordIcon {
+
+  width: 1.125rem;
+
+  height: 1.125rem;
+
+  opacity: 0.72;
+
+}
+
+
+
+.forgotWrap {
+
+  padding-top: 1.25rem;
+
+}
+
+
+
+.forgotLink {
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: var(--color-red-link);
+
+  font-size: 0.8125rem;
+
+  font-weight: 600;
+
+  line-height: 1.5;
+
+}
+
+
+
+.submitWrap {
+
+  padding-top: 1.25rem;
+
+}
+
+
+
+.submitButton {
+
+  position: relative;
+
+  width: 100%;
+
+  height: 3.375rem;
+
+  border: 0;
+
+  border-radius: 0.875rem;
+
+  background: linear-gradient(180deg, var(--color-red-primary) 0%, #a10406 100%);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  color: #fff;
+
+  font-size: 0.9375rem;
+
+  font-weight: 600;
+
+  line-height: 1.5;
+
+  letter-spacing: -0.01em;
+
+}
+
+
+
+.submitButton:hover {
+
+  filter: brightness(1.05);
+
+}
+
+
+
+.formDisclaimer {
+
+  margin: 0;
+
+  padding-top: 1.5rem;
+
+  font-size: 0.6875rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+
+  color: var(--color-text-faint);
+
+}
+
+
+
+.signupPrompt {
+
+  margin: 0;
+
+  padding-top: 1rem;
+
+  font-size: 0.8125rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+
+  color: var(--color-text-muted);
+
+}
+
+
+
+.signupLink {
+
+  color: var(--color-red-link);
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+}
+
+
+
+.signupLink:hover {
+
+  text-decoration: underline;
+
+}
+
+
+
+@media (max-width: 1024px) {
+
+  .layout {
+
+    grid-template-columns: 1fr;
+
+    align-content: start;
+
+    padding-top: 4.5rem;
+
+  }
+
+
+
+  .hero {
+
+    max-width: none;
+
+  }
+
+
+
+  .loginCard {
+
+    justify-self: stretch;
+
+    max-width: none;
+
+  }
+
+}
+
+
+
+@media (max-width: 640px) {
+
+  .heroCopyright {
+
+    padding-bottom: 0.5rem;
+
+  }
+
+
+
+  .formTitle {
+
+    font-size: 1.75rem;
+
+  }
+
+}
+
+

@@ -1,0 +1,47 @@
+.wrap {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gridLine {
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1;
+}
+
+.yLabel {
+  fill: #6b6768;
+  font-size: 11px;
+  font-family: Inter, sans-serif;
+}
+
+.xLabel {
+  fill: #5a5658;
+  font-size: 10px;
+  font-family: Inter, sans-serif;
+}
+
+.priceLine {
+  stroke: #dd0912;
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.priceBadge {
+  fill: #dd0912;
+}
+
+.priceBadgeText {
+  fill: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: Inter, sans-serif;
+}

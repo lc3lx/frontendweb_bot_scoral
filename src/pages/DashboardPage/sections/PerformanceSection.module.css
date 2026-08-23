@@ -1,0 +1,120 @@
+.card {
+  padding: 13px 22px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 15px;
+  background: #0b0708;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 15px;
+  letter-spacing: 0.11px;
+}
+
+.value {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.4px;
+  color: #4ade9a;
+}
+
+.filters {
+  display: flex;
+  gap: 0;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 9px;
+  background: #121011;
+}
+
+.filterButton {
+  border: 0;
+  border-radius: 7px;
+  padding: 5px 11px;
+  background: transparent;
+  color: #8a8688;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 15px;
+  cursor: pointer;
+}
+
+.filterActive {
+  background: #dd0912;
+  color: #fff;
+}
+
+.chartWrap {
+  position: relative;
+  margin-top: 10px;
+  min-height: 220px;
+}
+
+.chartGrid {
+  position: absolute;
+  inset-block: 28px 24px;
+  inset-inline: 12px 0;
+  width: calc(100% - 12px);
+  height: calc(100% - 52px);
+  object-fit: fill;
+}
+
+.chartFill {
+  position: absolute;
+  inset-block: 28px 24px;
+  inset-inline: 12px 0;
+  width: calc(100% - 12px);
+  height: calc(100% - 52px);
+  object-fit: fill;
+}
+
+.chartLine {
+  position: absolute;
+  inset-block: 28px 24px;
+  inset-inline: 12px 0;
+  width: calc(100% - 12px);
+  height: calc(100% - 52px);
+  object-fit: fill;
+}
+
+.yLabels {
+  position: absolute;
+  inset-block: 24px 20px;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 36px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 14px;
+  color: #6e6a6c;
+}
+
+.xLabels {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 48px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 14px;
+  color: #6e6a6c;
+}

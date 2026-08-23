@@ -1,0 +1,146 @@
+.panel {
+  min-width: 0;
+}
+
+.card {
+  padding-block: 20px;
+  padding-inline: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: linear-gradient(
+    157deg,
+    rgba(93, 6, 8, 0.22) 8.5%,
+    rgba(64, 10, 11, 0.31) 14.7%,
+    rgba(49, 12, 13, 0.4) 20.9%,
+    rgba(32, 14, 15, 0.59) 33.4%,
+    rgba(23, 15, 16, 0.77) 45.8%,
+    rgba(18, 16, 17, 0.95) 58.3%
+  );
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dd0912 0%, #5d0608 100%);
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.titleBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.freshChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 3px;
+  padding-inline: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #4ade9a;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.freshDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 10px;
+  padding-inline: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rowLabel {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.rowValue {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: end;
+}
+
+.signalUp {
+  color: #26c281;
+}
+
+.ltrValue {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.cta {
+  width: 100%;
+  margin-top: 16px;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #dd0912 0%, #a10406 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 23px;
+  letter-spacing: -0.15px;
+  cursor: pointer;
+}

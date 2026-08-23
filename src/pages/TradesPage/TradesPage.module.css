@@ -1,0 +1,363 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.pageHeader {
+  padding-block: 8px 0;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 32px;
+  letter-spacing: -0.56px;
+}
+
+.pageSubtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: #121011;
+  overflow-x: auto;
+}
+
+.filterButton {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #8a8688;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filterButtonActive {
+  background: #dd0912;
+  color: #fff;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.directionWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.directionWrapUp {
+  background: rgba(38, 194, 80, 0.12);
+}
+
+.directionWrapDown {
+  background: rgba(221, 9, 18, 0.12);
+}
+
+.directionIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.pairBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.pairName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+}
+
+.pairTime {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.sourceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 3px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sourceChipGlobal {
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  background: rgba(96, 165, 250, 0.08);
+  color: #8fb6f5;
+}
+
+.sourceChipBinolla {
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(245, 158, 11, 0.08);
+  color: #f5c462;
+}
+
+.sourceDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.sourceDotGlobal {
+  background: #60a5fa;
+}
+
+.sourceDotBinolla {
+  background: #f59e0b;
+}
+
+.outcomeBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.outcomeBoxProfit {
+  border: 1px solid rgba(38, 194, 80, 0.16);
+  background: rgba(38, 194, 80, 0.06);
+}
+
+.outcomeBoxLoss {
+  border: 1px solid rgba(221, 9, 18, 0.16);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.outcomeBoxRunning {
+  border: 1px solid rgba(245, 193, 94, 0.16);
+  background: rgba(245, 193, 94, 0.06);
+}
+
+.outcomeLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.outcomeValue {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 30px;
+}
+
+.outcomeValueProfit {
+  color: #26c250;
+}
+
+.outcomeValueLoss {
+  color: #dd0912;
+}
+
+.runningValueRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.runningTimer {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 27px;
+  color: #f5c15e;
+}
+
+.runningPulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #f59e0b;
+  animation: tradePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tradePulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.outcomeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 3px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.outcomeChipProfit {
+  border: 1px solid rgba(38, 194, 80, 0.22);
+  background: rgba(16, 185, 129, 0.08);
+  color: #26c250;
+}
+
+.outcomeChipLoss {
+  border: 1px solid rgba(221, 9, 18, 0.22);
+  background: rgba(221, 9, 18, 0.08);
+  color: #f26770;
+}
+
+.outcomeChipRunning {
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(245, 158, 11, 0.08);
+  color: #f5c462;
+}
+
+.outcomeChipDotProfit {
+  background: #26c250;
+}
+
+.outcomeChipDotLoss {
+  background: #dd0912;
+}
+
+.outcomeChipDotRunning {
+  background: #f59e0b;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.metaCell {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.metaLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.metaValue {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.cardAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 19px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cardActionIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  padding: 32px 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: #8a8688;
+  font-size: 13px;
+  text-align: center;
+}

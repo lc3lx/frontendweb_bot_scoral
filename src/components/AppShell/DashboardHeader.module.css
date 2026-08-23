@@ -1,0 +1,119 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 85px;
+  padding-block: 0;
+  padding-inline: 29px;
+  background: rgba(2, 1, 1, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: -0.3px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileWrap {
+  position: relative;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding-block: 4px;
+  padding-inline: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  background: #121011;
+}
+
+.profileOpen {
+  border-color: rgba(221, 1, 1, 0.2);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: #dd0912;
+}
+
+.profileText {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.profileName {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 16px;
+  color: #dd0101;
+}
+
+.profileBalanceRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profileBalance {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 15px;
+}
+
+.profileDemo {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 13px;
+  color: #dd0101;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
+}
+
+.notifButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
+  background: #121011;
+  cursor: pointer;
+}
+
+.notifIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.notifDot {
+  position: absolute;
+  top: 9px;
+  inset-inline-end: 12px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #dd0912;
+}

@@ -1,0 +1,158 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.16px;
+}
+
+.seeAll {
+  border: 0;
+  background: transparent;
+  color: #dd0101;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+  letter-spacing: 0.12px;
+  cursor: pointer;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.tableHead,
+.tableRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 0.7fr 0.7fr 0.7fr 0.5fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+}
+
+.tableHead {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #6e6a6c;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.tableRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.tableRow:first-of-type {
+  border-top: 0;
+}
+
+.headPl,
+.cellPl {
+  text-align: end;
+}
+
+.headAction,
+.cellAction {
+  text-align: end;
+}
+
+.pairCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pairIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.pairIconWrapForex {
+  background: rgba(38, 194, 129, 0.12);
+}
+
+.pairIconWrapCrypto {
+  background: rgba(221, 1, 1, 0.12);
+}
+
+.pairIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.pairName {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.strategy {
+  color: #6e6a6c;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.meta {
+  color: #c9c7c8;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.plProfit {
+  color: #26c281;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.plLoss {
+  color: #dd0101;
+}
+
+.plRunning {
+  color: #f5c15e;
+}
+
+.menuIcon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 900px) {
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .headPl,
+  .cellPl,
+  .headAction,
+  .cellAction {
+    text-align: start;
+  }
+}

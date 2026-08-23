@@ -1,0 +1,23 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #020101 18.97%, #890000 217.32%);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: auto;
+  padding-block: 10px 24px;
+  padding-inline: 8px;
+}

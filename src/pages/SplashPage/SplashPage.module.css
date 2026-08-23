@@ -1,0 +1,148 @@
+/**
+ * Splash page — Figma 574:1026 (1440×1024).
+ * Static logo with pulsing glow + shimmer behind it.
+ */
+.page {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--color-bg-primary);
+}
+
+.pageExiting {
+  animation: splash-page-exit 780ms var(--motion-ease-exit) both;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 48%, rgba(221, 9, 18, 0.22) 0%, transparent 72%),
+    radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, #020101 100%);
+  pointer-events: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ellipseGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(40.76vw, 36.6875rem);
+  height: min(40.76vw, 36.6875rem);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(221, 9, 18, 0.34) 0%,
+    rgba(221, 9, 18, 0.16) 42%,
+    rgba(221, 9, 18, 0.04) 62%,
+    transparent 74%
+  );
+  filter: blur(2px);
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+
+.logoGlow {
+  position: absolute;
+  width: min(78vw, 36rem);
+  height: min(36vw, 12rem);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 50%,
+    rgba(255, 42, 52, 0.55) 0%,
+    rgba(221, 9, 18, 0.28) 38%,
+    rgba(221, 9, 18, 0.06) 62%,
+    transparent 78%
+  );
+  filter: blur(32px);
+  animation: splash-glow 2.4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.logoGlow::after {
+  content: '';
+  position: absolute;
+  inset: 18% 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 120, 120, 0.35) 0%, transparent 68%);
+  filter: blur(12px);
+  animation: splash-shimmer 2.4s ease-in-out infinite;
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  width: min(26vw, 23.375rem);
+  height: auto;
+  aspect-ratio: 374 / 300;
+  object-fit: contain;
+}
+
+@keyframes splash-glow {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes splash-shimmer {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes splash-page-exit {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    width: min(72vw, 18rem);
+  }
+
+  .logoGlow {
+    width: min(84vw, 22rem);
+    height: min(44vw, 8rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logoGlow,
+  .logoGlow::after,
+  .pageExiting {
+    animation: none;
+  }
+
+  .pageExiting {
+    opacity: 0;
+  }
+}

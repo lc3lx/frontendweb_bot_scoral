@@ -1,0 +1,393 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.subTopBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-inline: -8px;
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(2, 1, 1, 0.9);
+  backdrop-filter: blur(24px);
+}
+
+.backButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  background: #0b0708;
+  cursor: pointer;
+}
+
+.backIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.subTopBarTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.16px;
+  text-align: center;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 40px;
+  padding-block: 3px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.statusChipProfit {
+  border: 1px solid rgba(38, 194, 80, 0.22);
+  background: rgba(16, 185, 129, 0.08);
+  color: #4ade9a;
+}
+
+.statusChipLoss {
+  border: 1px solid rgba(221, 9, 18, 0.22);
+  background: rgba(221, 9, 18, 0.08);
+  color: #f26770;
+}
+
+.statusChipRunning {
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(245, 158, 11, 0.08);
+  color: #f5c462;
+}
+
+.statusChipDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.statusChipDotProfit {
+  background: #22c55e;
+}
+
+.statusChipDotLoss {
+  background: #dd0912;
+}
+
+.statusChipDotRunning {
+  background: #f59e0b;
+}
+
+.summaryCard {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: linear-gradient(
+    172deg,
+    rgba(93, 6, 8, 0.22) 8.49%,
+    rgba(64, 10, 11, 0.31) 14.71%,
+    rgba(49, 12, 13, 0.4) 20.94%,
+    rgba(32, 14, 15, 0.59) 33.39%,
+    rgba(23, 15, 16, 0.77) 45.85%,
+    rgba(18, 16, 17, 0.95) 58.3%
+  );
+}
+
+.summaryHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.directionWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.directionWrapUp {
+  background: rgba(38, 194, 80, 0.15);
+}
+
+.directionWrapDown {
+  background: rgba(221, 9, 18, 0.15);
+}
+
+.directionIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.pairBlock {
+  min-width: 0;
+}
+
+.pairName {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 27px;
+  letter-spacing: -0.45px;
+}
+
+.tradeRef {
+  margin: 0;
+  font-size: 11px;
+  line-height: 17px;
+  color: #666;
+}
+
+.plBlock {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.plValue {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 33px;
+  letter-spacing: -0.55px;
+}
+
+.plValueProfit {
+  color: #26c250;
+}
+
+.plValueLoss {
+  color: #dd0912;
+}
+
+.plHint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 17px;
+  color: #666;
+}
+
+.runningValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.runningPulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #f59e0b;
+  animation: detailPulse 1.2s ease-in-out infinite;
+}
+
+.runningTimer {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 33px;
+  color: #f5c15e;
+}
+
+@keyframes detailPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.chartWrap {
+  margin-top: 16px;
+  height: 136px;
+  overflow: hidden;
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .bottomGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.specsCard {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.specRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.specRow:last-child {
+  border-bottom: 0;
+}
+
+.specLabel {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: #666;
+}
+
+.specValue {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: end;
+}
+
+.specValueProfit {
+  color: #26c250;
+}
+
+.specValueLoss {
+  color: #dd0912;
+}
+
+.specValueRunning {
+  color: #f5c462;
+}
+
+.timelineSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.timelineTitle {
+  margin: 0;
+  padding-inline: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 23px;
+  letter-spacing: -0.375px;
+}
+
+.timelineCard {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.timelineRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-block: 8px;
+}
+
+.timelineDotWrap {
+  display: flex;
+  justify-content: center;
+  width: 24px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.timelineDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #dd0912;
+  box-shadow: 0 0 8px #dd0912;
+}
+
+.timelineCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.timelineEvent {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.timelineTime {
+  margin: 0;
+  font-size: 11px;
+  line-height: 17px;
+  color: #666;
+}
+
+.timelineCheck {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: rgba(38, 194, 80, 0.12);
+  color: #26c250;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.notFound {
+  padding: 32px 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: #8a8688;
+  font-size: 13px;
+  text-align: center;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 19px;
+  text-decoration: none;
+  cursor: pointer;
+}

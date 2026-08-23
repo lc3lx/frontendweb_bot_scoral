@@ -1,0 +1,1 @@
+export { PendingApprovalPage } from './PendingApprovalPage';

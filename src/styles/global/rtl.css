@@ -1,0 +1,22 @@
+/* RTL layout helpers — prefer logical properties in components where possible. */
+
+html[dir='rtl'] body {
+  text-align: start;
+}
+
+/* Flip absolute brand marks that were designed for LTR. */
+html[dir='rtl'] [data-ltr-anchor='start'] {
+  left: auto;
+  right: 0;
+}
+
+html[dir='rtl'] [data-ltr-anchor='end'] {
+  right: auto;
+  left: 0;
+}
+
+/* Flip directional chevrons / back arrows designed for LTR. */
+html[dir='rtl'] [data-flip-rtl='true'] {
+  transform: scaleX(-1);
+}
+

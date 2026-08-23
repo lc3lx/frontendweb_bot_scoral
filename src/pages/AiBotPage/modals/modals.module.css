@@ -1,0 +1,797 @@
+/* Shared modal content styles — Figma pages 12–20 */
+
+.titleRegular {
+  font-weight: 400;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.optionCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: start;
+  cursor: pointer;
+}
+
+.optionCardSelected {
+  border-color: rgba(221, 9, 18, 0.4);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.optionCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.optionIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  flex-shrink: 0;
+}
+
+.optionIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.checkIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.optionTitle {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+.optionDescription {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.riskBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+  flex-shrink: 0;
+}
+
+.riskDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.riskLow {
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  background: rgba(16, 185, 129, 0.08);
+  color: #4ade9a;
+}
+
+.riskLow .riskDot {
+  background: #22c55e;
+}
+
+.riskMedium {
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(245, 158, 11, 0.08);
+  color: #f5c462;
+}
+
+.riskMedium .riskDot {
+  background: #f59e0b;
+}
+
+.riskHigh {
+  border: 1px solid rgba(245, 196, 98, 0.25);
+  background: rgba(245, 196, 98, 0.1);
+  color: #f59e0b;
+}
+
+.riskHigh .riskDot {
+  background: #f59e0b;
+}
+
+.riskHighPlus {
+  border: 1px solid rgba(221, 9, 18, 0.25);
+  background: rgba(221, 9, 18, 0.1);
+  color: #dd0912;
+}
+
+.riskHighPlus .riskDot {
+  background: #dd0912;
+}
+
+.strategyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.strategyCard {
+  position: relative;
+  min-height: 98px;
+  padding: 12px 12px 12px 94px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: start;
+  cursor: pointer;
+}
+
+.strategyCardSelected {
+  border-color: rgba(221, 9, 18, 0.4);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.strategyPreview {
+  position: absolute;
+  left: 11px;
+  top: 13px;
+  width: 71px;
+  height: 71px;
+  border-radius: 13px;
+  object-fit: cover;
+}
+
+.strategyCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.strategyCardTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+.strategyCardDescription {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.strategyCardBestFor {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6b6768;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #f5f5f5;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.selectAllButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selectAllIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.pairGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pairCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: start;
+  cursor: pointer;
+}
+
+.pairCardSelected {
+  border-color: rgba(221, 9, 18, 0.4);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.pairBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.pairCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pairSymbol {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.pairPriceUp {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 17px;
+  color: #26c281;
+}
+
+.pairPriceDown {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 17px;
+  color: #dd0912;
+}
+
+.pairCheck {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.brandedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.brandedCard {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: start;
+  cursor: pointer;
+}
+
+.brandedCardSelected {
+  border-color: rgba(221, 9, 18, 0.4);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.brandedCardTop {
+  display: flex;
+  gap: 14px;
+}
+
+.brandedPreviewWrap {
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brandedPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brandedCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.brandedTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandedTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 23px;
+}
+
+.brandedDescription {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.brandedRiskRow {
+  margin-top: 10px;
+}
+
+.brandedFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.balanceLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.balanceValue {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.viewDetails {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #dd0912;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.viewDetailsIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.detailLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.chartPlaceholder {
+  width: 100%;
+  min-height: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #08090c;
+  overflow: hidden;
+}
+
+.chartImage {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: cover;
+}
+
+.detailStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.detailStat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.detailStatIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.detailStatIconWrapProfit {
+  background: rgba(38, 194, 129, 0.12);
+}
+
+.detailStatIconWrapRisk {
+  background: rgba(221, 9, 18, 0.1);
+}
+
+.detailStatIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.detailStatLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.detailStatValue {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.sectionLabel {
+  margin: 16px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.sectionText {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 18px;
+  color: #6e6a6c;
+}
+
+.bulletList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bulletItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.bulletIcon {
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.detailActions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.ghostAction,
+.primaryAction {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghostAction {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: #dd0912;
+  color: #fff;
+  font-weight: 700;
+}
+
+.primaryActionIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.settingsSectionLabel {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.toggleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.toggleCopy {
+  min-width: 0;
+}
+
+.toggleTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.toggleDescription {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background: linear-gradient(90deg, #dd0912 0%, #a10406 100%);
+}
+
+.toggleOff {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toggleKnob {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.toggleOn .toggleKnob {
+  transform: translateX(16px);
+}
+
+.settingsCard {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.riskChipRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.riskChip {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: transparent;
+  color: #888;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.riskChipActive {
+  border-color: transparent;
+  background: linear-gradient(180deg, #dd0912 0%, #a10406 100%);
+  color: #fff;
+}
+
+.settingsHint {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.configRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.configRow + .configRow {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.configLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.configValue {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.footerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.footerGhost,
+.footerPrimary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footerGhost {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+}
+
+.footerPrimary {
+  border: 0;
+  background: #dd0912;
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .detailLayout,
+  .brandedGrid,
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .strategyGrid,
+  .pairGrid,
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .toggleGrid {
+    grid-template-columns: 1fr;
+  }
+}

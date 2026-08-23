@@ -1,0 +1,152 @@
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  z-index: 20;
+  width: 291px;
+  padding: 17px 15px 15px;
+  border-radius: 12px;
+  background: #0b0708;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border: 1.4px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: #dd0912;
+  flex-shrink: 0;
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  color: #dd0101;
+}
+
+.userEmail {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  color: rgba(245, 245, 245, 0.5);
+}
+
+.divider {
+  height: 1px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.accountList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accountItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 55px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #100c0d;
+  text-align: start;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.accountItemDemo {
+  border-color: rgba(221, 1, 1, 0.2);
+  background: #170809;
+}
+
+.accountIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 47px;
+  height: 45px;
+  flex-shrink: 0;
+}
+
+.accountIcon {
+  width: 47px;
+  height: 45px;
+}
+
+.openIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 47px;
+  height: 45px;
+  border-radius: 9px;
+  background: rgba(222, 74, 74, 0.1);
+  flex-shrink: 0;
+}
+
+.openIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.accountCopy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.accountLabel {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: rgba(245, 245, 245, 0.5);
+}
+
+.accountBalance {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 15px;
+}
+
+.openLabel {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.activeBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 13px;
+  color: rgba(221, 1, 1, 0.7);
+}
+
+.openChevron {
+  width: 8px;
+  height: 14px;
+  flex-shrink: 0;
+}

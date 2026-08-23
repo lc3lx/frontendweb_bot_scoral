@@ -1,0 +1,100 @@
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 15px;
+  padding: 22px;
+  background: linear-gradient(
+    175deg,
+    rgba(93, 6, 8, 0.22) 8.5%,
+    rgba(64, 10, 11, 0.31) 14.7%,
+    rgba(49, 12, 13, 0.4) 20.9%,
+    rgba(32, 14, 15, 0.59) 33.4%,
+    rgba(23, 15, 16, 0.77) 45.8%,
+    rgba(18, 16, 17, 0.95) 58.3%
+  );
+}
+
+.label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 15px;
+  letter-spacing: 0.11px;
+  color: #8a8688;
+}
+
+.valueRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 11px;
+  padding-top: 7px;
+}
+
+.value {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 29px;
+  letter-spacing: -0.68px;
+}
+
+.growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 5px;
+  color: #4ade9a;
+  font-size: 11.9px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.growthIcon {
+  width: 15px;
+  height: 15px;
+}
+
+.miniStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding-top: 18px;
+}
+
+.miniStat {
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.miniStatLabel {
+  margin: 0;
+  font-size: 10px;
+  line-height: 14px;
+  color: #6e6a6c;
+}
+
+.miniStatValue {
+  margin: 4px 0 0;
+  font-size: 13.7px;
+  font-weight: 700;
+  line-height: 21px;
+}
+
+.profit {
+  color: #4ade9a;
+}
+
+.loss {
+  color: #dd0101;
+}
+
+.neutral {
+  color: #f5f5f5;
+}
+
+@media (max-width: 700px) {
+  .miniStats {
+    grid-template-columns: 1fr;
+  }
+}

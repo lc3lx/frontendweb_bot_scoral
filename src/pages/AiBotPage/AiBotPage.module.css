@@ -1,0 +1,532 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.pageHeader {
+  padding-block: 8px 0;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 32px;
+  letter-spacing: -0.56px;
+}
+
+.pageSubtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sectionLabel {
+  margin: 0;
+  padding-inline: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+/* Bot status card */
+.statusCard {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: linear-gradient(
+    172deg,
+    rgba(93, 6, 8, 0.22) 8.49%,
+    rgba(64, 10, 11, 0.31) 14.71%,
+    rgba(49, 12, 13, 0.4) 20.94%,
+    rgba(32, 14, 15, 0.59) 33.39%,
+    rgba(23, 15, 16, 0.77) 45.85%,
+    rgba(18, 16, 17, 0.95) 58.3%
+  );
+}
+
+.statusHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.botIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dd0912 0%, #5d0608 100%);
+  flex-shrink: 0;
+}
+
+.botIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.statusCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.statusName {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.17px;
+}
+
+.statusMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.runningChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 3px;
+  padding-inline: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #4ade9a;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+}
+
+.runningDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.engineLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.metricCell {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.metricLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.metricValue {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 23px;
+}
+
+.metricValueUp {
+  color: #4ade9a;
+}
+
+/* Engine controls */
+.controlsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.controlButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-block: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.controlButtonActive {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0.13);
+}
+
+.controlIcon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Performance */
+.performanceCard {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.balanceLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.balanceValue {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 32px;
+  letter-spacing: -0.75px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.statCell {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.statLabel {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.statValue {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 23px;
+}
+
+.statValueProfit {
+  color: #4ade9a;
+}
+
+.statValueLoss {
+  color: #dd0912;
+}
+
+.statValueWarning {
+  color: #f5c15e;
+}
+
+/* Right column — configuration */
+.configGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #121011;
+  cursor: pointer;
+}
+
+.settingIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  flex-shrink: 0;
+}
+
+.settingIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.settingCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.settingLabel {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.settingValue {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+.settingChevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.paramsRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.paramCard {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.paramHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.paramTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #8a8688;
+  letter-spacing: 0.12px;
+}
+
+.paramValue {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 27px;
+}
+
+.chipGrid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chipGrid6 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chipButton {
+  padding-block: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #8a8688;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.chipButtonActive {
+  border-color: #dd0912;
+  background: #dd0912;
+  color: #fff;
+}
+
+.targetsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.targetCard {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
+}
+
+.targetHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.targetIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.targetTitleProfit {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #4ade9a;
+  letter-spacing: 0.12px;
+}
+
+.targetTitleLoss {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #dd0912;
+  letter-spacing: 0.12px;
+}
+
+.targetValueProfit {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: -0.44px;
+  color: #4ade9a;
+}
+
+.targetValueLoss {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: -0.44px;
+  color: #dd0912;
+}
+
+.targetHint {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ghostButton {
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: #121011;
+  color: #f5f5f5;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.ghostButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.disclaimer {
+  margin: 20px 0 8px;
+  font-size: 11px;
+  line-height: 15px;
+  color: #6e6a6c;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .controlsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .configGrid,
+  .paramsRow,
+  .targetsGrid,
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsGrid,
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chipGrid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
