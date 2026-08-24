@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useI18n } from '@i18n';
 
 import { AccountSubBar } from './AccountSubBar';
-import { ACCOUNT_PROFILE } from './data/account.mock';
+import { accountService } from './data/accountService';
 import styles from './AccountPage.module.css';
 
 type EditProfileContentProps = {
@@ -12,12 +12,22 @@ type EditProfileContentProps = {
 
 export function EditProfileContent({ figmaNode }: EditProfileContentProps) {
   const { t } = useI18n();
-  const profile = ACCOUNT_PROFILE;
 
-  const [fullName, setFullName] = useState(profile.fullName);
-  const [country, setCountry] = useState(profile.country);
-  const [telegramId, setTelegramId] = useState(profile.telegram);
-  const [binollaAccountId, setBinollaAccountId] = useState(profile.binollaId);
+  const [fullName, setFullName] = useState('');
+  const [country, setCountry] = useState('');
+  const [telegramId, setTelegramId] = useState('');
+  const [binollaAccountId, setBinollaAccountId] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const profile = await accountService.fetchProfile();
+      setFullName(profile.fullName);
+      setCountry(profile.country);
+      setTelegramId(profile.telegram);
+    })();
+  }, []);
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
@@ -27,8 +37,25 @@ export function EditProfileContent({ figmaNode }: EditProfileContentProps) {
         className={styles.formPanel}
         onSubmit={(event) => {
           event.preventDefault();
+          setError(null);
+          void (async () => {
+            try {
+              await accountService.updateProfile({
+                fullName,
+                country,
+                telegramId,
+                binollaSsid: binollaAccountId,
+              });
+              setSaved(true);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : t.account.actions.saveChanges);
+            }
+          })();
         }}
       >
+        {error ? <p role="alert">{error}</p> : null}
+        {saved ? <p>{t.account.actions.saveChanges}</p> : null}
+
         <div className={styles.field}>
           <label className={styles.fieldLabel} htmlFor="account-full-name">
             {t.account.fields.fullName}

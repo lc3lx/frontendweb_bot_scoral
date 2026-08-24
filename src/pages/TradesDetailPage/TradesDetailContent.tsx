@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import { signupAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
 import { CandlestickChart } from '@pages/TradingPage/sections/CandlestickChart';
 
-import { getTradeDetail, type TradeDetailData } from './data/tradeDetail.mock';
+import { fetchTradeDetail } from './data/tradeDetailService';
+import type { TradeDetailData } from './data/tradeDetail.mock';
 import styles from './TradesDetailPage.module.css';
 
 type TradesDetailContentProps = {
@@ -40,7 +42,26 @@ function resolveTradeSourceLabel(
 export function TradesDetailContent({ tradeId, isLiveView, figmaNode }: TradesDetailContentProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const detail = getTradeDetail(tradeId);
+  const [detail, setDetail] = useState<TradeDetailData | null | undefined>(undefined);
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const next = await fetchTradeDetail(tradeId);
+      if (active) setDetail(next);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [tradeId]);
+
+  if (detail === undefined) {
+    return (
+      <div className={styles.page} data-figma-node={figmaNode}>
+        <p>…</p>
+      </div>
+    );
+  }
 
   if (!detail) {
     return (

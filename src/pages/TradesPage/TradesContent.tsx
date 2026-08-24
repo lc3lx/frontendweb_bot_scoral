@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useI18n } from '@i18n';
 
-import { TRADES_MOCK, filterTrades, type TradeFilterId } from './data/trades.mock';
+import { tradesPageService } from './data/tradesService';
+import type { TradeCardData, TradeFilterId } from './data/trades.mock';
 import styles from './TradesPage.module.css';
 import { TradeCard } from './sections/TradeCard';
 import { TradeFilters } from './sections/TradeFilters';
@@ -14,11 +15,26 @@ type TradesContentProps = {
 export function TradesContent({ figmaNode }: TradesContentProps) {
   const { t } = useI18n();
   const [activeFilter, setActiveFilter] = useState<TradeFilterId>('all');
+  const [trades, setTrades] = useState<TradeCardData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredTrades = useMemo(
-    () => filterTrades(TRADES_MOCK, activeFilter),
-    [activeFilter],
-  );
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const items = await tradesPageService.list(activeFilter);
+        if (active) setTrades(items);
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : t.trades.empty);
+          setTrades([]);
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [activeFilter, t.trades.empty]);
 
   const filterLabels: Record<TradeFilterId, string> = {
     all: t.trades.filters.all,
@@ -38,10 +54,11 @@ export function TradesContent({ figmaNode }: TradesContentProps) {
       <TradeFilters active={activeFilter} labels={filterLabels} onChange={setActiveFilter} />
 
       <div className={styles.grid}>
-        {filteredTrades.length === 0 ? (
+        {error ? <p className={styles.emptyState}>{error}</p> : null}
+        {!error && trades.length === 0 ? (
           <p className={styles.emptyState}>{t.trades.empty}</p>
         ) : (
-          filteredTrades.map((trade) => <TradeCard key={trade.id} trade={trade} />)
+          trades.map((trade) => <TradeCard key={trade.id} trade={trade} />)
         )}
       </div>
     </div>

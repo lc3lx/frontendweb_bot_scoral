@@ -3,7 +3,13 @@ import { useI18n } from '@i18n';
 
 import styles from './ProfileDropdown.module.css';
 
-export function ProfileDropdown() {
+type ProfileDropdownProps = {
+  name: string;
+  email: string;
+  balance: string;
+};
+
+export function ProfileDropdown({ name, email, balance }: ProfileDropdownProps) {
   const { t } = useI18n();
   const copy = t.dashboard.accountMenu;
 
@@ -12,8 +18,8 @@ export function ProfileDropdown() {
       <div className={styles.userRow}>
         <span className={styles.avatar} aria-hidden="true" />
         <div className={styles.userText}>
-          <span className={styles.userName}>{t.dashboard.user.name}</span>
-          <span className={styles.userEmail}>{copy.email}</span>
+          <span className={styles.userName}>{name || t.dashboard.user.name}</span>
+          <span className={styles.userEmail}>{email || copy.email}</span>
         </div>
       </div>
 
@@ -33,7 +39,7 @@ export function ProfileDropdown() {
           </span>
           <span className={styles.accountCopy}>
             <span className={styles.accountLabel}>{copy.realAccount}</span>
-            <span className={styles.accountBalance}>{t.dashboard.user.balance}</span>
+            <span className={styles.accountBalance}>{balance}</span>
           </span>
         </button>
 
@@ -50,7 +56,7 @@ export function ProfileDropdown() {
           </span>
           <span className={styles.accountCopy}>
             <span className={styles.accountLabel}>{copy.demoAccount}</span>
-            <span className={styles.accountBalance}>{t.dashboard.user.balance}</span>
+            <span className={styles.accountBalance}>{balance}</span>
           </span>
           <span className={styles.activeBadge}>{copy.active}</span>
         </button>

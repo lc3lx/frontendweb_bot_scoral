@@ -1,23 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { loginAssets, signupAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
+import loginStyles from '@pages/LoginPage/LoginPage.module.css';
 
+import { useSignupForm } from './hooks/useSignupForm';
 import styles from './SignupPage.module.css';
 
 /** Figma frame "3" (591:180) — create account with hero column and signup card. */
 export function SignupPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [country, setCountry] = useState('');
-  const [telegramId, setTelegramId] = useState('');
-  const [binollaAccount, setBinollaAccount] = useState('');
+  const form = useSignupForm();
 
   useEffect(() => {
     document.title = t.signup.seo.title;
@@ -111,10 +107,16 @@ export function SignupPage() {
             <form
               className={styles.form}
               onSubmit={(event) => {
-                event.preventDefault();
-                navigate(ROUTES.pendingApproval);
+                void form.submit(event);
               }}
+              noValidate
             >
+              {form.serverError ? (
+                <p className={loginStyles.serverError} role="alert">
+                  {form.serverError}
+                </p>
+              ) : null}
+
               <div className={styles.field}>
                 <label className={styles.label} htmlFor="signup-full-name">
                   {t.signup.form.fullNameLabel}
@@ -126,9 +128,12 @@ export function SignupPage() {
                   name="fullName"
                   autoComplete="name"
                   placeholder={t.signup.form.fullNamePlaceholder}
-                  value={fullName}
-                  onChange={(event) => setFullName(event.target.value)}
+                  value={form.values.fullName}
+                  onChange={(event) => form.setField('fullName', event.target.value)}
                 />
+                {form.fieldErrors.fullName ? (
+                  <span className={loginStyles.fieldError}>{form.fieldErrors.fullName}</span>
+                ) : null}
               </div>
 
               <div className={styles.field}>
@@ -142,9 +147,12 @@ export function SignupPage() {
                   name="email"
                   autoComplete="email"
                   placeholder={t.signup.form.emailPlaceholder}
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  value={form.values.email}
+                  onChange={(event) => form.setField('email', event.target.value)}
                 />
+                {form.fieldErrors.email ? (
+                  <span className={loginStyles.fieldError}>{form.fieldErrors.email}</span>
+                ) : null}
               </div>
 
               <div className={styles.field}>
@@ -158,9 +166,12 @@ export function SignupPage() {
                   name="password"
                   autoComplete="new-password"
                   placeholder={t.signup.form.passwordPlaceholder}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  value={form.values.password}
+                  onChange={(event) => form.setField('password', event.target.value)}
                 />
+                {form.fieldErrors.password ? (
+                  <span className={loginStyles.fieldError}>{form.fieldErrors.password}</span>
+                ) : null}
               </div>
 
               <div className={styles.field}>
@@ -174,9 +185,12 @@ export function SignupPage() {
                   name="country"
                   autoComplete="country-name"
                   placeholder={t.signup.form.countryPlaceholder}
-                  value={country}
-                  onChange={(event) => setCountry(event.target.value)}
+                  value={form.values.country}
+                  onChange={(event) => form.setField('country', event.target.value)}
                 />
+                {form.fieldErrors.country ? (
+                  <span className={loginStyles.fieldError}>{form.fieldErrors.country}</span>
+                ) : null}
               </div>
 
               <div className={styles.field}>
@@ -189,9 +203,12 @@ export function SignupPage() {
                   type="text"
                   name="telegramId"
                   placeholder={t.signup.form.telegramPlaceholder}
-                  value={telegramId}
-                  onChange={(event) => setTelegramId(event.target.value)}
+                  value={form.values.telegramId}
+                  onChange={(event) => form.setField('telegramId', event.target.value)}
                 />
+                {form.fieldErrors.telegramId ? (
+                  <span className={loginStyles.fieldError}>{form.fieldErrors.telegramId}</span>
+                ) : null}
               </div>
 
               <div className={styles.field}>
@@ -204,13 +221,17 @@ export function SignupPage() {
                   type="text"
                   name="binollaAccount"
                   placeholder={t.signup.form.binollaPlaceholder}
-                  value={binollaAccount}
-                  onChange={(event) => setBinollaAccount(event.target.value)}
+                  value={form.values.binollaAccount}
+                  onChange={(event) => form.setField('binollaAccount', event.target.value)}
                 />
               </div>
 
               <div className={styles.submitWrap}>
-                <button type="submit" className={styles.submitButton}>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={form.isSubmitDisabled}
+                >
                   {t.signup.form.submit}
                 </button>
               </div>

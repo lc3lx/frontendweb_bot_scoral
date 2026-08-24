@@ -777,3 +777,29 @@
 }
 
 
+
+.fieldError {
+
+  color: #ff6b6b;
+
+  font-size: 0.8125rem;
+
+  margin-top: 0.35rem;
+
+  display: block;
+
+}
+
+
+
+.serverError {
+
+  color: #ff6b6b;
+
+  font-size: 0.875rem;
+
+  margin: 0 0 1rem;
+
+}
+
+

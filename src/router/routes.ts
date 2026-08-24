@@ -5,6 +5,7 @@ export const ROUTES = {
   login: '/login',
   signup: '/signup',
   pendingApproval: '/pending-approval',
+  linkBinolla: '/link-binolla',
   dashboard: '/dashboard',
   dashboardScroll: '/dashboard-scroll',
   trading: '/trading',

@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { loginAssets, pendingAssets } from '@assets';
 import { useI18n } from '@i18n';
-import { ROUTES } from '@router/routes';
 
+import { usePendingApproval } from './hooks/usePendingApproval';
 import styles from './PendingApprovalPage.module.css';
 
 /** Figma frame "4" (595:669) — pending approval with hero column and status card. */
 export function PendingApprovalPage() {
   const { t } = useI18n();
-  const navigate = useNavigate();
+  const pending = usePendingApproval();
 
   useEffect(() => {
     document.title = t.pendingApproval.seo.title;
@@ -123,17 +122,23 @@ export function PendingApprovalPage() {
             </dl>
 
             <div className={styles.actions}>
+              {pending.error ? (
+                <p className={styles.error} role="alert">
+                  {pending.error}
+                </p>
+              ) : null}
               <button
                 type="button"
                 className={styles.primaryButton}
-                onClick={() => navigate(ROUTES.dashboard)}
+                onClick={() => void pending.refresh()}
+                disabled={pending.status === 'loading'}
               >
                 {t.pendingApproval.actions.refresh}
               </button>
               <button
                 type="button"
                 className={styles.ghostButton}
-                onClick={() => navigate(ROUTES.login)}
+                onClick={pending.logout}
               >
                 {t.pendingApproval.actions.backToLogin}
               </button>

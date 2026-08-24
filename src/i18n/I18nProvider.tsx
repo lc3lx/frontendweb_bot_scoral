@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { setLocale as setSharedLocale } from '@shared/i18n';
 import { ar } from './locales/ar';
 import { en } from './locales/en';
 import {
@@ -46,6 +47,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     applyDocumentLocale(locale);
+    setSharedLocale(locale);
     try {
       localStorage.setItem(LOCALE_STORAGE_KEY, locale);
     } catch {

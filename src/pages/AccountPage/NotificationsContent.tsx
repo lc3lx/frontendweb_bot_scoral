@@ -1,8 +1,11 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import { accountAssets } from '@assets';
 import { useI18n } from '@i18n';
 
 import { AccountSubBar } from './AccountSubBar';
-import { NOTIFICATION_ITEMS, type NotificationTone } from './data/notifications.mock';
+import { activityService, type WebNotificationItem } from './data/activityService';
+import type { NotificationTone } from './data/notifications.mock';
 import styles from './AccountPage.module.css';
 
 type NotificationsContentProps = {
@@ -43,45 +46,56 @@ function resolveToneClass(tone: NotificationTone) {
 
 export function NotificationsContent({ figmaNode }: NotificationsContentProps) {
   const { t } = useI18n();
+  const [items, setItems] = useState<WebNotificationItem[]>([]);
+
+  const load = useCallback(async () => {
+    const next = await activityService.fetchNotifications();
+    setItems(next);
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
       <AccountSubBar
         title={t.account.subBar.notifications}
         trailing={
-          <button type="button" className={styles.markAllButton}>
+          <button
+            type="button"
+            className={styles.markAllButton}
+            onClick={() => void activityService.markAllRead().then(load)}
+          >
             {t.account.actions.markAll}
           </button>
         }
       />
 
       <div className={styles.notificationsGrid}>
-        {NOTIFICATION_ITEMS.map((item) => {
-          const message = t.account.notifications.items[item.messageKey];
-
-          return (
-            <article key={item.id} className={styles.notificationCard}>
-              <div className={`${styles.notificationIconWrap} ${resolveToneClass(item.tone)}`}>
-                <img
-                  src={resolveNotificationIcon(item.tone)}
-                  alt=""
-                  width={16}
-                  height={16}
-                  aria-hidden="true"
-                />
+        {items.length === 0 ? <p>{t.trades.empty}</p> : null}
+        {items.map((item) => (
+          <article key={item.id} className={styles.notificationCard}>
+            <div className={`${styles.notificationIconWrap} ${resolveToneClass(item.tone)}`}>
+              <img
+                src={resolveNotificationIcon(item.tone)}
+                alt=""
+                width={16}
+                height={16}
+                aria-hidden="true"
+              />
+            </div>
+            <div className={styles.notificationBody}>
+              <div className={styles.notificationHead}>
+                <h3 className={styles.notificationTitle}>{item.title}</h3>
+                <time className={styles.notificationTime} dateTime={item.timeAgo}>
+                  {item.timeAgo}
+                </time>
               </div>
-              <div className={styles.notificationBody}>
-                <div className={styles.notificationHead}>
-                  <h3 className={styles.notificationTitle}>{message.title}</h3>
-                  <time className={styles.notificationTime} dateTime={message.timeAgo}>
-                    {message.timeAgo}
-                  </time>
-                </div>
-                <p className={styles.notificationDescription}>{message.description}</p>
-              </div>
-            </article>
-          );
-        })}
+              <p className={styles.notificationDescription}>{item.description}</p>
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   );

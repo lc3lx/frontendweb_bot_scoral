@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import { useI18n } from '@i18n';
 
 import { ROUTES } from '@router/routes';
 
+import { useLoginForm } from './hooks/useLoginForm';
 import styles from './LoginPage.module.css';
 
 
@@ -22,11 +23,7 @@ export function LoginPage() {
 
   const { t } = useI18n();
 
-  const [email, setEmail] = useState('');
-
-  const [password, setPassword] = useState('');
-
-  const [showPassword, setShowPassword] = useState(false);
+  const form = useLoginForm();
 
 
 
@@ -232,11 +229,19 @@ export function LoginPage() {
 
               onSubmit={(event) => {
 
-                event.preventDefault();
+                void form.submit(event);
 
               }}
 
+              noValidate
+
             >
+
+              {form.serverError ? (
+                <p className={styles.serverError} role="alert">
+                  {form.serverError}
+                </p>
+              ) : null}
 
               <div className={styles.field}>
 
@@ -260,11 +265,15 @@ export function LoginPage() {
 
                   placeholder={t.login.form.emailPlaceholder}
 
-                  value={email}
+                  value={form.values.email}
 
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event) => form.setField('email', event.target.value)}
 
                 />
+
+                {form.fieldErrors.email ? (
+                  <span className={styles.fieldError}>{form.fieldErrors.email}</span>
+                ) : null}
 
               </div>
 
@@ -286,49 +295,23 @@ export function LoginPage() {
 
                     className={`${styles.input} ${styles.passwordInput}`}
 
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
 
                     name="password"
 
                     autoComplete="current-password"
 
-                    value={password}
+                    value={form.values.password}
 
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={(event) => form.setField('password', event.target.value)}
 
                   />
 
-                  <button
-
-                    type="button"
-
-                    className={styles.togglePassword}
-
-                    onClick={() => setShowPassword((visible) => !visible)}
-
-                    aria-label={showPassword ? t.a11y.hidePassword : t.a11y.showPassword}
-
-                  >
-
-                    <img
-
-                      className={styles.togglePasswordIcon}
-
-                      src={loginAssets.iconEye}
-
-                      alt=""
-
-                      width={18}
-
-                      height={18}
-
-                      aria-hidden="true"
-
-                    />
-
-                  </button>
-
                 </div>
+
+                {form.fieldErrors.password ? (
+                  <span className={styles.fieldError}>{form.fieldErrors.password}</span>
+                ) : null}
 
               </div>
 
@@ -348,9 +331,9 @@ export function LoginPage() {
 
               <div className={styles.submitWrap}>
 
-                <button type="submit" className={styles.submitButton}>
+                <button type="submit" className={styles.submitButton} disabled={form.isSubmitDisabled}>
 
-                  {t.login.form.submit}
+                  {form.status === 'loading' ? t.login.form.submit : t.login.form.submit}
 
                 </button>
 

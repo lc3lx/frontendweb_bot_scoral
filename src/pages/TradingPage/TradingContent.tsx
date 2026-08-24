@@ -1,7 +1,10 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import { tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 
-import { tradingMockData } from './data/trading.mock';
+import { tradingService } from './data/tradingService';
+import type { TradingMockData } from './data/trading.mock';
 import styles from './TradingPage.module.css';
 import { AiSignalPanel } from './sections/AiSignalPanel';
 import { TradingTerminal } from './sections/TradingTerminal';
@@ -12,7 +15,24 @@ type TradingContentProps = {
 
 export function TradingContent({ figmaNode }: TradingContentProps) {
   const { t } = useI18n();
-  const data = tradingMockData;
+  const [data, setData] = useState<TradingMockData | null>(null);
+
+  const load = useCallback(async () => {
+    const next = await tradingService.fetchData();
+    setData(next);
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (!data) {
+    return (
+      <div className={styles.page} data-figma-node={figmaNode}>
+        <p>…</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
@@ -31,7 +51,12 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
             <span className={styles.chipDotBlue} aria-hidden="true" />
             {t.trading.status.demo}
           </span>
-          <button type="button" className={styles.iconButton} aria-label={t.trading.status.refreshAria}>
+          <button
+            type="button"
+            className={styles.iconButton}
+            aria-label={t.trading.status.refreshAria}
+            onClick={() => void load()}
+          >
             <img
               className={styles.iconButtonImg}
               src={tradingAssets.iconRefresh}

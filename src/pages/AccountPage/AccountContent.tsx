@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { accountAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
+import { tokenStore } from '@shared/auth/tokenStore';
 
-import { ACCOUNT_PROFILE } from './data/account.mock';
+import { accountService } from './data/accountService';
+import type { AccountProfile } from './data/account.mock';
 import styles from './AccountPage.module.css';
 
 type AccountContentProps = {
@@ -14,7 +17,39 @@ type AccountContentProps = {
 export function AccountContent({ figmaNode }: AccountContentProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const profile = ACCOUNT_PROFILE;
+  const [profile, setProfile] = useState<AccountProfile | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const next = await accountService.fetchProfile();
+        if (active) {
+          setProfile({
+            fullName: next.fullName,
+            email: next.email,
+            country: next.country,
+            telegram: next.telegram,
+            binollaId: next.binollaId,
+            unreadNotifications: next.unreadNotifications,
+          });
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!profile) {
+    return (
+      <div className={styles.page} data-figma-node={figmaNode}>
+        <p>…</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
@@ -155,7 +190,10 @@ export function AccountContent({ figmaNode }: AccountContentProps) {
             <button
               type="button"
               className={styles.logoutRow}
-              onClick={() => navigate(ROUTES.login)}
+              onClick={() => {
+                tokenStore.clear();
+                navigate(ROUTES.login, { replace: true });
+              }}
             >
               <div className={styles.logoutIconWrap}>
                 <img src={accountAssets.iconSessionLogout} alt="" width={18} height={18} aria-hidden="true" />

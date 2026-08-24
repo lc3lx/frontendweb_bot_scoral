@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { dashboardAssets, loginAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
+import { tokenStore } from '@shared/auth/tokenStore';
 
 import styles from './Sidebar.module.css';
 
@@ -87,7 +88,10 @@ export function Sidebar({ activeNav }: SidebarProps) {
       <button
         type="button"
         className={`${styles.navItem} ${styles.logout}`}
-        onClick={() => navigate(ROUTES.login)}
+        onClick={() => {
+          tokenStore.clear();
+          navigate(ROUTES.login, { replace: true });
+        }}
       >
         <img
           className={styles.navIcon}
