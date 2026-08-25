@@ -8,7 +8,7 @@ export type {
   SignupFormValues,
   FieldErrors,
 } from './types';
-export { authService, login, signup, changePassword } from './services/authService';
+export { authService, login, loginWithBinolla, signup, signupWithBinolla, changePassword } from './services/authService';
 export { useAuthForm } from './hooks/useAuthForm';
 export type { UseAuthFormOptions, UseAuthFormResult } from './hooks/useAuthForm';
 export {

@@ -154,9 +154,9 @@ export const en: Messages = {
 
       telegramPlaceholder: '@yourhandle',
 
-      binollaLabel: 'Binolla Account ID / Email',
+      binollaLabel: 'Binolla SSID (optional fallback)',
 
-      binollaPlaceholder: 'ID or email',
+      binollaPlaceholder: 'Paste only if credential login is unavailable',
 
       submit: 'Create Account',
 

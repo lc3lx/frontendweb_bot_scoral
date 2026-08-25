@@ -10,6 +10,16 @@ export type AuthTelegramResponse = {
   userId: string;
 };
 
+export type BinollaAuthResponse = AuthTelegramResponse & {
+  connected: boolean;
+  accountType: string;
+  access: string;
+  adminApproved: boolean;
+  approvalStatus: string;
+  lastConnectedAt: string | null;
+  balance: number | null;
+};
+
 export type EmailAuthRequest = {
   email: string;
   password: string;

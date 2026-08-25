@@ -1,7 +1,7 @@
 import { ApiClientError, authApi } from '@shared/api';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { t } from '@shared/i18n';
-import type { AuthSession, AuthServiceError, LoginCredentials, SignupPayload } from '../types';
+import type { AuthSession, AuthServiceError, BinollaAuthSession, LoginCredentials, SignupPayload } from '../types';
 
 function toAuthError(error: unknown): AuthServiceError {
   if (error instanceof ApiClientError) {
@@ -19,6 +19,47 @@ function storeSession(result: { accessToken: string; userId: string }): AuthSess
     accessToken: result.accessToken,
     userId: result.userId,
   };
+}
+
+function storeBinollaSession(result: {
+  accessToken: string;
+  userId: string;
+  access: string;
+  connected: boolean;
+}): BinollaAuthSession {
+  tokenStore.setSession(result.accessToken, result.userId);
+  return {
+    accessToken: result.accessToken,
+    userId: result.userId,
+    access: result.access,
+    connected: result.connected,
+  };
+}
+
+export async function loginWithBinolla(credentials: LoginCredentials): Promise<BinollaAuthSession> {
+  try {
+    const result = await authApi.binollaLogin({
+      email: credentials.email.trim(),
+      password: credentials.password,
+      accountType: 'Demo',
+    });
+    return storeBinollaSession(result);
+  } catch (error) {
+    throw toAuthError(error);
+  }
+}
+
+export async function signupWithBinolla(credentials: LoginCredentials): Promise<BinollaAuthSession> {
+  try {
+    const result = await authApi.binollaSignup({
+      email: credentials.email.trim(),
+      password: credentials.password,
+      accountType: 'Demo',
+    });
+    return storeBinollaSession(result);
+  } catch (error) {
+    throw toAuthError(error);
+  }
 }
 
 export async function login(credentials: LoginCredentials): Promise<AuthSession> {
@@ -61,6 +102,8 @@ export async function changePassword(input: {
 
 export const authService = {
   login,
+  loginWithBinolla,
   signup,
+  signupWithBinolla,
   changePassword,
 };

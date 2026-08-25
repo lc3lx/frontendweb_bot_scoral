@@ -29,6 +29,8 @@ module.exports = {
       out_file: path.join(__dirname, 'logs', 'pm2-out.log'),
       merge_logs: true,
       time: true,
+      max_size: '20M',
+      retain: 3,
       env: {
         NODE_ENV: 'production',
         WEBAPP_PORT: port,

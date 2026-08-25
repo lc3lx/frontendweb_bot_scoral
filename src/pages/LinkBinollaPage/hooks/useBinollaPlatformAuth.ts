@@ -18,7 +18,7 @@ export function useBinollaPlatformAuth(mode: BinollaAuthMode = 'login') {
 
   const ensureSession = useCallback(async () => {
     if (tokenStore.isAuthenticated()) return;
-    navigate(ROUTES.login, { replace: true });
+    navigate(`${ROUTES.login}?mode=login`, { replace: true });
     throw { message: t('auth.signInFirst') };
   }, [navigate]);
 

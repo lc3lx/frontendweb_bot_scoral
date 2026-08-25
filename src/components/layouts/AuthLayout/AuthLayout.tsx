@@ -42,10 +42,8 @@ export function AuthLayout() {
           location.pathname === ROUTES.linkBinolla;
 
         if (isGuestRoute && location.pathname !== ROUTES.linkBinolla) {
-          if (status.botAccess !== 'BinollaNotConnected' && status.botAccess !== 'SessionExpired') {
-            navigate(destination, { replace: true });
-            return;
-          }
+          navigate(destination, { replace: true });
+          return;
         }
 
         if (

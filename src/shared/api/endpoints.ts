@@ -5,10 +5,11 @@ import type {
   AccountSubscriptionResponse,
   ActivationHistoryResponse,
   AuthTelegramResponse,
+  BinollaAuthResponse,
+  BinollaCredentialRequest,
   BinollaBalanceDto,
   BinollaConnectRequest,
   BinollaConnectResponse,
-  BinollaCredentialRequest,
   BinollaStatusDto,
   BotRuntimeResponse,
   ChangePasswordRequest,
@@ -90,6 +91,30 @@ export const authApi = {
     return apiRequest<AuthTelegramResponse>('/api/auth/link-telegram', {
       method: 'POST',
       body: { initData },
+    });
+  },
+  binollaLogin(body: BinollaCredentialRequest): Promise<BinollaAuthResponse> {
+    return apiRequest<BinollaAuthResponse>('/api/auth/binolla-login', {
+      method: 'POST',
+      body: {
+        email: body.email,
+        password: body.password,
+        accountType: body.accountType ?? 'Demo',
+      },
+      auth: false,
+      signal: timedSignal(BINOLLA_LOGIN_MS),
+    });
+  },
+  binollaSignup(body: BinollaCredentialRequest): Promise<BinollaAuthResponse> {
+    return apiRequest<BinollaAuthResponse>('/api/auth/binolla-signup', {
+      method: 'POST',
+      body: {
+        email: body.email,
+        password: body.password,
+        accountType: body.accountType ?? 'Demo',
+      },
+      auth: false,
+      signal: timedSignal(BINOLLA_LOGIN_MS),
     });
   },
 };

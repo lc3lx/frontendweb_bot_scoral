@@ -7,6 +7,11 @@ export type AuthSession = {
   userId: string;
 };
 
+export type BinollaAuthSession = AuthSession & {
+  access: string;
+  connected: boolean;
+};
+
 export type LoginCredentials = {
   email: string;
   password: string;

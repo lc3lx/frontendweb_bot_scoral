@@ -151,9 +151,9 @@ export const ar: Messages = {
 
       telegramPlaceholder: '@yourhandle',
 
-      binollaLabel: 'معرّف / بريد حساب Binolla',
+      binollaLabel: 'SSID بينولا (اختياري)',
 
-      binollaPlaceholder: 'المعرّف أو البريد',
+      binollaPlaceholder: 'الصق فقط إذا تعذّر الدخول بالبيانات',
 
       submit: 'إنشاء حساب',
 

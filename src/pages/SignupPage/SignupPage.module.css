@@ -314,6 +314,23 @@
   color: #555;
 }
 
+.binollaHelp {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #888;
+}
+
+.binollaHelpLink {
+  color: #c9a227;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.binollaHelpLink:hover {
+  color: #e0b83a;
+}
+
 @media (max-width: 1024px) {
   .layout {
     grid-template-columns: 1fr;

@@ -3,3 +3,35 @@
   font-size: 0.875rem;
   margin: 0 0 0.75rem;
 }
+
+.secondaryButton {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+:global(.signupLink) {
+  /* keep LoginPage link look when used on buttons */
+}
+
+.modeSwitch {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
