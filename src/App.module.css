@@ -3,3 +3,7 @@
   min-height: 100dvh;
   background: var(--color-bg-primary);
 }
+
+.app[data-route='landing'] {
+  overflow-x: clip;
+}

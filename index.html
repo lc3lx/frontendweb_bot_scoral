@@ -9,6 +9,13 @@
           var lang = locale === 'en' ? 'en' : 'ar';
           document.documentElement.lang = lang;
           document.documentElement.dir = dir;
+          function applyBody() {
+            if (!document.body) return;
+            document.body.lang = lang;
+            document.body.dir = dir;
+          }
+          if (document.body) applyBody();
+          else document.addEventListener('DOMContentLoaded', applyBody);
         } catch (e) {}
       })();
     </script>
@@ -32,7 +39,7 @@
       rel="stylesheet"
     />
   </head>
-  <body dir="rtl">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

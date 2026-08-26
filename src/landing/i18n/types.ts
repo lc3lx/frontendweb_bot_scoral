@@ -25,8 +25,9 @@ export const LOCALE_META: Record<Locale, LocaleMeta> = {
   },
 };
 
-export const DEFAULT_LOCALE: Locale = 'en';
-export const LOCALE_STORAGE_KEY = 'scar-alpha-locale';
+export const DEFAULT_LOCALE: Locale = 'ar';
+/** Same key as the main web app so language + dir survive login/home navigation. */
+export const LOCALE_STORAGE_KEY = 'scar-alpha-web-locale';
 
 export type NavKey =
   | 'home'

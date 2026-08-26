@@ -1,13 +1,18 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  type ReactNode,
+} from 'react';
+import {
+  LOCALE_META as APP_LOCALE_META,
+  useI18n as useAppI18n,
+  type Locale,
+} from '@i18n';
 import { ar } from './locales/ar';
 import { en } from './locales/en';
-import {
-  DEFAULT_LOCALE,
-  LOCALE_META,
-  LOCALE_STORAGE_KEY,
-  type Locale,
-  type Messages,
-} from './types';
+import { LOCALE_META, type Messages } from './types';
 
 const MESSAGES: Record<Locale, Messages> = { en, ar };
 
@@ -21,49 +26,31 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function readStoredLocale(): Locale {
-  try {
-    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (stored === 'en' || stored === 'ar') return stored;
-  } catch {
-    /* ignore */
-  }
-  return DEFAULT_LOCALE;
-}
-
-function applyDocumentLocale(locale: Locale) {
-  const meta = LOCALE_META[locale];
-  document.documentElement.lang = meta.htmlLang;
-  document.documentElement.dir = meta.dir;
-  // index.html hardcodes `<body dir="rtl">`, and an attribute on the body wins over the
-  // inherited one from <html> — without this the landing renders English text in RTL.
-  document.body.dir = meta.dir;
-}
-
+/**
+ * Bridges the app-wide locale (Arabic/English + document dir) into landing copy.
+ * One storage key, one dir on <html>/<body> — no nested locale fight with login/dashboard.
+ */
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() =>
-    typeof window === 'undefined' ? DEFAULT_LOCALE : readStoredLocale(),
-  );
+  const app = useAppI18n();
 
   useEffect(() => {
-    applyDocumentLocale(locale);
-    try {
-      localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-    } catch {
-      /* ignore */
-    }
-  }, [locale]);
+    const meta = APP_LOCALE_META[app.locale];
+    document.documentElement.lang = meta.htmlLang;
+    document.documentElement.dir = meta.dir;
+    document.body.lang = meta.htmlLang;
+    document.body.dir = meta.dir;
+  }, [app.locale]);
 
-  const value = useMemo<I18nContextValue>(() => {
-    const setLocale = (next: Locale) => setLocaleState(next);
-    return {
-      locale,
-      dir: LOCALE_META[locale].dir,
-      t: MESSAGES[locale],
-      setLocale,
-      toggleLocale: () => setLocaleState((prev) => (prev === 'en' ? 'ar' : 'en')),
-    };
-  }, [locale]);
+  const value = useMemo<I18nContextValue>(
+    () => ({
+      locale: app.locale,
+      dir: app.dir,
+      t: MESSAGES[app.locale],
+      setLocale: app.setLocale,
+      toggleLocale: app.toggleLocale,
+    }),
+    [app.dir, app.locale, app.setLocale, app.toggleLocale],
+  );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
@@ -71,7 +58,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 export function useI18n(): I18nContextValue {
   const ctx = useContext(I18nContext);
   if (!ctx) {
-    throw new Error('useI18n must be used within I18nProvider');
+    throw new Error('useI18n must be used within landing I18nProvider');
   }
   return ctx;
 }
+
+export { LOCALE_META };

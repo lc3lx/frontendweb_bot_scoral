@@ -8,7 +8,7 @@
 
 /* Pin Features subtitle (475:130) under SectionTitle */
 .heading :global([class*='description']) {
-  margin-top: clamp(0.5rem, 0.35rem + 0.4vw, 0.625rem); /* ~10px after title block */
+  margin-block-start: clamp(0.5rem, 0.35rem + 0.4vw, 0.625rem); /* ~10px after title block */
   max-width: 57.0625rem; /* 913px */
   font-size: clamp(1rem, 0.85rem + 0.58vw, 1.374rem); /* → 21.985 @1440 */
   line-height: 1.556; /* 34.198 / 21.985 */

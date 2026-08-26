@@ -28,7 +28,7 @@ export function LandingFeature({ className }: LandingFeatureProps) {
   const [splashDone, setSplashDone] = useState(false);
   const onSplashFinished = useCallback(() => setSplashDone(true), []);
   useScrollReveal(splashDone);
-  const { t, locale } = useI18n();
+  const { t, locale, dir } = useI18n();
 
   return (
     <>
@@ -53,6 +53,8 @@ export function LandingFeature({ className }: LandingFeatureProps) {
         className={cn(styles.root, className)}
         data-figma-node={FIGMA_LANDING_NODES.desktopRoot}
         aria-hidden={!splashDone}
+        dir={dir}
+        lang={locale === 'ar' ? 'ar' : 'en'}
       >
         <HeaderSection />
         <HeroSection />
