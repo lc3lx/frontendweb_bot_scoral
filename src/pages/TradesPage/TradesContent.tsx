@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
 
 import { tradesPageService } from './data/tradesService';
@@ -11,6 +12,15 @@ import { TradeFilters } from './sections/TradeFilters';
 type TradesContentProps = {
   figmaNode: string;
 };
+
+function TradesBackdrop() {
+  return (
+    <div className={styles.backdrop} aria-hidden="true">
+      <img className={styles.bg} src={dashboardAssets.homeBg} alt="" />
+      <span className={styles.veil} />
+    </div>
+  );
+}
 
 export function TradesContent({ figmaNode }: TradesContentProps) {
   const { t } = useI18n();
@@ -46,20 +56,19 @@ export function TradesContent({ figmaNode }: TradesContentProps) {
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
-      <div className={styles.pageHeader}>
-        <h2 className={styles.pageTitle}>{t.trades.header.title}</h2>
-        <p className={styles.pageSubtitle}>{t.trades.header.subtitle}</p>
-      </div>
+      <TradesBackdrop />
 
-      <TradeFilters active={activeFilter} labels={filterLabels} onChange={setActiveFilter} />
+      <div className={styles.content}>
+        <TradeFilters active={activeFilter} labels={filterLabels} onChange={setActiveFilter} />
 
-      <div className={styles.grid}>
-        {error ? <p className={styles.emptyState}>{error}</p> : null}
-        {!error && trades.length === 0 ? (
-          <p className={styles.emptyState}>{t.trades.empty}</p>
-        ) : (
-          trades.map((trade) => <TradeCard key={trade.id} trade={trade} />)
-        )}
+        <div className={styles.grid}>
+          {error ? <p className={styles.emptyState}>{error}</p> : null}
+          {!error && trades.length === 0 ? (
+            <p className={styles.emptyState}>{t.trades.empty}</p>
+          ) : (
+            trades.map((trade) => <TradeCard key={trade.id} trade={trade} />)
+          )}
+        </div>
       </div>
     </div>
   );
