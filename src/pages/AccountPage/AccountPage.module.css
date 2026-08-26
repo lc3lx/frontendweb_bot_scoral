@@ -1,29 +1,108 @@
 .page {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  isolation: isolate;
+  min-height: calc(100dvh - 110px);
+  color: #ffffff;
 }
 
-.pageHeader {
-  padding-block: 8px 0;
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  min-height: 100%;
 }
 
-.pageTitle {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 32px;
-  letter-spacing: -0.56px;
+.bg,
+.veil {
+  position: absolute;
+  pointer-events: none;
 }
 
-.pageSubtitle {
-  margin: 4px 0 0;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 17px;
-  color: #8a8688;
-  letter-spacing: 0.12px;
+.bg {
+  top: 50%;
+  left: 50%;
+  width: 118%;
+  height: 118%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  user-select: none;
+  animation: bgDrift 28s ease-in-out infinite alternate;
+}
+
+.veil {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 2, 3, 0.18) 0%,
+    rgba(5, 2, 3, 0.06) 45%,
+    rgba(5, 2, 3, 0.22) 100%
+  );
+}
+
+@keyframes bgDrift {
+  from {
+    transform: translate(-50%, -50%) scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate(-52%, -48%) scale(1.08) translate3d(1.5%, -1%, 0);
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: visible;
+  perspective: 1200px;
+}
+
+.homeCard {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(221, 9, 18, 0.22);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(221, 9, 18, 0.22) 0%, transparent 55%),
+    linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.homeCard::before {
+  content: '';
+  position: absolute;
+  inset-inline-end: -28%;
+  inset-block-start: -38%;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(221, 9, 18, 0.26) 0%, transparent 70%);
+  pointer-events: none;
+  animation: cardOrb 9s ease-in-out infinite alternate;
+}
+
+@keyframes cardOrb {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate(-12%, 18%) scale(1.12);
+    opacity: 1;
+  }
 }
 
 .accountLayout {
@@ -31,6 +110,7 @@
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   gap: 20px;
   width: 100%;
+  overflow: visible;
 }
 
 .accountLeft,
@@ -46,20 +126,10 @@
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  background: linear-gradient(
-    172deg,
-    rgba(93, 6, 8, 0.22) 8.5%,
-    rgba(64, 10, 11, 0.31) 14.7%,
-    rgba(49, 12, 13, 0.4) 20.9%,
-    rgba(32, 14, 15, 0.59) 33.4%,
-    rgba(23, 15, 16, 0.77) 45.8%,
-    rgba(18, 16, 17, 0.95) 58.3%
-  );
 }
 
 .profileHead {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -91,16 +161,18 @@
   font-weight: 600;
   line-height: 22px;
   letter-spacing: -0.17px;
+  color: #ffffff;
 }
 
 .profileEmail {
   margin: 2px 0 0;
   font-size: 11px;
   line-height: 15px;
-  color: #6e6a6c;
+  color: #ffffff;
 }
 
 .profileBadges {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -154,27 +226,33 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 17px;
-  color: #8a8688;
+  color: #ffffff;
   letter-spacing: 0.12px;
 }
 
 .detailCard,
 .settingsCard {
+  position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  background: #0b0708;
+  padding: 4px 0;
 }
 
 .detailRow {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  margin: 0 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  background: rgba(2, 1, 1, 0.35);
+  backdrop-filter: blur(8px);
 }
 
 .detailRow + .detailRow {
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .detailIconWrap,
@@ -193,7 +271,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 17px;
-  color: #8a8688;
+  color: #ffffff;
   letter-spacing: 0.12px;
 }
 
@@ -202,26 +280,49 @@
   font-weight: 600;
   line-height: 20px;
   text-align: end;
+  color: #ffffff;
 }
 
-.settingsRow,
-.logoutRow {
+.settingsRow {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
-  width: 100%;
-  padding: 16px;
-  border: 0;
-  background: transparent;
+  width: calc(100% - 24px);
+  margin: 0 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  background: rgba(2, 1, 1, 0.35);
+  backdrop-filter: blur(8px);
   color: inherit;
   font: inherit;
   text-align: start;
   cursor: pointer;
 }
 
-.settingsRow + .settingsRow,
+.settingsRow + .settingsRow {
+  margin-top: 8px;
+}
+
 .logoutRow {
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid rgba(221, 9, 18, 0.28);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(221, 9, 18, 0.18) 0%, transparent 55%),
+    linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
 }
 
 .settingsLabel {
@@ -229,18 +330,13 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 21px;
+  color: #ffffff;
 }
 
 .settingsChevron {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
-}
-
-.logoutRow {
-  border: 1px solid rgba(221, 1, 1, 0.18);
-  border-radius: 16px;
-  background: #0b0708;
 }
 
 .logoutIconWrap {
@@ -266,7 +362,7 @@
   font-size: 11px;
   line-height: 17px;
   text-align: center;
-  color: #4a4648;
+  color: #ffffff;
 }
 
 .subTopBar {
@@ -306,6 +402,7 @@
   line-height: 21px;
   letter-spacing: -0.16px;
   text-align: center;
+  color: #ffffff;
 }
 
 .subTopBarTrailing {
@@ -353,7 +450,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 17px;
-  color: #8a8688;
+  color: #ffffff;
   letter-spacing: 0.12px;
 }
 
@@ -364,7 +461,7 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   background: #121011;
-  color: #f5f5f5;
+  color: #ffffff;
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
@@ -462,6 +559,7 @@
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
+  color: #ffffff;
 }
 
 .notificationTime {
@@ -469,7 +567,7 @@
   font-size: 10px;
   font-weight: 500;
   line-height: 15px;
-  color: #666;
+  color: #ffffff;
   white-space: nowrap;
 }
 
@@ -478,7 +576,18 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 18px;
-  color: #888;
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg,
+  .homeCard::before {
+    animation: none !important;
+  }
+
+  .bg {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
 }
 
 @media (max-width: 1100px) {

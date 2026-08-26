@@ -16,7 +16,6 @@ export const ROUTES = {
   aiBot: '/ai-bot',
   account: '/account',
   accountEditProfile: '/account/edit-profile',
-  accountChangePassword: '/account/change-password',
   accountNotifications: '/account/notifications',
 } as const;
 
