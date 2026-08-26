@@ -244,24 +244,45 @@
   align-items: start;
   min-width: 0;
   max-width: 100%;
-  overflow-x: clip;
+  overflow: visible;
   perspective: 1200px;
 }
 
 .mainColumn,
 .sideColumn {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-width: 0;
   max-width: 100%;
+  overflow: visible;
+  z-index: 1;
+}
+
+.mainColumn:hover,
+.mainColumn:focus-within {
+  z-index: 3;
+}
+
+.sideColumn:hover,
+.sideColumn:focus-within {
+  z-index: 4;
 }
 
 .rise {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   max-width: 100%;
+  overflow: visible;
   animation: homeRise 0.72s cubic-bezier(0.2, 0, 0, 1) both;
   animation-delay: calc(var(--home-delay, 0) * 70ms);
+}
+
+.rise:hover,
+.rise:focus-within {
+  z-index: 12;
 }
 
 .skeleton {
