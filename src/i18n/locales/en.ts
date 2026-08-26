@@ -16,6 +16,10 @@ export const en: Messages = {
 
     switchLanguage: 'Switch language',
 
+    openMenu: 'Open menu',
+
+    closeMenu: 'Close menu',
+
     splashLoading: 'Loading Scar Alpha AI',
 
     showPassword: 'Show password',

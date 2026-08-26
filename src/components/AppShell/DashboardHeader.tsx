@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { dashboardAssets, loginAssets } from '@assets';
-import { useI18n } from '@i18n';
+import { LOCALE_META, useI18n } from '@i18n';
 import { useSessionProfile } from '@hooks/useSessionProfile';
 
 import styles from './DashboardHeader.module.css';
@@ -10,29 +10,39 @@ import { ProfileDropdown } from './ProfileDropdown';
 type DashboardHeaderProps = {
   title: string;
   profileDropdownOpen?: boolean;
+  menuOpen?: boolean;
+  menuId?: string;
+  onMenuToggle?: () => void;
 };
 
-export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderProps) {
-  const { t } = useI18n();
+export function DashboardHeader({
+  title,
+  profileDropdownOpen,
+  menuOpen = false,
+  menuId,
+  onMenuToggle,
+}: DashboardHeaderProps) {
+  const { t, locale, toggleLocale } = useI18n();
   const profile = useSessionProfile();
-  const [menuOpen, setMenuOpen] = useState(Boolean(profileDropdownOpen));
+  const [menuProfileOpen, setMenuProfileOpen] = useState(Boolean(profileDropdownOpen));
   const wrapRef = useRef<HTMLDivElement>(null);
+  const switchLabel = LOCALE_META[locale].switchToLabel;
 
   useEffect(() => {
-    if (profileDropdownOpen != null) setMenuOpen(profileDropdownOpen);
+    if (profileDropdownOpen != null) setMenuProfileOpen(profileDropdownOpen);
   }, [profileDropdownOpen]);
 
   useEffect(() => {
-    if (!menuOpen) return undefined;
+    if (!menuProfileOpen) return undefined;
 
     function onPointerDown(event: MouseEvent) {
       if (!wrapRef.current?.contains(event.target as Node)) {
-        setMenuOpen(false);
+        setMenuProfileOpen(false);
       }
     }
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setMenuOpen(false);
+      if (event.key === 'Escape') setMenuProfileOpen(false);
     }
 
     window.addEventListener('mousedown', onPointerDown);
@@ -41,25 +51,54 @@ export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderP
       window.removeEventListener('mousedown', onPointerDown);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [menuOpen]);
+  }, [menuProfileOpen]);
 
   const accountLabel =
     profile.accountType === 'Real' ? t.dashboard.user.live : t.dashboard.user.demo;
 
   return (
     <header className={styles.header}>
-      <h1 className={styles.title}>{title}</h1>
+      <div className={styles.start}>
+        {onMenuToggle ? (
+          <button
+            type="button"
+            className={`${styles.menuButton}${menuOpen ? ` ${styles.menuButtonOpen}` : ''}`}
+            aria-label={menuOpen ? t.a11y.closeMenu : t.a11y.openMenu}
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            onClick={onMenuToggle}
+          >
+            <span className={styles.menuBar} aria-hidden="true" />
+            <span className={styles.menuBar} aria-hidden="true" />
+            <span className={styles.menuBar} aria-hidden="true" />
+          </button>
+        ) : null}
+
+        <h1 className={styles.title}>{title}</h1>
+      </div>
 
       <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.langButton}
+          onClick={toggleLocale}
+          aria-label={t.a11y.switchLanguage}
+          title={t.a11y.switchLanguage}
+        >
+          <span className={styles.langCode} lang={locale === 'en' ? 'ar' : 'en'}>
+            {switchLabel}
+          </span>
+        </button>
+
         <div className={styles.profileWrap} ref={wrapRef}>
-          <div className={`${styles.profile} ${menuOpen ? styles.profileOpen : ''}`}>
+          <div className={`${styles.profile} ${menuProfileOpen ? styles.profileOpen : ''}`}>
             <button
               type="button"
               className={styles.profileMain}
               aria-label={t.dashboard.profileAria}
-              aria-expanded={menuOpen}
+              aria-expanded={menuProfileOpen}
               aria-haspopup="menu"
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={() => setMenuProfileOpen((open) => !open)}
             >
               <span className={styles.avatar} aria-hidden="true">
                 <img
@@ -92,7 +131,7 @@ export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderP
               }}
             >
               <img
-                className={`${styles.chevron}${menuOpen ? ` ${styles.chevronOpen}` : ''}`}
+                className={`${styles.chevron}${menuProfileOpen ? ` ${styles.chevronOpen}` : ''}`}
                 src={dashboardAssets.iconChevronDown}
                 alt=""
                 width={16}
@@ -102,7 +141,7 @@ export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderP
             </button>
           </div>
 
-          {menuOpen ? (
+          {menuProfileOpen ? (
             <ProfileDropdown
               name={profile.name}
               email={profile.email}
@@ -117,7 +156,7 @@ export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderP
             />
           ) : null}
 
-          {profile.error && !menuOpen ? (
+          {profile.error && !menuProfileOpen ? (
             <p className={styles.switchError} role="alert">
               {profile.error}
             </p>

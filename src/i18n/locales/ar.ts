@@ -16,6 +16,10 @@ export const ar: Messages = {
 
     switchLanguage: 'تبديل اللغة',
 
+    openMenu: 'فتح القائمة',
+
+    closeMenu: 'إغلاق القائمة',
+
     splashLoading: 'جاري تحميل Scar Alpha AI',
 
     showPassword: 'إظهار كلمة المرور',

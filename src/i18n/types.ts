@@ -84,6 +84,10 @@ export type Messages = {
 
     switchLanguage: string;
 
+    openMenu: string;
+
+    closeMenu: string;
+
     splashLoading: string;
 
     showPassword: string;

@@ -44,6 +44,7 @@
 
 .content {
   position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
   max-width: 100%;
@@ -51,6 +52,10 @@
   padding-block: 10px 24px;
   padding-inline: 8px;
   background: transparent;
+}
+
+.scrim {
+  display: none;
 }
 
 /* Card tilt → cards above sidebar */
@@ -76,12 +81,43 @@
   z-index: 30;
 }
 
+/* Drawer must stay above cards / stack hover while open */
+.shell[data-drawer='open'] :global([data-app-sidebar]) {
+  z-index: 80;
+}
+
+.shell[data-drawer='open'] .main {
+  z-index: 10;
+}
+
 @keyframes shellWash {
   from {
     background-position: 0% 0%, 100% 8%, 46% 100%, 0 0;
   }
   to {
     background-position: 18% 10%, 82% 0%, 54% 92%, 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .content {
+    padding-inline: 12px;
+  }
+
+  .scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    border: 0;
+    padding: 0;
+    background: rgba(2, 1, 1, 0.62);
+    cursor: pointer;
   }
 }
 

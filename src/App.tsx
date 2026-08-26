@@ -19,16 +19,19 @@ function routeDataAttr(pathname: string): 'landing' | 'auth' | 'app' {
   return 'app';
 }
 
-/** Landing has its own header language control — hide the floating global switcher there. */
+/**
+ * Landing has its own header language control.
+ * App shell pages put the switcher in DashboardHeader so it cannot cover the title.
+ * Auth screens keep the floating control.
+ */
 function AppChrome() {
   const { pathname } = useLocation();
   const route = routeDataAttr(pathname);
-  const onLanding = route === 'landing';
 
   return (
     <>
       <PageTransition />
-      {!onLanding ? <LanguageSwitcher /> : null}
+      {route === 'auth' ? <LanguageSwitcher /> : null}
       <div className={styles.app} data-route={route}>
         <AppRouter />
       </div>

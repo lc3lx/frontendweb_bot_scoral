@@ -1,10 +1,11 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 6;
+  z-index: 8;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   flex-shrink: 0;
   height: 85px;
   padding-block: 0;
@@ -14,13 +15,29 @@
   backdrop-filter: blur(10px);
 }
 
+.start {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.menuButton {
+  display: none;
+}
+
 .title {
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
   font-size: 32px;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 1.15;
   letter-spacing: -0.3px;
   color: #ffffff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .actions {
@@ -202,4 +219,129 @@
   height: 5px;
   border-radius: 999px;
   background: #dd0912;
+}
+
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  height: 37px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
+  background: #121011;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.langButton:hover,
+.langButton:focus-visible {
+  border-color: rgba(221, 9, 18, 0.45);
+  background: #1a1213;
+}
+
+.langCode {
+  white-space: nowrap;
+}
+
+.menuBar {
+  display: block;
+  width: 1.125rem;
+  height: 2px;
+  border-radius: 2px;
+  background: #ffffff;
+  transition:
+    transform 200ms ease,
+    opacity 160ms ease;
+}
+
+.menuButtonOpen .menuBar:nth-child(1) {
+  transform: translateY(0.5rem) rotate(45deg);
+}
+
+.menuButtonOpen .menuBar:nth-child(2) {
+  opacity: 0;
+}
+
+.menuButtonOpen .menuBar:nth-child(3) {
+  transform: translateY(-0.5rem) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 64px;
+    padding-inline: 12px;
+    gap: 8px;
+  }
+
+  .start {
+    gap: 8px;
+  }
+
+  .menuButton {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 0.3rem;
+    width: 37px;
+    height: 37px;
+    padding: 0;
+    border: 1px solid rgba(221, 9, 18, 0.35);
+    border-radius: 30px;
+    background: #121011;
+    cursor: pointer;
+  }
+
+  .menuButton:hover,
+  .menuButton:focus-visible {
+    background: rgba(221, 9, 18, 0.18);
+    border-color: rgba(221, 9, 18, 0.7);
+  }
+
+  .title {
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  .actions {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .profileText {
+    display: none;
+  }
+
+  .langButton {
+    min-width: 0;
+    height: 37px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 430px) {
+  .profile {
+    padding-inline: 2px;
+    gap: 0;
+  }
+
+  .chevronButton {
+    width: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuBar,
+  .chevron {
+    transition: none;
+  }
 }

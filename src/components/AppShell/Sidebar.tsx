@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { dashboardAssets, loginAssets } from '@assets';
+import { aiBotAssets, dashboardAssets, loginAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
 import { tokenStore } from '@shared/auth/tokenStore';
@@ -28,14 +28,23 @@ const NAV_ITEMS: NavItemConfig[] = [
 
 type SidebarProps = {
   activeNav: DashboardNavId;
+  id?: string;
+  open?: boolean;
+  onClose?: () => void;
 };
 
-export function Sidebar({ activeNav }: SidebarProps) {
+export function Sidebar({ activeNav, id, open = true, onClose }: SidebarProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
 
   return (
-    <aside className={styles.sidebar} data-app-sidebar="" aria-label={t.dashboard.sidebarAria}>
+    <aside
+      id={id}
+      className={`${styles.sidebar}${open ? ` ${styles.sidebarOpen}` : ''}`}
+      data-app-sidebar=""
+      aria-label={t.dashboard.sidebarAria}
+      aria-hidden={open ? undefined : true}
+    >
       <div className={styles.brand}>
         <div className={styles.brandMark}>
           <img
@@ -61,6 +70,23 @@ export function Sidebar({ activeNav }: SidebarProps) {
             aria-hidden="true"
           />
         </div>
+        {onClose ? (
+          <button
+            type="button"
+            className={styles.closeButton}
+            aria-label={t.a11y.closeMenu}
+            onClick={onClose}
+          >
+            <img
+              className={styles.closeIcon}
+              src={aiBotAssets.iconClose}
+              alt=""
+              width={16}
+              height={16}
+              aria-hidden="true"
+            />
+          </button>
+        ) : null}
       </div>
 
       <nav className={styles.nav}>
@@ -69,7 +95,7 @@ export function Sidebar({ activeNav }: SidebarProps) {
 
           if (item.to) {
             return (
-              <NavLink key={item.id} to={item.to} className={className}>
+              <NavLink key={item.id} to={item.to} className={className} onClick={onClose}>
                 <img className={styles.navIcon} src={item.icon} alt="" width={18} height={18} aria-hidden="true" />
                 {t.dashboard.nav[item.labelKey]}
               </NavLink>
@@ -90,6 +116,7 @@ export function Sidebar({ activeNav }: SidebarProps) {
         className={`${styles.navItem} ${styles.logout}`}
         onClick={() => {
           tokenStore.clear();
+          onClose?.();
           navigate(ROUTES.login, { replace: true });
         }}
       >
