@@ -1,0 +1,43 @@
+.tilt {
+  height: 100%;
+  border-radius: 20px;
+  transform: perspective(1100px)
+    rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg))
+    translateZ(var(--tilt-lift, 0px));
+  transform-style: preserve-3d;
+  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.glare {
+  position: relative;
+  isolation: isolate;
+}
+
+.glare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0) 54%
+  );
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .glare::after {
+    display: none;
+  }
+}

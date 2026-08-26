@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 
 import { dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { ROUTES } from '@router/routes';
 
 import { dashboardService } from './data/dashboardService';
 import type { DashboardMockData } from './data/dashboard.mock';
@@ -42,13 +44,32 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
   if (!data) {
     return (
       <div className={styles.page} data-figma-node={figmaNode}>
-        <p>{error ?? '…'}</p>
+        {error ? <p>{error}</p> : (
+          <div className={styles.skeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.skelBlock} />
+            <div className={`${styles.skelBlock} ${styles.skelBlockWide}`} />
+            <div className={styles.skelBlock} />
+            <div className={`${styles.skelBlock} ${styles.skelBlockWide}`} />
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
+      <header className={styles.hero}>
+        <div>
+          <p className={styles.kicker}>{t.dashboard.hero.kicker}</p>
+          <h1 className={styles.heroTitle}>{t.dashboard.header.title}</h1>
+          <p className={styles.heroSubtitle}>{t.dashboard.hero.subtitle}</p>
+        </div>
+        <span className={styles.liveBadge}>
+          <span className={styles.liveDot} aria-hidden="true" />
+          {t.dashboard.hero.live}
+        </span>
+      </header>
+
       <section className={styles.banner} aria-labelledby="dashboard-onboarding-title">
         <div className={styles.bannerIconWrap}>
           <img
@@ -66,7 +87,7 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
           </h2>
           <p className={styles.bannerDescription}>{t.dashboard.onboarding.description}</p>
         </div>
-        <button type="button" className={styles.bannerAction}>
+        <Link to={ROUTES.aiBot} className={styles.bannerAction}>
           {t.dashboard.onboarding.cta}
           <img
             className={styles.bannerChevron}
@@ -77,20 +98,30 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
             data-flip-rtl="true"
             aria-hidden="true"
           />
-        </button>
+        </Link>
       </section>
 
       <div className={styles.grid}>
         <div className={styles.mainColumn}>
-          <BalanceCard data={data.balance} />
-          <StatsRow data={data.stats} />
-          <PerformanceSection data={data.performance} />
-          <div data-scroll-target={scrollTarget ? 'recent-trades' : undefined}>
+          <div className={styles.rise} style={{ '--home-delay': 1 } as CSSProperties}>
+            <BalanceCard data={data.balance} />
+          </div>
+          <div className={styles.rise} style={{ '--home-delay': 2 } as CSSProperties}>
+            <StatsRow data={data.stats} />
+          </div>
+          <div className={styles.rise} style={{ '--home-delay': 3 } as CSSProperties}>
+            <PerformanceSection data={data.performance} />
+          </div>
+          <div
+            className={styles.rise}
+            style={{ '--home-delay': 4 } as CSSProperties}
+            data-scroll-target={scrollTarget ? 'recent-trades' : undefined}
+          >
             <RecentTradesSection trades={data.trades} />
           </div>
         </div>
 
-        <aside className={styles.sideColumn} aria-label={t.dashboard.widgetsAria}>
+        <aside className={`${styles.sideColumn} ${styles.rise}`} style={{ '--home-delay': 2 } as CSSProperties} aria-label={t.dashboard.widgetsAria}>
           <SideWidgets botStatus={data.botStatus} alphaPro={data.alphaPro} />
         </aside>
       </div>

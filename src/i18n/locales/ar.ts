@@ -241,6 +241,16 @@ export const ar: Messages = {
 
     },
 
+    hero: {
+
+      kicker: 'مكتب مباشر',
+
+      subtitle: 'المحرك العصبي يراقب Binolla لحظة بلحظة.',
+
+      live: 'مباشر',
+
+    },
+
     nav: {
 
       home: 'الرئيسية',
@@ -374,6 +384,8 @@ export const ar: Messages = {
       title: 'الصفقات الأخيرة',
 
       seeAll: 'عرض الكل',
+
+      empty: 'لا صفقات بعد — البوت ينتظر الإشارة التالية.',
 
       columns: {
 

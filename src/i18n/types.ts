@@ -282,6 +282,16 @@ export type Messages = {
 
     };
 
+    hero: {
+
+      kicker: string;
+
+      subtitle: string;
+
+      live: string;
+
+    };
+
     nav: {
 
       home: string;
@@ -415,6 +425,8 @@ export type Messages = {
       title: string;
 
       seeAll: string;
+
+      empty: string;
 
       columns: {
 

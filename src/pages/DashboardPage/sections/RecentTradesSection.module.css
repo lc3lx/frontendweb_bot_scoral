@@ -14,28 +14,41 @@
 .title {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 21px;
-  letter-spacing: -0.16px;
+  letter-spacing: -0.02em;
 }
 
 .seeAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   border: 0;
   background: transparent;
-  color: #dd0101;
+  color: #ff4d55;
   font-family: inherit;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 17px;
-  letter-spacing: 0.12px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
   cursor: pointer;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.seeAll:hover {
+  color: #ff8086;
+  transform: translateX(2px);
 }
 
 .card {
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  background: #0b0708;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  background:
+    radial-gradient(80% 60% at 0% 0%, rgba(221, 9, 18, 0.1) 0%, transparent 50%),
+    #0b0708;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
 }
 
 .tableHead,
@@ -44,24 +57,36 @@
   grid-template-columns: 1.2fr 1.2fr 0.7fr 0.7fr 0.7fr 0.5fr;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 12px 16px;
 }
 
 .tableHead {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.025);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: #6e6a6c;
   font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   line-height: 15px;
 }
 
 .tableRow {
   border-top: 1px solid rgba(255, 255, 255, 0.04);
   font-size: 12px;
+  animation: rowIn 0.5s cubic-bezier(0.2, 0, 0, 1) both;
+  animation-delay: calc(var(--row-i, 0) * 55ms);
+  transition: background-color 180ms ease, transform 180ms ease;
 }
 
 .tableRow:first-of-type {
   border-top: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tableRow:hover {
+    background: rgba(221, 9, 18, 0.07);
+    transform: translateX(2px);
+  }
 }
 
 .headPl,
@@ -85,18 +110,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 10px;
   flex-shrink: 0;
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tableRow:hover .pairIconWrap {
+  transform: scale(1.08) rotate(-6deg);
 }
 
 .pairIconWrapForex {
-  background: rgba(38, 194, 129, 0.12);
+  background: rgba(74, 222, 154, 0.12);
+  box-shadow: 0 0 0 1px rgba(74, 222, 154, 0.12);
 }
 
 .pairIconWrapCrypto {
-  background: rgba(221, 1, 1, 0.12);
+  background: rgba(221, 9, 18, 0.14);
+  box-shadow: 0 0 0 1px rgba(221, 9, 18, 0.16);
 }
 
 .pairIcon {
@@ -106,12 +138,12 @@
 
 .pairName {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 20px;
 }
 
 .strategy {
-  color: #6e6a6c;
+  color: #8a8688;
   font-size: 12px;
   line-height: 17px;
 }
@@ -123,24 +155,53 @@
   line-height: 19px;
 }
 
-.plProfit {
-  color: #26c281;
+.cellPl {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 20px;
 }
 
+.plProfit {
+  color: #4ade9a;
+}
+
 .plLoss {
-  color: #dd0101;
+  color: #ff4d55;
 }
 
 .plRunning {
-  color: #f5c15e;
+  color: #f5c462;
 }
 
 .menuIcon {
   width: 16px;
   height: 16px;
+  opacity: 0.45;
+  transition: opacity 180ms ease;
+}
+
+.tableRow:hover .menuIcon {
+  opacity: 1;
+}
+
+.empty {
+  margin: 0;
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #8a8688;
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -154,5 +215,28 @@
   .headAction,
   .cellAction {
     text-align: start;
+  }
+
+  .tableRow:hover {
+    transform: none;
+  }
+}
+
+[dir='rtl'] .seeAll:hover {
+  transform: translateX(-2px);
+}
+
+[dir='rtl'] .tableRow:hover {
+  transform: translateX(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tableRow,
+  .seeAll,
+  .pairIconWrap,
+  .menuIcon {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }

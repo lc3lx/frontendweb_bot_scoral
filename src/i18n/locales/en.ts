@@ -244,6 +244,16 @@ export const en: Messages = {
 
     },
 
+    hero: {
+
+      kicker: 'Live desk',
+
+      subtitle: 'Your neural engine is watching Binolla in real time.',
+
+      live: 'Live',
+
+    },
+
     nav: {
 
       home: 'Home',
@@ -377,6 +387,8 @@ export const en: Messages = {
       title: 'Recent Trades',
 
       seeAll: 'See all',
+
+      empty: 'No trades yet — the bot is waiting for the next signal.',
 
       columns: {
 

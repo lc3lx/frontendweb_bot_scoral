@@ -1,6 +1,7 @@
 import { useI18n } from '@i18n';
 
 import type { DashboardMockData } from '../data/dashboard.mock';
+import { HomeTilt } from '../HomeTilt';
 import styles from './StatsRow.module.css';
 
 type StatsRowProps = {
@@ -40,11 +41,13 @@ export function StatsRow({ data }: StatsRowProps) {
   return (
     <section className={styles.row} aria-label={t.dashboard.stats.aria}>
       {items.map((item) => (
-        <article key={item.label} className={styles.card}>
-          <p className={styles.label}>{item.label}</p>
-          <p className={`${styles.value} ${item.tone}`}>{item.value}</p>
-          <p className={styles.secondary}>{item.secondary}</p>
-        </article>
+        <HomeTilt key={item.label} maxTiltDeg={8} liftPx={8}>
+          <article className={styles.card}>
+            <p className={styles.label}>{item.label}</p>
+            <p className={`${styles.value} ${item.tone}`}>{item.value}</p>
+            <p className={styles.secondary}>{item.secondary}</p>
+          </article>
+        </HomeTilt>
       ))}
     </section>
   );
