@@ -17,7 +17,7 @@
   font-weight: 700;
   line-height: 21px;
   letter-spacing: -0.02em;
-  color: var(--color-text-primary);
+  color: #ffffff;
 }
 
 .seeAll {
@@ -142,7 +142,7 @@
   font-size: 13px;
   font-weight: 700;
   line-height: 20px;
-  color: var(--color-text-primary);
+  color: #ffffff;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -49,7 +49,7 @@ export function BalanceCard({ data }: BalanceCardProps) {
             <p className={styles.miniStatLabel}>{t.dashboard.balance.todayLoss}</p>
             <p className={`${styles.miniStatValue} ${styles.loss}`}>{data.todayLoss}</p>
           </div>
-          <div className={styles.miniStat}>
+          <div className={`${styles.miniStat} ${styles.miniStatNet}`}>
             <p className={styles.miniStatLabel}>{t.dashboard.balance.netToday}</p>
             <p className={`${styles.miniStatValue} ${styles.neutral}`}>{data.netToday}</p>
           </div>

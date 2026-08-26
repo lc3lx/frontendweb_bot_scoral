@@ -71,7 +71,12 @@
 }
 
 .primary {
-  color: var(--color-text-primary);
+  color: #ffffff;
+}
+
+.cardEmphasis .label,
+.cardEmphasis .value {
+  color: #ffffff;
 }
 
 .warning {

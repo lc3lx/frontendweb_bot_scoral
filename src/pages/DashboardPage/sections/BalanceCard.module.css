@@ -103,7 +103,7 @@
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.05em;
-  color: var(--color-text-primary);
+  color: #ffffff;
 }
 
 .growth {
@@ -173,7 +173,12 @@
 }
 
 .neutral {
-  color: var(--color-text-primary);
+  color: #ffffff;
+}
+
+.miniStatNet .miniStatLabel,
+.miniStatNet .miniStatValue {
+  color: #ffffff;
 }
 
 @keyframes balanceOrb {
