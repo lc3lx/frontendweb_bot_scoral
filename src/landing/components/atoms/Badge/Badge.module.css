@@ -62,5 +62,12 @@
   .soft {
     padding: 0.5rem 0.875rem;
     font-size: var(--font-size-sm);
+    white-space: normal;
+  }
+
+  .label {
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
   }
 }

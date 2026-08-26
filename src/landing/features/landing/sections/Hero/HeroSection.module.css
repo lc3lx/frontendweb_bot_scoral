@@ -90,6 +90,8 @@
   line-height: 1.443; /* 92.336 / 64 */
   letter-spacing: 0;
   color: var(--color-text-heading); /* #f7eeee */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .description {
@@ -100,6 +102,7 @@
   font-weight: var(--font-weight-regular);
   line-height: 1.6; /* 39.084 / 24.427 */
   color: var(--color-text-body); /* #b7a6a6 */
+  overflow-wrap: anywhere;
 }
 
 .actions {
@@ -235,11 +238,12 @@
 @media (max-width: 768px) {
   .hero {
     padding-block-start: 0.75rem;
+    padding-block-end: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
   }
 
   .layout {
-    grid-template-columns: 1fr;
-    row-gap: clamp(2rem, 1.5rem + 2vw, 3rem);
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
   }
 
   .copy {
@@ -249,32 +253,65 @@
 
   .eyebrow {
     white-space: normal;
+    max-width: 100%;
+  }
+
+  .title {
+    margin-block-start: 1rem;
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+    line-height: 1.3;
+  }
+
+  .description {
+    margin-block-start: 1rem;
+    font-size: clamp(0.9375rem, 0.88rem + 0.4vw, 1.125rem);
+    line-height: 1.55;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-block-start: 1.5rem;
+  }
+
+  .actions :global(a),
+  .actions :global(button) {
+    width: 100%;
+    min-height: 3rem;
+    font-size: 1.0625rem;
   }
 
   .visual {
     order: 2;
     justify-content: center;
+    max-width: 100%;
+  }
+
+  .phoneStage {
+    max-width: min(100%, 22rem);
+    margin-inline: auto;
   }
 
   .phone {
-    width: min(44vw, 11.5rem);
+    width: min(42vw, 10.5rem);
   }
 
   .glowRight {
     top: auto;
     bottom: -5%;
-    inset-inline-end: 50%;
-    translate: 50% 0;
-    width: min(28rem, 80vw);
-  }
-
-  :global([dir='rtl']) .glowRight {
+    /* Physical centering — avoids RTL translate mismatch */
+    left: 50%;
+    right: auto;
+    inset-inline-end: auto;
     translate: -50% 0;
+    width: min(22rem, 70vw);
   }
 
   .glowLeft {
     top: -5%;
     inset-inline-start: -12%;
+    width: min(28rem, 75vw);
   }
 }
 
@@ -282,7 +319,7 @@
 @media (max-width: 430px) {
   .hero {
     padding-block-start: 0.5rem;
-    padding-block-end: 2rem;
+    padding-block-end: 1.75rem;
   }
 
   .eyebrow {
@@ -290,10 +327,8 @@
     font-size: 0.8125rem !important;
   }
 
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
+  .title {
+    font-size: clamp(1.625rem, 1.35rem + 1.4vw, 1.9rem);
   }
 
   .phonesStack {
@@ -301,22 +336,21 @@
   }
 
   .phone {
-    width: min(46vw, 9.75rem);
+    width: min(44vw, 9.5rem);
   }
 }
 
 @media (max-width: 360px) {
   .title {
-    font-size: clamp(1.75rem, 1.5rem + 1.2vw, 2rem);
+    font-size: 1.5rem;
+    line-height: 1.35;
+  }
+
+  .description {
+    font-size: 0.9375rem;
   }
 
   .phone {
-    width: min(45vw, 8.75rem);
-  }
-}
-
-@media (max-width: 320px) {
-  .phone {
-    width: min(44vw, 8rem);
+    width: min(43vw, 8.5rem);
   }
 }

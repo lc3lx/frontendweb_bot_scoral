@@ -18,7 +18,14 @@
 
 @media (max-width: 430px) {
   .container {
-    padding-inline: max(1rem, env(safe-area-inset-inline-start, 0px))
-      max(1rem, env(safe-area-inset-inline-end, 0px));
+    padding-inline: max(0.875rem, env(safe-area-inset-inline-start, 0px))
+      max(0.875rem, env(safe-area-inset-inline-end, 0px));
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding-inline: max(0.75rem, env(safe-area-inset-inline-start, 0px))
+      max(0.75rem, env(safe-area-inset-inline-end, 0px));
   }
 }

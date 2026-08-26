@@ -66,6 +66,10 @@
     justify-content: flex-start;
     column-gap: clamp(1rem, 0.75rem + 2vw, 1.75rem);
   }
+
+  .label {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 430px) {
@@ -73,10 +77,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.875rem;
-  }
-
-  .label {
-    white-space: normal;
   }
 }
 
