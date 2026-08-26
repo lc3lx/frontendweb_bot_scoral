@@ -1,0 +1,206 @@
+/**
+ * 3D motion utilities — depth layer on top of `motion.css`.
+ *
+ * Two families:
+ *  * `.tilt3d*` — interactive. Driven by `useTilt3d`, which writes `--tilt-x`,
+ *    `--tilt-y`, `--tilt-lift` and `--glare-x/y`. With no hook attached the vars fall
+ *    back to zero, so the classes are inert rather than broken.
+ *  * `.motionDepth*` / `.motionFloat3d` — ambient. Pure CSS, no JS.
+ *
+ * Everything here is transform/opacity only, so it stays on the compositor. Nothing
+ * animates `width`, `height`, `top` or `left`.
+ */
+:root {
+  --depth-perspective: 1100px;
+  --depth-perspective-near: 700px;
+  --depth-tilt-max: 9deg;
+  --depth-lift: 14px;
+  --depth-float-distance: 10px;
+  --depth-float-duration: 6s;
+  --depth-glare: rgba(255, 255, 255, 0.16);
+}
+
+/* Parent that establishes the vanishing point for tilting children. */
+.scene3d {
+  perspective: var(--depth-perspective);
+  perspective-origin: 50% 50%;
+}
+
+.scene3dNear {
+  perspective: var(--depth-perspective-near);
+}
+
+/* ---- interactive tilt ------------------------------------------------------ */
+
+.tilt3d {
+  transform: perspective(var(--depth-perspective))
+    rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg))
+    translateZ(var(--tilt-lift, 0px));
+  transform-style: preserve-3d;
+  /*
+   * Long enough to smooth the pointer stream, short enough that the surface still
+   * feels attached to the cursor. The return to rest reads as a settle.
+   */
+  transition: transform var(--motion-duration-slow) var(--motion-ease-spring);
+  will-change: transform;
+}
+
+/* A child that should sit above the tilting surface rather than on it. */
+.tilt3dLayer {
+  transform: translateZ(38px);
+  transform-style: preserve-3d;
+}
+
+.tilt3dLayerDeep {
+  transform: translateZ(70px);
+  transform-style: preserve-3d;
+}
+
+/*
+ * Specular sheen that tracks the pointer. Needs a positioned, `overflow: hidden`
+ * host; it is a sibling-less ::after so it never disturbs the element's own layout.
+ */
+.tilt3dGlare {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.tilt3dGlare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    var(--depth-glare) 0%,
+    rgba(255, 255, 255, 0) 55%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
+}
+
+.tilt3dGlare:hover::after {
+  opacity: 1;
+}
+
+/* ---- ambient depth --------------------------------------------------------- */
+
+/* Reveal that arrives from behind the page rather than sliding up it. */
+.motionDepthIn {
+  opacity: 0;
+  transform: perspective(var(--depth-perspective)) translateZ(-140px) rotateX(12deg);
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+}
+
+.motionDepthIn.is-visible {
+  animation: motion-depth-in var(--motion-duration-slower) var(--motion-ease-emphasized) both;
+}
+
+@keyframes motion-depth-in {
+  from {
+    opacity: 0;
+    transform: perspective(var(--depth-perspective)) translateZ(-140px) rotateX(12deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(var(--depth-perspective)) translateZ(0) rotateX(0);
+  }
+}
+
+/* Same idea, hinged from the side — used for the two hero phones. */
+.motionDepthInStart {
+  opacity: 0;
+  transform: perspective(var(--depth-perspective)) rotateY(18deg) translateZ(-90px);
+  transform-origin: 100% 50%;
+  will-change: opacity, transform;
+}
+
+.motionDepthInStart.is-visible {
+  animation: motion-depth-swing var(--motion-duration-slower) var(--motion-ease-emphasized) both;
+}
+
+.motionDepthInEnd {
+  opacity: 0;
+  transform: perspective(var(--depth-perspective)) rotateY(-18deg) translateZ(-90px);
+  transform-origin: 0% 50%;
+  will-change: opacity, transform;
+}
+
+.motionDepthInEnd.is-visible {
+  animation: motion-depth-swing var(--motion-duration-slower) var(--motion-ease-emphasized) both;
+}
+
+@keyframes motion-depth-swing {
+  to {
+    opacity: 1;
+    transform: perspective(var(--depth-perspective)) rotateY(0) translateZ(0);
+  }
+}
+
+/*
+ * Idle float. Applied to an element whose ancestor handles the reveal, so the two
+ * animations never fight over the same transform.
+ */
+.motionFloat3d {
+  animation: motion-float-3d var(--depth-float-duration) var(--motion-ease-standard) infinite;
+}
+
+/* Offset so a row of floating elements does not bob in lockstep. */
+.motionFloat3dDelayed {
+  animation-delay: calc(var(--depth-float-duration) / -3);
+}
+
+@keyframes motion-float-3d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotateZ(0);
+  }
+  50% {
+    transform: translate3d(0, calc(var(--depth-float-distance) * -1), 0) rotateZ(-0.4deg);
+  }
+}
+
+/* Hover lift with depth — for cards that are not pointer-tracked. */
+.motionLift3d {
+  transform-style: preserve-3d;
+  transition:
+    transform var(--motion-duration-base) var(--motion-ease-spring),
+    box-shadow var(--motion-duration-base) var(--motion-ease-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .motionLift3d:hover {
+    transform: perspective(var(--depth-perspective)) translateY(-6px) translateZ(24px)
+      rotateX(3deg);
+    box-shadow: var(--glow-red-soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt3d,
+  .tilt3dLayer,
+  .tilt3dLayerDeep,
+  .motionLift3d,
+  .motionLift3d:hover,
+  .motionDepthIn,
+  .motionDepthInStart,
+  .motionDepthInEnd {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .motionFloat3d {
+    animation: none !important;
+  }
+
+  .tilt3dGlare::after {
+    display: none;
+  }
+}

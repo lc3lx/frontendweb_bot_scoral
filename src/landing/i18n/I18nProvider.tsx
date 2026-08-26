@@ -35,6 +35,9 @@ function applyDocumentLocale(locale: Locale) {
   const meta = LOCALE_META[locale];
   document.documentElement.lang = meta.htmlLang;
   document.documentElement.dir = meta.dir;
+  // index.html hardcodes `<body dir="rtl">`, and an attribute on the body wins over the
+  // inherited one from <html> — without this the landing renders English text in RTL.
+  document.body.dir = meta.dir;
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {

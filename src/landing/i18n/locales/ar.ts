@@ -9,6 +9,8 @@ export const ar: Messages = {
     primaryNav: 'القائمة الرئيسية',
     footerNav: 'تذييل الموقع',
     backToTop: 'العودة إلى الأعلى',
+    openMenu: 'فتح القائمة',
+    closeMenu: 'إغلاق القائمة',
     switchLanguage: 'تبديل اللغة',
     productHighlights: 'أبرز مزايا المنتج',
     tradeDirection: 'معاينة اتجاه التداول',

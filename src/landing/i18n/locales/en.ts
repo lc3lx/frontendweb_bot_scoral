@@ -9,6 +9,8 @@ export const en: Messages = {
     primaryNav: 'Primary',
     footerNav: 'Footer',
     backToTop: 'Back to top',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
     switchLanguage: 'Switch language',
     productHighlights: 'Product highlights',
     tradeDirection: 'Trade direction preview',

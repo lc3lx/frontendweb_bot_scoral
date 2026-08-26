@@ -125,59 +125,158 @@
   gap: var(--space-2);
 }
 
-/* Tablet: keep row, allow nav to scroll between logo and CTA */
-@media (max-width: 1024px) {
-  .bar {
-    gap: var(--space-3);
-    min-height: 5.5rem;
-  }
+/* ---- mobile: menu button + drawer ---------------------------------------- */
 
-  .nav {
-    justify-content: flex-start;
-    margin-inline: var(--space-2);
-  }
+.menuToggle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid rgba(221, 9, 18, 0.35);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
 
-  .actions {
-    gap: 0.5rem;
+.menuToggle:hover {
+  background: rgba(221, 9, 18, 0.18);
+  border-color: rgba(221, 9, 18, 0.7);
+}
+
+.menuToggle:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+.menuBar {
+  display: block;
+  width: 1.125rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-text-primary);
+  transition:
+    transform var(--motion-duration-base) var(--motion-ease-emphasized),
+    opacity var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+/* Top and bottom rotate into an X; the middle fades out under them. */
+.menuToggleOpen .menuBar:nth-child(1) {
+  transform: translateY(0.5rem) rotate(45deg);
+}
+
+.menuToggleOpen .menuBar:nth-child(2) {
+  opacity: 0;
+}
+
+.menuToggleOpen .menuBar:nth-child(3) {
+  transform: translateY(-0.5rem) rotate(-45deg);
+}
+
+/*
+ * Collapsed state uses grid-template-rows 0fr → 1fr so the panel animates to its own
+ * height without hardcoding one, and `visibility: hidden` (delayed on the way out) is
+ * what actually pulls the links out of the tab order.
+ */
+.drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  opacity: 0;
+  perspective: 900px;
+  transition:
+    grid-template-rows var(--motion-duration-base) var(--motion-ease-emphasized),
+    opacity var(--motion-duration-fast) var(--motion-ease-exit),
+    visibility 0s linear var(--motion-duration-base);
+}
+
+.drawerOpen {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--motion-duration-base) var(--motion-ease-emphasized),
+    opacity var(--motion-duration-base) var(--motion-ease-enter),
+    visibility 0s;
+}
+
+.drawerNav,
+.drawerCta {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.drawerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: var(--space-3) 0 0;
+  list-style: none;
+}
+
+/*
+ * Each row swings in from behind the header on its own delay — the tilt is what makes
+ * the panel read as a physical flap rather than a fade.
+ */
+.drawerItem {
+  transform: rotateX(-35deg) translateY(-0.5rem);
+  transform-origin: top center;
+  opacity: 0;
+}
+
+.drawerOpen .drawerItem {
+  animation: header-drawer-item var(--motion-duration-base) var(--motion-ease-enter) both;
+  animation-delay: calc(var(--drawer-index, 0) * 45ms);
+}
+
+@keyframes header-drawer-item {
+  to {
+    transform: rotateX(0) translateY(0);
+    opacity: 1;
   }
 }
 
-/* Phablet / mobile: logo + actions on first row, nav scrolls below */
-@media (max-width: 768px) {
-  .bar {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      'logo actions'
-      'nav nav';
-    align-items: center;
-    row-gap: var(--space-3);
-    min-height: unset;
-    padding-block: var(--space-4);
-  }
+.drawerLink {
+  display: block;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
+}
 
-  .logoLink {
-    grid-area: logo;
-  }
+.drawerLink:hover,
+.drawerLink:focus-visible {
+  background: rgba(221, 9, 18, 0.12);
+  color: var(--color-text-primary);
+}
 
-  .actions {
-    grid-area: actions;
-  }
+.drawerCta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) 0 var(--space-5);
+}
 
-  .nav {
-    grid-area: nav;
-    justify-content: flex-start;
-    margin-inline: 0;
-    width: 100%;
-  }
-
-  .navList {
-    width: 100%;
-    justify-content: flex-start;
-  }
+/* Full-width CTAs read as the primary action on a phone. */
+.drawerCta > * {
+  width: 100%;
 }
 
 @media (max-width: 430px) {
+  .cta :global(a),
   .cta :global(button) {
     min-height: 2.75rem;
     padding-inline: 1rem;
@@ -191,6 +290,20 @@
   }
 
   .logo {
-    width: 10rem;
+    width: 9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawerOpen,
+  .menuBar {
+    transition-duration: 0.01ms;
+  }
+
+  .drawerOpen .drawerItem {
+    animation: none;
+    transform: none;
+    opacity: 1;
   }
 }

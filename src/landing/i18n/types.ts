@@ -46,6 +46,8 @@ export type Messages = {
     footerNav: string;
     backToTop: string;
     switchLanguage: string;
+    openMenu: string;
+    closeMenu: string;
     productHighlights: string;
     tradeDirection: string;
     splashLoading: string;
