@@ -35,7 +35,7 @@ export function Sidebar({ activeNav }: SidebarProps) {
   const navigate = useNavigate();
 
   return (
-    <aside className={styles.sidebar} aria-label={t.dashboard.sidebarAria}>
+    <aside className={styles.sidebar} data-app-sidebar="" aria-label={t.dashboard.sidebarAria}>
       <div className={styles.brand}>
         <div className={styles.brandMark}>
           <img

@@ -27,6 +27,7 @@ export function HomeTilt({
   return (
     <div
       ref={ref}
+      data-home-tilt=""
       className={`${styles.tilt} ${glare ? styles.glare : ''} ${className ?? ''}`.trim()}
       style={style}
     >

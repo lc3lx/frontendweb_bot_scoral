@@ -31,7 +31,7 @@
 
 .main {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -39,6 +39,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   overflow: visible;
+  transition: z-index 0s;
 }
 
 .content {
@@ -50,6 +51,24 @@
   padding-block: 10px 24px;
   padding-inline: 8px;
   background: transparent;
+}
+
+/* Card tilt → cards above sidebar */
+.shell[data-stack='cards'] .main {
+  z-index: 40;
+}
+
+.shell[data-stack='cards'] :global([data-app-sidebar]) {
+  z-index: 5;
+}
+
+/* Sidebar wave → nav above cards */
+.shell[data-stack='sidebar'] :global([data-app-sidebar]) {
+  z-index: 50;
+}
+
+.shell[data-stack='sidebar'] .main {
+  z-index: 5;
 }
 
 @keyframes shellWash {
