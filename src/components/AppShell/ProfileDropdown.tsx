@@ -1,4 +1,4 @@
-import { dashboardAssets } from '@assets';
+import { dashboardAssets, loginAssets } from '@assets';
 import { useI18n } from '@i18n';
 import type { AccountMode } from '@hooks/useSessionProfile';
 
@@ -31,7 +31,9 @@ export function ProfileDropdown({
   return (
     <div className={styles.dropdown} role="menu" aria-label={copy.aria}>
       <div className={styles.userRow}>
-        <span className={styles.avatar} aria-hidden="true" />
+        <span className={styles.avatar} aria-hidden="true">
+          <img className={styles.avatarLogo} src={loginAssets.brandIcon} alt="" width={36} height={36} />
+        </span>
         <div className={styles.userText}>
           <span className={styles.userName}>{name || t.dashboard.user.name}</span>
           <span className={styles.userEmail}>{email || copy.email}</span>

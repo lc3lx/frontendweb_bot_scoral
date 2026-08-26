@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { dashboardAssets } from '@assets';
+import { dashboardAssets, loginAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { useSessionProfile } from '@hooks/useSessionProfile';
 
@@ -61,7 +61,15 @@ export function DashboardHeader({ title, profileDropdownOpen }: DashboardHeaderP
               aria-haspopup="menu"
               onClick={() => setMenuOpen((open) => !open)}
             >
-              <span className={styles.avatar} aria-hidden="true" />
+              <span className={styles.avatar} aria-hidden="true">
+                <img
+                  className={styles.avatarLogo}
+                  src={loginAssets.brandIcon}
+                  alt=""
+                  width={28}
+                  height={28}
+                />
+              </span>
               <span className={styles.profileText}>
                 <span className={styles.profileName}>
                   {profile.loading ? t.dashboard.user.name : profile.name}

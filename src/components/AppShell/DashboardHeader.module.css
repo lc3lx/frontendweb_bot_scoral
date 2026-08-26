@@ -46,7 +46,7 @@
 }
 
 .profileOpen {
-  border-color: rgba(221, 1, 1, 0.2);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .profileMain {
@@ -62,11 +62,22 @@
 }
 
 .avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
-  background: #dd0912;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarLogo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .profileText {
@@ -79,7 +90,7 @@
   font-size: 12.5px;
   font-weight: 700;
   line-height: 16px;
-  color: #dd0101;
+  color: #ffffff;
 }
 
 .profileBalanceRow {
@@ -92,14 +103,14 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 15px;
-  color: var(--color-text-primary);
+  color: #26c281;
 }
 
 .profileDemo {
   font-size: 10.5px;
   font-weight: 600;
   line-height: 13px;
-  color: #dd0101;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .chevronButton {
