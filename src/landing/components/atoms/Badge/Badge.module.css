@@ -58,6 +58,11 @@
   line-height: 1.2;
 }
 
+:global([dir='rtl']) .eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 @media (max-width: 430px) {
   .soft {
     padding: 0.5rem 0.875rem;

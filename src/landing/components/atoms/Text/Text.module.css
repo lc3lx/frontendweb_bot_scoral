@@ -52,6 +52,13 @@
   line-height: 1.2;
   letter-spacing: 0.205em; /* ~4.1px @20px */
   text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* Wide Latin tracking breaks Arabic glyphs into a jumbled row */
+:global([dir='rtl']) .eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .tone_primary {

@@ -252,15 +252,15 @@
   .binolla,
   .signal {
     max-width: none;
-    flex: 1 1 calc(50% - 0.375rem);
+    flex: 1 1 100%;
     min-width: 0;
   }
 }
 
 @media (max-width: 768px) {
   .trading {
-    padding-block-start: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
-    padding-block-end: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding-block-start: 1.5rem;
+    padding-block-end: 2.5rem;
   }
 
   .cards {
@@ -276,12 +276,12 @@
   }
 
   .copy :global([class*='description']) {
-    font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+    font-size: 1rem;
     line-height: 1.65;
   }
 
   .chartWell {
-    height: clamp(12rem, 55vw, 17.099rem);
+    height: 12.5rem;
   }
 
   .actions {

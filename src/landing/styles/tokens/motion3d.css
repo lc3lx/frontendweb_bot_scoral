@@ -283,6 +283,47 @@
   }
 }
 
+/*
+ * Phones / tablets: 3D perspective + translateZ paints outside the layout box and
+ * makes stacked sections look like they overlap (especially Safari + RTL).
+ * Flatten motion; keep desktop depth effects above tablet.
+ */
+@media (max-width: 768px) {
+  .scene3d,
+  .scene3dNear {
+    perspective: none;
+  }
+
+  .tilt3d,
+  .tilt3dLayer,
+  .tilt3dLayerDeep,
+  .motionLift3d,
+  .motionLift3d:hover,
+  .motionDepthIn,
+  .motionDepthInStart,
+  .motionDepthInEnd,
+  .motionOrbitIn,
+  .motionStaggerDepth > * {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    will-change: auto;
+    transform-style: flat;
+  }
+
+  .motionFloat3d,
+  .motionFloat3dDelayed,
+  .motionGlowDrift,
+  .motionGlowDriftAlt {
+    animation: none !important;
+  }
+
+  .tilt3dGlare::after {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tilt3d,
   .tilt3dLayer,

@@ -113,26 +113,27 @@
 
 @media (max-width: 768px) {
   .tradeTracking {
-    padding-block-end: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    padding-block-end: 2.5rem;
   }
 
   .grid {
     grid-template-columns: 1fr;
     gap: 1rem;
-    margin-block-start: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    margin-block-start: 1.5rem;
   }
 
   .card {
     min-height: 0;
-    padding: 1.75rem 1.35rem;
+    padding: 1.5rem 1.25rem;
   }
 
   .cardTitle {
-    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+    font-size: 1.125rem;
   }
 
   .cardBody {
-    font-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1.0625rem);
+    font-size: 1rem;
+    max-width: 100%;
   }
 }
 

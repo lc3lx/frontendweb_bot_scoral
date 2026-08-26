@@ -98,25 +98,28 @@
   }
 }
 
-/* Tablet / phablet */
 @media (max-width: 768px) {
   .features {
-    padding-block-start: clamp(2rem, 1.5rem + 2vw, 3rem);
-    padding-block-end: clamp(2rem, 1.5rem + 2vw, 3rem);
+    padding-block-start: 2rem;
+    padding-block-end: 2rem;
   }
 
   .grid {
     grid-template-columns: 1fr;
     gap: 1rem;
-    margin-block-start: clamp(1.5rem, 1.25rem + 1.5vw, 2.25rem);
+    margin-block-start: 1.5rem;
   }
 
   .card {
     min-height: unset;
   }
 
+  .cardBody {
+    max-width: 100%;
+  }
+
   .heading :global([class*='description']) {
-    font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+    font-size: 1rem;
   }
 }
 
@@ -127,7 +130,7 @@
   }
 
   .heading :global([class*='description']) {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 }
 

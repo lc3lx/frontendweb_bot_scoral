@@ -301,6 +301,20 @@
   .logo {
     width: clamp(7.5rem, 22vw, 10rem);
   }
+
+  /* Flat drawer — rotateX stack looked like overlapping rows on phones */
+  .drawer {
+    perspective: none;
+  }
+
+  .drawerItem {
+    transform: none;
+    opacity: 1;
+  }
+
+  .drawerOpen .drawerItem {
+    animation: none;
+  }
 }
 
 @media (max-width: 430px) {

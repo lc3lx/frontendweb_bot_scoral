@@ -237,13 +237,19 @@
 /* Tablet: stack — copy first, phones second */
 @media (max-width: 768px) {
   .hero {
+    overflow-x: clip;
     padding-block-start: 0.75rem;
-    padding-block-end: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+    padding-block-end: 1.75rem;
+  }
+
+  /* Absolute glows + drift animation bleed into Feature Strip on small screens */
+  .glowLayer {
+    display: none;
   }
 
   .layout {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
+    row-gap: 1.5rem;
   }
 
   .copy {
@@ -258,13 +264,13 @@
 
   .title {
     margin-block-start: 1rem;
-    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+    font-size: 1.75rem;
     line-height: 1.3;
   }
 
   .description {
     margin-block-start: 1rem;
-    font-size: clamp(0.9375rem, 0.88rem + 0.4vw, 1.125rem);
+    font-size: 1rem;
     line-height: 1.55;
   }
 
@@ -272,7 +278,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
-    margin-block-start: 1.5rem;
+    margin-block-start: 1.25rem;
   }
 
   .actions :global(a),
@@ -286,32 +292,26 @@
     order: 2;
     justify-content: center;
     max-width: 100%;
+    overflow: hidden;
+  }
+
+  .phoneStage,
+  .phoneFloat {
+    transform: none;
+    transform-style: flat;
   }
 
   .phoneStage {
-    max-width: min(100%, 22rem);
+    max-width: min(100%, 20rem);
     margin-inline: auto;
   }
 
+  .phonesStack {
+    gap: 0.75rem;
+  }
+
   .phone {
-    width: min(42vw, 10.5rem);
-  }
-
-  .glowRight {
-    top: auto;
-    bottom: -5%;
-    /* Physical centering — avoids RTL translate mismatch */
-    left: 50%;
-    right: auto;
-    inset-inline-end: auto;
-    translate: -50% 0;
-    width: min(22rem, 70vw);
-  }
-
-  .glowLeft {
-    top: -5%;
-    inset-inline-start: -12%;
-    width: min(28rem, 75vw);
+    width: min(40vw, 9.5rem);
   }
 }
 
@@ -319,7 +319,7 @@
 @media (max-width: 430px) {
   .hero {
     padding-block-start: 0.5rem;
-    padding-block-end: 1.75rem;
+    padding-block-end: 1.5rem;
   }
 
   .eyebrow {
@@ -328,7 +328,7 @@
   }
 
   .title {
-    font-size: clamp(1.625rem, 1.35rem + 1.4vw, 1.9rem);
+    font-size: 1.625rem;
   }
 
   .phonesStack {
@@ -336,7 +336,7 @@
   }
 
   .phone {
-    width: min(44vw, 9.5rem);
+    width: min(42vw, 8.75rem);
   }
 }
 
@@ -351,6 +351,6 @@
   }
 
   .phone {
-    width: min(43vw, 8.5rem);
+    width: min(40vw, 8rem);
   }
 }

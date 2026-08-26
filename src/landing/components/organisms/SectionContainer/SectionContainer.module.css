@@ -62,4 +62,17 @@
   .space_lg {
     padding-block: clamp(2.5rem, 2rem + 3vw, 4rem);
   }
+
+  .bg_glow::before {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .bg_glow::before {
+    inset-inline: 15%;
+    top: 30%;
+    height: min(28vw, 12rem);
+    opacity: 0.55;
+  }
 }

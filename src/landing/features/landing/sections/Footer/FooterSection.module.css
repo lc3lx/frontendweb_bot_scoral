@@ -239,6 +239,13 @@
     padding-block: 2.5rem 2rem;
   }
 
+  .glow {
+    top: -3rem;
+    height: 6rem;
+    filter: blur(4rem);
+    opacity: 0.45;
+  }
+
   .top {
     margin-block-end: 1.5rem;
     gap: 2rem;
@@ -260,7 +267,7 @@
   }
 
   .copyright {
-    font-size: clamp(0.875rem, 0.8rem + 0.4vw, 1.0687rem);
+    font-size: 0.9375rem;
     line-height: 1.45;
   }
 }
