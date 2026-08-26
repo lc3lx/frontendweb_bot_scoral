@@ -6,17 +6,17 @@ import {
   BRANDED_STRATEGY_OPTIONS,
   MARKET_TYPE_OPTIONS,
   STRATEGY_GRID_OPTIONS,
-  TRADING_PAIR_OPTIONS,
   getDefaultBrandedStrategyId,
   getDefaultMarketTypeId,
   getDefaultStrategyGridId,
-  getDefaultTradingPairId,
+  getDefaultTradingPairIds,
   type BotRiskLevelId,
   type BotSettingsToggleId,
   type BrandedStrategyId,
   type MarketTypeId,
   type StrategyGridId,
 } from './modals/aiBotModals.data';
+import { formatSelectedPairsLabel } from '@shared/market/pairDisplay';
 import type { BotSettingsState } from './modals/BotSettingsModal';
 
 export type AiBotModalId =
@@ -29,7 +29,7 @@ export type AiBotModalId =
 
 export type AiBotConfiguration = {
   marketTypeId: MarketTypeId;
-  tradingPairId: string;
+  tradingPairIds: string[];
   strategyGridId: StrategyGridId;
   brandedStrategyId: BrandedStrategyId;
   marketType: string;
@@ -48,7 +48,8 @@ type AiBotModalContextValue = {
   openStrategyDetail: (strategyId: BrandedStrategyId) => void;
   closeStrategyDetail: () => void;
   setMarketType: (id: MarketTypeId) => void;
-  setTradingPair: (id: string) => void;
+  setTradingPairIds: (ids: string[]) => void;
+  toggleTradingPair: (id: string) => void;
   setStrategyGrid: (id: StrategyGridId) => void;
   setBrandedStrategy: (id: BrandedStrategyId) => void;
   setBotSettings: (settings: BotSettingsState) => void;
@@ -80,7 +81,7 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
   const [activeModal, setActiveModal] = useState<AiBotModalId | null>(null);
   const [detailStrategyId, setDetailStrategyId] = useState<BrandedStrategyId | null>(null);
   const [marketTypeId, setMarketTypeId] = useState<MarketTypeId>(getDefaultMarketTypeId());
-  const [tradingPairId, setTradingPairId] = useState(getDefaultTradingPairId());
+  const [tradingPairIds, setTradingPairIdsState] = useState<string[]>(getDefaultTradingPairIds());
   const [strategyGridId, setStrategyGridId] = useState<StrategyGridId>(getDefaultStrategyGridId());
   const [brandedStrategyId, setBrandedStrategyId] = useState<BrandedStrategyId>(
     getDefaultBrandedStrategyId(),
@@ -91,21 +92,19 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     const marketOption = MARKET_TYPE_OPTIONS.find((item) => item.id === marketTypeId);
     const strategyOption = STRATEGY_GRID_OPTIONS.find((item) => item.id === strategyGridId);
     const brandedOption = BRANDED_STRATEGY_OPTIONS.find((item) => item.id === brandedStrategyId);
-    const pairOption = TRADING_PAIR_OPTIONS.find((item) => item.id === tradingPairId);
-
     return {
       marketTypeId,
-      tradingPairId,
+      tradingPairIds,
       strategyGridId,
       brandedStrategyId,
       marketType: marketOption ? t.aiBot.modals.marketType[marketOption.titleKey] : marketTypeId,
-      tradingPair: pairOption?.symbol ?? tradingPairId,
+      tradingPair: formatSelectedPairsLabel(tradingPairIds),
       strategy: strategyOption ? t.aiBot.modals.strategyGrid[strategyOption.titleKey] : strategyGridId,
       indicator: brandedOption
         ? t.aiBot.modals.brandedStrategy[brandedOption.titleKey]
         : brandedStrategyId,
     };
-  }, [brandedStrategyId, marketTypeId, strategyGridId, t.aiBot.modals, tradingPairId]);
+  }, [brandedStrategyId, marketTypeId, strategyGridId, t.aiBot.modals, tradingPairIds]);
 
   const openModal = useCallback((modal: AiBotModalId) => {
     setActiveModal(modal);
@@ -130,8 +129,18 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     setMarketTypeId(id);
   }, []);
 
-  const setTradingPair = useCallback((id: string) => {
-    setTradingPairId(id);
+  const setTradingPairIds = useCallback((ids: string[]) => {
+    setTradingPairIdsState(ids);
+  }, []);
+
+  const toggleTradingPair = useCallback((id: string) => {
+    setTradingPairIdsState((current) => {
+      if (current.includes(id)) {
+        const next = current.filter((item) => item !== id);
+        return next.length > 0 ? next : current;
+      }
+      return [...current, id];
+    });
   }, []);
 
   const setStrategyGrid = useCallback((id: StrategyGridId) => {
@@ -165,7 +174,8 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       openStrategyDetail,
       closeStrategyDetail,
       setMarketType,
-      setTradingPair,
+      setTradingPairIds,
+      toggleTradingPair,
       setStrategyGrid,
       setBrandedStrategy,
       setBotSettings,
@@ -184,7 +194,8 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       setBrandedStrategy,
       setMarketType,
       setStrategyGrid,
-      setTradingPair,
+      setTradingPairIds,
+      toggleTradingPair,
       syncBotSettingsFromPage,
     ],
   );

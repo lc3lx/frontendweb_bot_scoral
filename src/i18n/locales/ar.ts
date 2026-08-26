@@ -879,6 +879,14 @@ export const ar: Messages = {
 
         chooseAll: 'تحديد الكل',
 
+        clearAll: 'مسح الكل',
+
+        loading: 'جاري تحميل الأزواج…',
+
+        empty: 'لا توجد أزواج تداول متاحة.',
+
+        noResults: 'لا توجد أزواج مطابقة للبحث.',
+
       },
 
       technicalIndicator: {

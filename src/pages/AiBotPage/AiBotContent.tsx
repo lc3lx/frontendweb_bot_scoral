@@ -36,7 +36,8 @@ function formatAmountDisplay(value: string): string {
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
-  const { configuration, openModal, syncBotSettingsFromPage, setBrandedStrategy } = useAiBotModals();
+  const { configuration, openModal, syncBotSettingsFromPage, setBrandedStrategy, setTradingPairIds } =
+    useAiBotModals();
 
   const [activeControl, setActiveControl] = useState<EngineControlId>('stop');
   const [tradeAmount, setTradeAmount] = useState('$25');
@@ -44,10 +45,12 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const [lossLimit, setLossLimit] = useState('30');
   const [busy, setBusy] = useState(false);
   const targetsSeededRef = useRef(false);
+  const pairsSeededRef = useRef(false);
 
   const load = useCallback(async () => {
+    const primaryPair = configuration.tradingPairIds[0] ?? null;
     const [next, bot] = await Promise.all([
-      aiBotService.fetchData(configuration.tradingPairId),
+      aiBotService.fetchData(primaryPair),
       aiBotService.fetchBotRuntime(),
     ]);
     setData(next);
@@ -62,10 +65,18 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     if (isBrandedStrategyId(bot?.stakeMode)) {
       setBrandedStrategy(bot.stakeMode);
     }
+    if (!pairsSeededRef.current && bot) {
+      if (bot.assets?.length) {
+        setTradingPairIds(bot.assets);
+      } else if (bot.asset) {
+        setTradingPairIds([bot.asset]);
+      }
+      pairsSeededRef.current = true;
+    }
     if (next.status.botState === 'running') setActiveControl('start');
     else if (next.status.botState === 'paused') setActiveControl('pause');
     else setActiveControl('stop');
-  }, [configuration.tradingPairId, setBrandedStrategy]);
+  }, [configuration.tradingPairIds, setBrandedStrategy, setTradingPairIds]);
 
   useEffect(() => {
     void load();
@@ -88,13 +99,16 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     setActiveControl(controlId);
     try {
       await aiBotService.applyControl(controlId, {
-        pairs: [configuration.tradingPairId],
+        pairs: configuration.tradingPairIds.length
+          ? configuration.tradingPairIds
+          : undefined,
         amount: aiBotService.parseAmount(tradeAmount),
         durationSeconds: 60,
         profitTarget: aiBotService.parseTargetAbs(profitTarget, 50),
         lossLimit: aiBotService.parseTargetAbs(lossLimit, 30),
         stakeMode: configuration.brandedStrategyId,
       });
+      pairsSeededRef.current = false;
       await load();
     } finally {
       setBusy(false);

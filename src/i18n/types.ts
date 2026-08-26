@@ -920,6 +920,14 @@ export type Messages = {
 
         chooseAll: string;
 
+        clearAll: string;
+
+        loading: string;
+
+        empty: string;
+
+        noResults: string;
+
       };
 
       technicalIndicator: {

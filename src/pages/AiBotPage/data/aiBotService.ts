@@ -14,6 +14,15 @@ import {
   formatWinRate,
   weekAndMonthSummaries,
 } from '@shared/trades/tradeAggregates';
+import {
+  filterFxCurrencyAssets,
+  isPreferredMarketSymbol,
+} from '@shared/market/preferAsset';
+import {
+  formatPairLabel,
+  pairTypeFromSymbol,
+  parseFxPair,
+} from '@shared/market/pairDisplay';
 import { t } from '@shared/i18n';
 import {
   AI_BOT_MOCK,
@@ -201,9 +210,29 @@ export const aiBotService = {
     return parseMoney(label, fallback);
   },
 
-  async listPairs() {
+  async listTradingPairs() {
     const assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
-    return assets?.assets ?? [];
+    if (!assets?.assets?.length) return [];
+
+    const fxAssets = filterFxCurrencyAssets(assets.assets);
+    return fxAssets
+      .map((asset) => {
+        const parsed = parseFxPair(asset.symbol);
+        return {
+          id: asset.symbol,
+          label: formatPairLabel(asset.symbol, asset.name),
+          type: pairTypeFromSymbol(asset.symbol),
+          base: parsed?.base ?? '',
+          quote: parsed?.quote ?? '',
+          available: asset.available,
+        };
+      })
+      .sort((a, b) => {
+        const aPreferred = isPreferredMarketSymbol(a.id) ? 0 : 1;
+        const bPreferred = isPreferredMarketSymbol(b.id) ? 0 : 1;
+        if (aPreferred !== bPreferred) return aPreferred - bPreferred;
+        return a.label.localeCompare(b.label);
+      });
   },
 
   async fetchBotRuntime() {

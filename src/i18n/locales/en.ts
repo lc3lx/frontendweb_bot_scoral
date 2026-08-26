@@ -882,6 +882,14 @@ export const en: Messages = {
 
         chooseAll: 'Select all',
 
+        clearAll: 'Clear all',
+
+        loading: 'Loading pairs…',
+
+        empty: 'No trading pairs available.',
+
+        noResults: 'No pairs match your search.',
+
       },
 
       technicalIndicator: {

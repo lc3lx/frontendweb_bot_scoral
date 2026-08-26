@@ -16,7 +16,8 @@ export function AiBotModalHost() {
     closeStrategyDetail,
     openStrategyDetail,
     setMarketType,
-    setTradingPair,
+    setTradingPairIds,
+    toggleTradingPair,
     setStrategyGrid,
     setBrandedStrategy,
     setBotSettings,
@@ -40,9 +41,11 @@ export function AiBotModalHost() {
 
       <TradingPairModal
         isOpen={activeModal === 'tradingPair'}
-        selectedId={configuration.tradingPairId}
+        selectedIds={configuration.tradingPairIds}
         onClose={closeModal}
-        onSelect={setTradingPair}
+        onToggle={toggleTradingPair}
+        onSelectAll={setTradingPairIds}
+        onClearAll={() => setTradingPairIds([])}
       />
 
       <TechnicalIndicatorModal

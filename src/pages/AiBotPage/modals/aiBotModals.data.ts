@@ -300,8 +300,8 @@ export function getDefaultBrandedStrategyId(): BrandedStrategyId {
   return 'red-signal-pro';
 }
 
-export function getDefaultTradingPairId(): string {
-  return 'eur-usd';
+export function getDefaultTradingPairIds(): string[] {
+  return ['EURUSD_otc'];
 }
 
 const BRANDED_STRATEGY_IDS = new Set<BrandedStrategyId>(
