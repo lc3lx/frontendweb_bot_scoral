@@ -44,11 +44,11 @@
 
 .card {
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(221, 9, 18, 0.16);
   border-radius: 20px;
   background:
-    radial-gradient(80% 60% at 0% 0%, rgba(221, 9, 18, 0.1) 0%, transparent 50%),
-    #0b0708;
+    radial-gradient(80% 60% at 0% 0%, rgba(221, 9, 18, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #100809 0%, #0b0708 60%);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
 }
 
@@ -62,7 +62,7 @@
 }
 
 .tableHead {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(221, 9, 18, 0.04);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: #6e6a6c;
   font-size: 11px;

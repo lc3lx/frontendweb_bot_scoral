@@ -24,11 +24,11 @@
   border-radius: inherit;
   background: radial-gradient(
     circle at var(--glare-x, 50%) var(--glare-y, 50%),
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0) 54%
+    rgba(221, 9, 18, 0.16) 0%,
+    transparent 54%
   );
-  opacity: 0.55;
-  mix-blend-mode: screen;
+  opacity: 0.45;
+  mix-blend-mode: soft-light;
 }
 
 @media (prefers-reduced-motion: reduce) {

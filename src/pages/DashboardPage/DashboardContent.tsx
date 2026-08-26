@@ -25,6 +25,7 @@ function HomeBackdrop() {
       <span className={styles.aurora} />
       <span className={styles.orb} />
       <span className={styles.orbAlt} />
+      <img className={styles.mark} src={dashboardAssets.homeMark} alt="" />
       <span className={styles.veil} />
     </div>
   );

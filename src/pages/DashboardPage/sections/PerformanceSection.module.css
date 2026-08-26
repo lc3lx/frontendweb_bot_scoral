@@ -1,10 +1,10 @@
 .card {
   padding: 16px 20px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(221, 9, 18, 0.16);
   border-radius: 20px;
   background:
-    radial-gradient(80% 70% at 90% 0%, rgba(221, 9, 18, 0.12) 0%, transparent 55%),
-    #0b0708;
+    radial-gradient(80% 70% at 90% 0%, rgba(221, 9, 18, 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, #100809 0%, #0b0708 60%);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
 }
 

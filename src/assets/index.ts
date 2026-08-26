@@ -41,6 +41,7 @@ import iconRowMenuUrl from './dashboard/icon-row-menu.svg';
 import iconAccountRealUrl from './dashboard/icon-account-real.svg';
 import iconAccountDemoUrl from './dashboard/icon-account-demo.svg';
 import iconAccountOpenUrl from './dashboard/icon-account-open.svg';
+import homeMarkUrl from './dashboard/home-mark.png';
 
 import iconTargetDownUrl from './ai-bot/icon-target-down.svg';
 import iconTargetUpUrl from './ai-bot/icon-target-up.svg';
@@ -193,6 +194,8 @@ export const dashboardAssets = {
   iconAccountDemo: iconAccountDemoUrl,
 
   iconAccountOpen: iconAccountOpenUrl,
+
+  homeMark: homeMarkUrl,
 
 } as const;
 
