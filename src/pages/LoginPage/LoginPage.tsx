@@ -7,24 +7,18 @@ import { t as tFlat } from '@shared/i18n';
 import { useLoginForm } from './hooks/useLoginForm';
 import styles from './LoginPage.module.css';
 
-/** Web entry — Binolla login/signup only (no separate Scar Alpha password). */
+/** Web entry — Binolla login; new accounts open partner signup on Binolla. */
 export function LoginPage() {
   const { t } = useI18n();
   const form = useLoginForm();
-  const isLogin = form.isLogin;
 
   useEffect(() => {
-    document.title = isLogin
-      ? tFlat('binolla.auth.loginTitle')
-      : tFlat('binolla.auth.signupTitle');
+    document.title = tFlat('binolla.auth.loginTitle');
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute(
-        'content',
-        isLogin ? tFlat('binolla.auth.loginDesc') : tFlat('binolla.auth.signupDesc'),
-      );
+      meta.setAttribute('content', tFlat('binolla.auth.loginDesc'));
     }
-  }, [isLogin]);
+  }, []);
 
   return (
     <main className={styles.page} data-figma-node="574:975">
@@ -54,9 +48,7 @@ export function LoginPage() {
             </span>
           </h1>
 
-          <p className={styles.heroSubtitle}>
-            {isLogin ? tFlat('binolla.auth.loginDesc') : tFlat('binolla.auth.signupDesc')}
-          </p>
+          <p className={styles.heroSubtitle}>{tFlat('binolla.auth.loginDesc')}</p>
 
           <ul className={styles.features}>
             {t.login.features.map((feature) => (
@@ -115,11 +107,9 @@ export function LoginPage() {
 
             <header className={styles.formHeader}>
               <h2 id="login-form-title" className={styles.formTitle}>
-                {isLogin ? tFlat('binolla.auth.loginTitle') : tFlat('binolla.auth.signupTitle')}
+                {t.login.form.welcome}
               </h2>
-              <p className={styles.formSubtitle}>
-                {isLogin ? tFlat('binolla.auth.loginDesc') : tFlat('binolla.auth.signupDesc')}
-              </p>
+              <p className={styles.formSubtitle}>{t.login.form.subtitle}</p>
             </header>
 
             <form
@@ -164,7 +154,7 @@ export function LoginPage() {
                     className={`${styles.input} ${styles.passwordInput}`}
                     type="password"
                     name="password"
-                    autoComplete={isLogin ? 'current-password' : 'new-password'}
+                    autoComplete="current-password"
                     value={form.values.password}
                     onChange={(event) => form.setField('password', event.target.value)}
                   />
@@ -176,42 +166,21 @@ export function LoginPage() {
 
               <div className={styles.submitWrap}>
                 <button type="submit" className={styles.submitButton} disabled={form.isSubmitDisabled}>
-                  {form.status === 'loading'
-                    ? isLogin
-                      ? tFlat('binolla.auth.loggingIn')
-                      : tFlat('binolla.auth.creating')
-                    : isLogin
-                      ? tFlat('binolla.auth.loginCta')
-                      : tFlat('binolla.auth.signupCta')}
+                  {form.status === 'loading' ? tFlat('binolla.auth.loggingIn') : t.login.form.submit}
                 </button>
               </div>
 
-              <p className={styles.signupPrompt}>
-                {isLogin ? (
-                  <>
-                    {tFlat('signup.noAccount')}{' '}
-                    <button
-                      type="button"
-                      className={styles.signupLink}
-                      onClick={() =>
-                        window.open(BINOLLA_REFERRAL_SIGNUP_URL, '_blank', 'noopener,noreferrer')
-                      }
-                    >
-                      {tFlat('signup.createBinolla')}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      className={styles.signupLink}
-                      onClick={() => form.setMode('login')}
-                    >
-                      {tFlat('binolla.auth.loginCta')}
-                    </button>
-                  </>
-                )}
-              </p>
+              <div className={styles.signupBlock}>
+                <p className={styles.signupPrompt}>{t.login.form.noAccount}</p>
+                <a
+                  className={styles.secondaryButton}
+                  href={BINOLLA_REFERRAL_SIGNUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t.login.form.createAccount}
+                </a>
+              </div>
 
               <p className={styles.formDisclaimer}>{t.login.form.disclaimer}</p>
             </form>

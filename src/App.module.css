@@ -6,9 +6,10 @@
   background: var(--color-bg-primary);
 }
 
-.app[data-route='landing'] {
+.app[data-route='landing'],
+.app[data-route='auth'] {
   overflow-x: clip;
-  /* Force marketing white text — app shell uses red --color-text-primary. */
+  /* Marketing/auth pages use white primary text — app shell uses red. */
   --color-text-primary: #ffffff;
   --color-text-heading: #f7eeee;
   --theme-text: #ffffff;

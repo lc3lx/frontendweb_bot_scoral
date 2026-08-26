@@ -1,12 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '@features/Auth';
 import { emailRule } from '@features/Auth/validation';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { t } from '@shared/i18n';
-
-export type BinollaAuthMode = 'login' | 'register';
 
 const MIN_BINOLLA_PASSWORD = 4;
 
@@ -22,18 +20,11 @@ function binollaPasswordRule(value: string): string | undefined {
 
 export function useLoginForm() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialMode: BinollaAuthMode =
-    searchParams.get('mode') === 'register' ? 'register' : 'login';
-
-  const [mode, setMode] = useState<BinollaAuthMode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
-
-  const isLogin = mode === 'login';
 
   const validate = useCallback(() => {
     const next = {
@@ -56,10 +47,10 @@ export function useLoginForm() {
       setError(null);
 
       try {
-        const credentials = { email: email.trim(), password };
-        const result = isLogin
-          ? await authService.loginWithBinolla(credentials)
-          : await authService.signupWithBinolla(credentials);
+        const result = await authService.loginWithBinolla({
+          email: email.trim(),
+          password,
+        });
 
         invalidateBotSessionCache();
         setStatus('success');
@@ -71,10 +62,10 @@ export function useLoginForm() {
           setError(String((err as { message: unknown }).message));
           return;
         }
-        setError(isLogin ? t('binolla.auth.loginFailed') : t('binolla.auth.signupFailed'));
+        setError(t('binolla.auth.loginFailed'));
       }
     },
-    [email, isLogin, navigate, password, validate],
+    [email, navigate, password, validate],
   );
 
   const isSubmitDisabled = useMemo(
@@ -83,9 +74,8 @@ export function useLoginForm() {
   );
 
   return {
-    mode,
-    setMode,
-    isLogin,
+    mode: 'login' as const,
+    isLogin: true as const,
     email,
     setEmail,
     password,
