@@ -5,8 +5,8 @@ import { useI18n } from '@i18n';
 
 import { useAiBotModals } from './AiBotModalContext';
 import {
+  SIGNAL_POLL_MS,
   TRADE_AMOUNTS,
-  TRADE_DURATIONS,
   type AiBotMockData,
   type EngineControlId,
 } from './data/aiBot.mock';
@@ -17,27 +17,70 @@ type AiBotContentProps = {
   figmaNode: string;
 };
 
+const DEFAULT_DURATION = '1m';
+
+function sanitizeAmountInput(raw: string): string {
+  const cleaned = raw.replace(/[^\d.]/g, '');
+  const [whole, ...rest] = cleaned.split('.');
+  if (rest.length === 0) return whole ?? '';
+  return `${whole ?? ''}.${rest.join('').slice(0, 2)}`;
+}
+
+function formatAmountDisplay(value: string): string {
+  const numeric = sanitizeAmountInput(value);
+  if (!numeric) return '';
+  return `$${numeric}`;
+}
+
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
   const { configuration, openModal, syncBotSettingsFromPage } = useAiBotModals();
 
+  const [activeControl, setActiveControl] = useState<EngineControlId>('stop');
+  const [tradeAmount, setTradeAmount] = useState('$25');
+  const [busy, setBusy] = useState(false);
+
   const load = useCallback(async () => {
-    const next = await aiBotService.fetchData();
+    const next = await aiBotService.fetchData(configuration.tradingPairId);
     setData(next);
-  }, []);
+    if (next.status.botState === 'running') setActiveControl('start');
+    else if (next.status.botState === 'paused') setActiveControl('pause');
+    else setActiveControl('stop');
+  }, [configuration.tradingPairId]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const [activeControl, setActiveControl] = useState<EngineControlId>('start');
-  const [tradeAmount, setTradeAmount] = useState('$25');
-  const [duration, setDuration] = useState('1m');
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      void load();
+    }, SIGNAL_POLL_MS);
+    return () => window.clearInterval(id);
+  }, [load]);
 
   useEffect(() => {
-    syncBotSettingsFromPage(tradeAmount, duration);
-  }, [duration, syncBotSettingsFromPage, tradeAmount]);
+    syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION);
+  }, [syncBotSettingsFromPage, tradeAmount]);
+
+  async function handleControl(controlId: EngineControlId) {
+    if (busy) return;
+    setBusy(true);
+    setActiveControl(controlId);
+    try {
+      await aiBotService.applyControl(controlId, {
+        pairs: [configuration.tradingPairId],
+        amount: aiBotService.parseAmount(tradeAmount),
+        durationSeconds: 60,
+        profitTarget: aiBotService.parseTargetAbs(data?.targets.profitTarget ?? '+$50', 50),
+        lossLimit: aiBotService.parseTargetAbs(data?.targets.lossLimit ?? '-$30', 30),
+      });
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   if (!data) {
     return (
@@ -45,12 +88,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         <p>…</p>
       </div>
     );
-  }
-
-  async function handleControl(controlId: EngineControlId) {
-    setActiveControl(controlId);
-    await aiBotService.applyControl(controlId);
-    await load();
   }
 
   const controlIcons: Record<EngineControlId, string> = {
@@ -107,225 +144,250 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     return '';
   }
 
+  const stateLabel =
+    data.status.botState === 'running'
+      ? t.aiBot.status.running
+      : data.status.botState === 'paused'
+        ? t.aiBot.status.paused
+        : t.aiBot.status.stopped;
+
+  const stateChipClass =
+    data.status.botState === 'running'
+      ? styles.stateChipRunning
+      : data.status.botState === 'paused'
+        ? styles.stateChipPaused
+        : styles.stateChipStopped;
+
+  const signalRows = [
+    {
+      label: t.aiBot.status.signal,
+      value: data.status.signal,
+      tone:
+        data.status.signalSide === 'up'
+          ? styles.signalUp
+          : data.status.signalSide === 'down'
+            ? styles.signalDown
+            : '',
+      ltr: true,
+    },
+    { label: t.aiBot.status.strength, value: data.status.strength, ltr: true },
+    { label: t.aiBot.status.indicator, value: data.status.indicator },
+    { label: t.aiBot.status.strategy, value: data.status.strategy },
+    { label: t.aiBot.status.market, value: data.status.market || configuration.tradingPair, ltr: true },
+    { label: t.aiBot.status.updated, value: data.status.updated, ltr: true },
+  ];
+
+  const amountNumeric = sanitizeAmountInput(tradeAmount);
+
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
-      <div className={styles.pageHeader}>
-        <h2 className={styles.pageTitle}>{t.aiBot.header.title}</h2>
-        <p className={styles.pageSubtitle}>{t.aiBot.header.subtitle}</p>
-      </div>
-
-      <div className={styles.grid}>
-        <div className={styles.leftColumn}>
-          <section className={styles.statusCard} aria-label={t.aiBot.status.aria}>
-            <div className={styles.statusHead}>
-              <div className={styles.botIconWrap}>
-                <img
-                  className={styles.botIcon}
-                  src={aiBotAssets.iconBotLarge}
-                  alt=""
-                  width={28}
-                  height={28}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className={styles.statusCopy}>
-                <p className={styles.statusName}>{data.status.name}</p>
-                <div className={styles.statusMeta}>
-                  <span className={styles.runningChip}>
-                    <span className={styles.runningDot} aria-hidden="true" />
-                    {t.aiBot.status.running}
-                  </span>
-                  <p className={styles.engineLabel}>{t.aiBot.status.neuralEngine}</p>
-                </div>
+      {/* Top: live signals | total balance */}
+      <div className={styles.topRow}>
+        <section className={styles.signalCard} aria-label={t.aiBot.status.aria}>
+          <div className={styles.statusHead}>
+            <div className={styles.botIconWrap}>
+              <img
+                className={styles.botIcon}
+                src={aiBotAssets.iconBotLarge}
+                alt=""
+                width={28}
+                height={28}
+                aria-hidden="true"
+              />
+            </div>
+            <div className={styles.statusCopy}>
+              <p className={styles.statusName}>{data.status.name}</p>
+              <div className={styles.statusMeta}>
+                <span className={`${styles.stateChip} ${stateChipClass}`}>
+                  <span className={styles.stateDot} aria-hidden="true" />
+                  {stateLabel}
+                </span>
+                <span className={styles.freshChip}>
+                  {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
+                </span>
               </div>
             </div>
+          </div>
 
-            <div className={styles.metricsGrid}>
-              <div className={styles.metricCell}>
-                <p className={styles.metricLabel}>{t.aiBot.status.signal}</p>
-                <p className={`${styles.metricValue} ${styles.metricValueUp}`}>{data.status.signal}</p>
-              </div>
-              <div className={styles.metricCell}>
-                <p className={styles.metricLabel}>{t.aiBot.status.strength}</p>
-                <p className={styles.metricValue}>{data.status.strength}</p>
-              </div>
-              <div className={styles.metricCell}>
-                <p className={styles.metricLabel}>{t.aiBot.status.updated}</p>
-                <p className={styles.metricValue}>{data.status.updated}</p>
-              </div>
-            </div>
-          </section>
-
-          <section aria-label={t.aiBot.controls.title}>
-            <p className={styles.sectionLabel}>{t.aiBot.controls.title}</p>
-            <div className={styles.controlsGrid}>
-              {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
-                <button
-                  key={controlId}
-                  type="button"
-                  className={`${styles.controlButton}${
-                    activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
+          <div className={styles.signalGrid}>
+            {signalRows.map((row) => (
+              <div key={row.label} className={styles.signalCell}>
+                <p className={styles.signalLabel}>{row.label}</p>
+                <p
+                  className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
+                    row.ltr ? ` ${styles.ltrValue}` : ''
                   }`}
-                  onClick={() => void handleControl(controlId)}
                 >
-                  <img
-                    className={styles.controlIcon}
-                    src={controlIcons[controlId]}
-                    alt=""
-                    width={22}
-                    height={22}
-                    aria-hidden="true"
-                  />
-                  {t.aiBot.controls[controlId]}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section aria-label={t.aiBot.performance.title}>
-            <p className={styles.sectionLabel}>{t.aiBot.performance.title}</p>
-            <div className={styles.performanceCard}>
-              <p className={styles.balanceLabel}>{t.aiBot.performance.totalBalance}</p>
-              <p className={styles.balanceValue}>{data.performance.totalBalance}</p>
-              <div className={styles.statsGrid}>
-                {performanceStats.map((stat) => (
-                  <div key={stat.id} className={styles.statCell}>
-                    <p className={styles.statLabel}>{stat.label}</p>
-                    <p className={`${styles.statValue} ${statValueClass(stat.tone)}`}>{stat.value}</p>
-                  </div>
-                ))}
+                  {row.value}
+                </p>
               </div>
-            </div>
-          </section>
-        </div>
-
-        <div className={styles.rightColumn}>
-          <section aria-label={t.aiBot.configuration.title}>
-            <p className={styles.sectionLabel}>{t.aiBot.configuration.title}</p>
-            <div className={styles.configGrid}>
-              {configRows.map((row) => (
-                <button
-                  key={row.id}
-                  type="button"
-                  className={styles.settingRow}
-                  onClick={() => openModal(row.modal)}
-                >
-                  <span className={styles.settingIconWrap}>
-                    <img
-                      className={styles.settingIcon}
-                      src={row.icon}
-                      alt=""
-                      width={18}
-                      height={18}
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <span className={styles.settingCopy}>
-                    <p className={styles.settingLabel}>{row.label}</p>
-                    <p className={styles.settingValue}>{row.value}</p>
-                  </span>
-                  <img
-                    className={styles.settingChevron}
-                    src={aiBotAssets.iconChevron}
-                    alt=""
-                    width={16}
-                    height={16}
-                    data-flip-rtl="true"
-                    aria-hidden="true"
-                  />
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <div className={styles.paramsRow}>
-            <section className={styles.paramCard} aria-label={t.aiBot.parameters.tradeAmount}>
-              <div className={styles.paramHeader}>
-                <p className={styles.paramTitle}>{t.aiBot.parameters.tradeAmount}</p>
-                <p className={styles.paramValue}>{tradeAmount}</p>
-              </div>
-              <div className={styles.chipGrid4}>
-                {TRADE_AMOUNTS.map((amount) => (
-                  <button
-                    key={amount}
-                    type="button"
-                    className={`${styles.chipButton}${
-                      tradeAmount === amount ? ` ${styles.chipButtonActive}` : ''
-                    }`}
-                    onClick={() => setTradeAmount(amount)}
-                  >
-                    {amount}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.paramCard} aria-label={t.aiBot.parameters.duration}>
-              <p className={styles.paramTitle}>{t.aiBot.parameters.duration}</p>
-              <div className={styles.chipGrid6}>
-                {TRADE_DURATIONS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={`${styles.chipButton}${
-                      duration === item ? ` ${styles.chipButtonActive}` : ''
-                    }`}
-                    onClick={() => setDuration(item)}
-                  >
-                    {item === 'Custom' ? t.aiBot.parameters.custom : item}
-                  </button>
-                ))}
-              </div>
-            </section>
+            ))}
           </div>
+        </section>
 
-          <div className={styles.targetsGrid}>
-            <article className={styles.targetCard}>
-              <div className={styles.targetHead}>
-                <img
-                  className={styles.targetIcon}
-                  src={aiBotAssets.iconTargetUp}
-                  alt=""
-                  width={16}
-                  height={16}
-                  aria-hidden="true"
-                />
-                <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
+        <section className={styles.performanceCard} aria-label={t.aiBot.performance.title}>
+          <p className={styles.balanceLabel}>{t.aiBot.performance.totalBalance}</p>
+          <p className={styles.balanceValue}>{data.performance.totalBalance}</p>
+          <div className={styles.statsGrid}>
+            {performanceStats.map((stat) => (
+              <div key={stat.id} className={styles.statCell}>
+                <p className={styles.statLabel}>{stat.label}</p>
+                <p className={`${styles.statValue} ${statValueClass(stat.tone)}`}>{stat.value}</p>
               </div>
-              <p className={styles.targetValueProfit}>{data.targets.profitTarget}</p>
-              <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
-            </article>
-
-            <article className={styles.targetCard}>
-              <div className={styles.targetHead}>
-                <img
-                  className={styles.targetIcon}
-                  src={aiBotAssets.iconTargetDown}
-                  alt=""
-                  width={16}
-                  height={16}
-                  aria-hidden="true"
-                />
-                <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
-              </div>
-              <p className={styles.targetValueLoss}>{data.targets.lossLimit}</p>
-              <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
-            </article>
+            ))}
           </div>
-
-          <div className={styles.actionsGrid}>
-            <button type="button" className={styles.ghostButton} disabled>
-              {t.aiBot.actions.showChart}
-            </button>
-            <button type="button" className={styles.ghostButton} onClick={() => openModal('botSettings')}>
-              {t.aiBot.actions.botSettings}
-            </button>
-          </div>
-
-          <p className={styles.disclaimer}>{t.aiBot.disclaimer}</p>
-        </div>
+        </section>
       </div>
+
+      {/* Mid: trading configuration | trade amount */}
+      <div className={styles.midRow}>
+        <section aria-label={t.aiBot.configuration.title}>
+          <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite}`}>
+            {t.aiBot.configuration.title}
+          </p>
+          <div className={styles.configGrid}>
+            {configRows.map((row) => (
+              <button
+                key={row.id}
+                type="button"
+                className={styles.settingRow}
+                onClick={() => openModal(row.modal)}
+              >
+                <span className={styles.settingIconWrap}>
+                  <img
+                    className={styles.settingIcon}
+                    src={row.icon}
+                    alt=""
+                    width={18}
+                    height={18}
+                    aria-hidden="true"
+                  />
+                </span>
+                <span className={styles.settingCopy}>
+                  <p className={styles.settingLabel}>{row.label}</p>
+                  <p className={styles.settingValue}>{row.value}</p>
+                </span>
+                <img
+                  className={styles.settingChevron}
+                  src={aiBotAssets.iconChevron}
+                  alt=""
+                  width={16}
+                  height={16}
+                  data-flip-rtl="true"
+                  aria-hidden="true"
+                />
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.paramCard} aria-label={t.aiBot.parameters.tradeAmount}>
+          <div className={styles.paramHeader}>
+            <p className={styles.paramTitle}>{t.aiBot.parameters.tradeAmount}</p>
+          </div>
+          <label className={styles.amountInputWrap}>
+            <span className={styles.amountCurrency}>$</span>
+            <input
+              className={styles.amountInput}
+              type="text"
+              inputMode="decimal"
+              value={amountNumeric}
+              onChange={(event) => setTradeAmount(formatAmountDisplay(event.target.value))}
+              aria-label={t.aiBot.parameters.tradeAmount}
+              placeholder="25"
+            />
+          </label>
+          <div className={styles.chipGrid4}>
+            {TRADE_AMOUNTS.map((amount) => (
+              <button
+                key={amount}
+                type="button"
+                className={`${styles.chipButton}${
+                  tradeAmount === amount ? ` ${styles.chipButtonActive}` : ''
+                }`}
+                onClick={() => setTradeAmount(amount)}
+              >
+                {amount}
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Center: engine controls */}
+      <section className={styles.controlsSection} aria-label={t.aiBot.controls.title}>
+        <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
+          {t.aiBot.controls.title}
+        </p>
+        <div className={styles.controlsGrid}>
+          {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
+            <button
+              key={controlId}
+              type="button"
+              className={`${styles.controlButton}${
+                activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
+              }`}
+              disabled={busy}
+              onClick={() => void handleControl(controlId)}
+            >
+              <img
+                className={styles.controlIcon}
+                src={controlIcons[controlId]}
+                alt=""
+                width={22}
+                height={22}
+                aria-hidden="true"
+              />
+              {t.aiBot.controls[controlId]}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div className={styles.targetsGrid}>
+        <article className={styles.targetCard}>
+          <div className={styles.targetHead}>
+            <img
+              className={styles.targetIcon}
+              src={aiBotAssets.iconTargetUp}
+              alt=""
+              width={16}
+              height={16}
+              aria-hidden="true"
+            />
+            <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
+          </div>
+          <p className={styles.targetValueProfit}>{data.targets.profitTarget}</p>
+          <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
+        </article>
+
+        <article className={styles.targetCard}>
+          <div className={styles.targetHead}>
+            <img
+              className={styles.targetIcon}
+              src={aiBotAssets.iconTargetDown}
+              alt=""
+              width={16}
+              height={16}
+              aria-hidden="true"
+            />
+            <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
+          </div>
+          <p className={styles.targetValueLoss}>{data.targets.lossLimit}</p>
+          <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
+        </article>
+      </div>
+
+      <div className={styles.actionsGrid}>
+        <button type="button" className={styles.ghostButton} disabled>
+          {t.aiBot.actions.showChart}
+        </button>
+        <button type="button" className={styles.ghostButton} onClick={() => openModal('botSettings')}>
+          {t.aiBot.actions.botSettings}
+        </button>
+      </div>
+
+      <p className={styles.disclaimer}>{t.aiBot.disclaimer}</p>
     </div>
   );
 }
-

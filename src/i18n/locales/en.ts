@@ -708,6 +708,10 @@ export const en: Messages = {
 
       running: 'Running',
 
+      paused: 'Paused',
+
+      stopped: 'Stopped',
+
       neuralEngine: 'Neural engine',
 
       signal: 'Signal',
@@ -715,6 +719,14 @@ export const en: Messages = {
       strength: 'Strength',
 
       updated: 'Updated',
+
+      indicator: 'Indicator',
+
+      strategy: 'Strategy',
+
+      market: 'Market',
+
+      fresh: 'Fresh · {seconds}s',
 
     },
 

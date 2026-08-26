@@ -15,7 +15,12 @@ import {
   weekAndMonthSummaries,
 } from '@shared/trades/tradeAggregates';
 import { t } from '@shared/i18n';
-import { AI_BOT_MOCK, type AiBotMockData, type EngineControlId } from './aiBot.mock';
+import {
+  AI_BOT_MOCK,
+  type AiBotMockData,
+  type BotRunState,
+  type EngineControlId,
+} from './aiBot.mock';
 
 function formatSignal(signal: string): string {
   const s = signal.toLowerCase();
@@ -24,8 +29,28 @@ function formatSignal(signal: string): string {
   return t('common.none');
 }
 
+function signalSide(signal: string): 'up' | 'down' | 'none' {
+  const s = signal.toLowerCase();
+  if (s === 'call') return 'up';
+  if (s === 'put') return 'down';
+  return 'none';
+}
+
+function mapBotState(state: string | undefined): BotRunState {
+  const s = (state ?? '').toLowerCase();
+  if (s === 'running') return 'running';
+  if (s === 'paused') return 'paused';
+  return 'stopped';
+}
+
+function parseMoney(label: string | undefined, fallback: number): number {
+  if (!label) return fallback;
+  const n = Number.parseFloat(label.replace(/[^\d.-]/g, ''));
+  return Number.isFinite(n) ? Math.abs(n) : fallback;
+}
+
 export const aiBotService = {
-  async fetchData(): Promise<AiBotMockData> {
+  async fetchData(preferredAsset?: string | null): Promise<AiBotMockData> {
     const data = structuredClone(AI_BOT_MOCK);
 
     try {
@@ -53,29 +78,51 @@ export const aiBotService = {
         data.performance.trades = String(trades.total);
       }
 
-      const asset = bot?.asset ?? bot?.assets?.[0] ?? '';
+      const strategyName =
+        strategies?.strategies.find((s) => s.id === (bot?.strategyId ?? 'rsi'))?.name ??
+        bot?.strategyId?.toUpperCase() ??
+        t('common.rsi');
+
+      if (bot) {
+        data.status.botState = mapBotState(bot.state);
+        data.status.engineLabel = bot.state;
+        data.configuration.tradingPair = bot.asset || bot.assets?.join(', ') || '—';
+        data.configuration.strategy = strategyName;
+        data.targets.profitTarget = `+$${bot.dailyProfitTarget}`;
+        data.targets.lossLimit = `-$${bot.dailyLossLimit}`;
+        data.status.strategy = strategyName;
+        data.status.indicator = t('common.rsi');
+      }
+
+      const asset =
+        (bot?.asset ?? bot?.assets?.[0] ?? preferredAsset ?? '').trim() || null;
+
+      if (asset) {
+        data.status.market = asset;
+        if (!bot?.asset && !bot?.assets?.[0]) {
+          data.configuration.tradingPair = preferredAsset ?? asset;
+        }
+      }
+
       if (asset && canBrowseMarket(status?.botAccess)) {
         const rsi = await strategiesApi
           .rsiSignal(asset, 60, timedSignal(MARKET_FETCH_MS))
           .catch(() => null);
         if (rsi) {
           data.status.signal = formatSignal(rsi.signal);
+          data.status.signalSide = signalSide(rsi.signal);
           data.status.strength = Number(rsi.liveRsi ?? rsi.rsi).toFixed(2);
-          data.status.updated = new Date(rsi.candleTime).toLocaleTimeString('en-GB', {
-            hour12: false,
-          });
+          const candleMs = Date.parse(rsi.candleTime);
+          data.status.updated = Number.isFinite(candleMs)
+            ? new Date(candleMs).toLocaleTimeString('en-GB', { hour12: false })
+            : new Date().toLocaleTimeString('en-GB', { hour12: false });
+          data.status.freshSeconds = Number.isFinite(candleMs)
+            ? Math.max(0, Math.floor((Date.now() - candleMs) / 1000))
+            : 0;
+          data.status.indicator = t('common.rsi');
+          data.status.strategy = strategyName;
+          data.status.market = rsi.asset || asset;
         }
-      }
-
-      if (bot) {
-        data.status.engineLabel = bot.state;
-        data.configuration.tradingPair = bot.asset || bot.assets?.join(', ') || '—';
-        data.configuration.strategy =
-          strategies?.strategies.find((s) => s.id === bot.strategyId)?.name ??
-          bot.strategyId?.toUpperCase() ??
-          'RSI';
-        data.targets.profitTarget = `+$${bot.dailyProfitTarget}`;
-        data.targets.lossLimit = `-$${bot.dailyLossLimit}`;
       }
     } catch {
       /* defaults */
@@ -84,15 +131,18 @@ export const aiBotService = {
     return data;
   },
 
-  async applyControl(control: EngineControlId, config?: {
-    pairs?: string[];
-    amount?: number;
-    durationSeconds?: number;
-    profitTarget?: number;
-    lossLimit?: number;
-  }): Promise<void> {
+  async applyControl(
+    control: EngineControlId,
+    config?: {
+      pairs?: string[];
+      amount?: number;
+      durationSeconds?: number;
+      profitTarget?: number;
+      lossLimit?: number;
+    },
+  ): Promise<void> {
     const amount = config?.amount ?? 25;
-    const durationSeconds = config?.durationSeconds ?? 300;
+    const durationSeconds = config?.durationSeconds ?? 60;
     const pairs = config?.pairs?.length ? config.pairs : ['EURUSD_otc'];
     const profitTarget = config?.profitTarget ?? 50;
     const lossLimit = config?.lossLimit ?? 30;
@@ -122,6 +172,14 @@ export const aiBotService = {
         strategyId: 'rsi',
       });
     }
+  },
+
+  parseAmount(label: string): number {
+    return parseMoney(label, 25);
+  },
+
+  parseTargetAbs(label: string, fallback: number): number {
+    return parseMoney(label, fallback);
   },
 
   async listPairs() {

@@ -5,40 +5,12 @@
   width: 100%;
 }
 
-.pageHeader {
-  padding-block: 8px 0;
-}
-
-.pageTitle {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 32px;
-  letter-spacing: -0.56px;
-}
-
-.pageSubtitle {
-  margin: 4px 0 0;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 17px;
-  color: #8a8688;
-  letter-spacing: 0.12px;
-}
-
-.grid {
+.topRow,
+.midRow {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: 20px;
-  align-items: start;
-}
-
-.leftColumn,
-.rightColumn {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   gap: 16px;
-  min-width: 0;
+  align-items: stretch;
 }
 
 .sectionLabel {
@@ -51,8 +23,13 @@
   letter-spacing: 0.12px;
 }
 
-/* Bot status card */
-.statusCard {
+.sectionLabelWhite {
+  color: #ffffff;
+}
+
+/* Signal card (bot-linked) */
+.signalCard {
+  height: 100%;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
@@ -101,117 +78,111 @@
   font-weight: 600;
   line-height: 22px;
   letter-spacing: -0.17px;
+  color: #ffffff;
 }
 
 .statusMeta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
 }
 
-.runningChip {
+.stateChip,
+.freshChip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding-block: 3px;
   padding-inline: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.22);
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.08);
-  color: #4ade9a;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.runningDot {
-  width: 4px;
-  height: 4px;
+.stateChipRunning {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.stateChipPaused {
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+  color: #f5c462;
+}
+
+.stateChipStopped {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #c9c7c8;
+}
+
+.stateDot {
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: #22c55e;
+  background: currentColor;
 }
 
-.engineLabel {
-  margin: 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: #6e6a6c;
+.freshChip {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
 }
 
-.metricsGrid {
+.signalGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
-.metricCell {
+.signalCell {
   padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(2, 1, 1, 0.35);
 }
 
-.metricLabel {
+.signalLabel {
   margin: 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: #6e6a6c;
+  font-size: 10px;
+  line-height: 14px;
+  color: #8a8688;
 }
 
-.metricValue {
+.signalValue {
   margin: 4px 0 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  line-height: 23px;
+  line-height: 18px;
+  color: #ffffff;
 }
 
-.metricValueUp {
+.signalUp {
   color: #4ade9a;
 }
 
-/* Engine controls */
-.controlsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 10px;
+.signalDown {
+  color: #ff6b72;
 }
 
-.controlButton {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding-block: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  color: #c9c7c8;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 18px;
-  cursor: pointer;
+.ltrValue {
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
-.controlButtonActive {
-  border-color: #22c55e;
-  background: rgba(34, 197, 94, 0.12);
-  color: #fff;
-  font-weight: 600;
-  box-shadow: inset 0 0 0 0 rgba(34, 197, 94, 0.13);
-}
-
-.controlIcon {
-  width: 22px;
-  height: 22px;
-}
-
-/* Performance */
+/* Performance / total balance */
 .performanceCard {
+  height: 100%;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
@@ -222,7 +193,7 @@
   margin: 0;
   font-size: 11px;
   line-height: 15px;
-  color: #6e6a6c;
+  color: #ffffff;
 }
 
 .balanceValue {
@@ -231,6 +202,7 @@
   font-weight: 800;
   line-height: 32px;
   letter-spacing: -0.75px;
+  color: #ffffff;
 }
 
 .statsGrid {
@@ -259,6 +231,7 @@
   font-size: 15px;
   font-weight: 700;
   line-height: 23px;
+  color: #ffffff;
 }
 
 .statValueProfit {
@@ -273,7 +246,7 @@
   color: #f5c15e;
 }
 
-/* Right column — configuration */
+/* Configuration */
 .configGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -290,6 +263,10 @@
   border-radius: 16px;
   background: #121011;
   cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  width: 100%;
 }
 
 .settingIconWrap {
@@ -318,7 +295,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 17px;
-  color: #8a8688;
+  color: #ffffff;
   letter-spacing: 0.12px;
 }
 
@@ -327,6 +304,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 21px;
+  color: #ffffff;
 }
 
 .settingChevron {
@@ -335,13 +313,8 @@
   flex-shrink: 0;
 }
 
-.paramsRow {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
 .paramCard {
+  height: 100%;
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
@@ -360,27 +333,50 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 17px;
-  color: #8a8688;
+  color: #ffffff;
   letter-spacing: 0.12px;
 }
 
-.paramValue {
-  margin: 0;
+.amountInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.amountCurrency {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.amountInput {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #ffffff;
+  font-family: inherit;
   font-size: 18px;
   font-weight: 700;
   line-height: 27px;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.amountInput::placeholder {
+  color: #6e6a6c;
 }
 
 .chipGrid4 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.chipGrid6 {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 12px;
 }
@@ -404,10 +400,71 @@
   color: #fff;
 }
 
+/* Centered engine controls */
+.controlsSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 8px 0;
+}
+
+.controlsTitle {
+  text-align: center;
+}
+
+.controlsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.controlButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-block: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #c9c7c8;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.controlButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.controlButtonActive {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  color: #fff;
+  font-weight: 600;
+}
+
+.controlIcon {
+  width: 22px;
+  height: 22px;
+}
+
 .targetsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  max-width: 720px;
+  width: 100%;
+  margin-inline: auto;
 }
 
 .targetCard {
@@ -475,6 +532,9 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  max-width: 720px;
+  width: 100%;
+  margin-inline: auto;
 }
 
 .ghostButton {
@@ -496,7 +556,7 @@
 }
 
 .disclaimer {
-  margin: 20px 0 8px;
+  margin: 8px 0;
   font-size: 11px;
   line-height: 15px;
   color: #6e6a6c;
@@ -504,7 +564,8 @@
 }
 
 @media (max-width: 1100px) {
-  .grid {
+  .topRow,
+  .midRow {
     grid-template-columns: 1fr;
   }
 
@@ -515,15 +576,14 @@
 
 @media (max-width: 640px) {
   .configGrid,
-  .paramsRow,
   .targetsGrid,
   .actionsGrid {
     grid-template-columns: 1fr;
   }
 
-  .metricsGrid,
+  .signalGrid,
   .statsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .chipGrid4 {

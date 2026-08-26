@@ -705,6 +705,10 @@ export const ar: Messages = {
 
       running: 'يعمل',
 
+      paused: 'متوقف مؤقتاً',
+
+      stopped: 'متوقف',
+
       neuralEngine: 'محرك عصبي',
 
       signal: 'الإشارة',
@@ -712,6 +716,14 @@ export const ar: Messages = {
       strength: 'القوة',
 
       updated: 'آخر تحديث',
+
+      indicator: 'المؤشر',
+
+      strategy: 'الاستراتيجية',
+
+      market: 'السوق',
+
+      fresh: 'حديث · {seconds}ث',
 
     },
 

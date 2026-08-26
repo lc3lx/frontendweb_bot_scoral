@@ -746,6 +746,10 @@ export type Messages = {
 
       running: string;
 
+      paused: string;
+
+      stopped: string;
+
       neuralEngine: string;
 
       signal: string;
@@ -753,6 +757,14 @@ export type Messages = {
       strength: string;
 
       updated: string;
+
+      indicator: string;
+
+      strategy: string;
+
+      market: string;
+
+      fresh: string;
 
     };
 
