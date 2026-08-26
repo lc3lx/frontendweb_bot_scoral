@@ -37,10 +37,7 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
       <div className={styles.pageHeader}>
-        <div>
-          <h2 className={styles.pageTitle}>{t.trading.header.title}</h2>
-          <p className={styles.pageSubtitle}>{t.trading.header.subtitle}</p>
-        </div>
+        <h2 className={styles.pageTitle}>{t.trading.header.title}</h2>
 
         <div className={styles.statusRow}>
           <span className={styles.chipConnected}>
