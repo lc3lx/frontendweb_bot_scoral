@@ -8,4 +8,9 @@
 
 .app[data-route='landing'] {
   overflow-x: clip;
+  /* Force marketing white text — app shell uses red --color-text-primary. */
+  --color-text-primary: #ffffff;
+  --color-text-heading: #f7eeee;
+  --theme-text: #ffffff;
+  color: #ffffff;
 }

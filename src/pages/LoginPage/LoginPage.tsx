@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { loginAssets } from '@assets';
+import { BINOLLA_REFERRAL_SIGNUP_URL } from '@constants/binolla';
 import { useI18n } from '@i18n';
 import { t as tFlat } from '@shared/i18n';
 import { useLoginForm } from './hooks/useLoginForm';
@@ -192,7 +193,9 @@ export function LoginPage() {
                     <button
                       type="button"
                       className={styles.signupLink}
-                      onClick={() => form.setMode('register')}
+                      onClick={() =>
+                        window.open(BINOLLA_REFERRAL_SIGNUP_URL, '_blank', 'noopener,noreferrer')
+                      }
                     >
                       {tFlat('signup.createBinolla')}
                     </button>

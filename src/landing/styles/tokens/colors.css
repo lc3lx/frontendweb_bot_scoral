@@ -1,11 +1,10 @@
 /**
  * Color tokens — Landing Page.
+ * Scoped to the landing route so the app shell's red --color-text-primary
+ * does not override marketing white text.
  * Source: Figma file 2Xub9DUc8qXvRygoo6mBDv
- * Pages: "font and color" + "landing page" / Desktop - 1 (385:1473)
- *
- * Values will be verified against node fills during section implementation.
  */
-:root {
+[data-route='landing'] {
   /* Brand */
   --color-bg-primary: #020101;
   --color-bg-surface: #0b0708;
@@ -70,4 +69,13 @@
   --color-border-strong: rgba(255, 255, 255, 0.12);
 
   --color-focus-ring: rgba(221, 9, 18, 0.45);
+
+  color-scheme: dark;
+  --theme-bg: var(--color-bg-primary);
+  --theme-surface: var(--color-bg-surface);
+  --theme-elevated: var(--color-bg-elevated);
+  --theme-text: #ffffff;
+  --theme-text-muted: var(--color-text-muted);
+  --theme-accent: var(--color-red-primary);
+  --theme-border: var(--color-border-default);
 }

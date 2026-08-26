@@ -1,4 +1,5 @@
 import { dashboardAssets } from '@assets';
+import { useSessionProfile } from '@hooks/useSessionProfile';
 import { useI18n } from '@i18n';
 
 import type { DashboardMockData } from '../data/dashboard.mock';
@@ -11,6 +12,9 @@ type BalanceCardProps = {
 
 export function BalanceCard({ data }: BalanceCardProps) {
   const { t } = useI18n();
+  const profile = useSessionProfile();
+  const accountLabel =
+    profile.accountType === 'Real' ? t.dashboard.user.live : t.dashboard.user.demo;
 
   return (
     <HomeTilt>
@@ -21,7 +25,7 @@ export function BalanceCard({ data }: BalanceCardProps) {
           </p>
           <span className={styles.liveBadge}>
             <span className={styles.liveDot} aria-hidden="true" />
-            {t.dashboard.hero.live}
+            {accountLabel}
           </span>
         </div>
 
