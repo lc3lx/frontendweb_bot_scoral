@@ -123,10 +123,10 @@
   }
 }
 
-@media (max-width: 720px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.cardTilt {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
 .card {
@@ -135,6 +135,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 18px;
   border: 1px solid rgba(221, 9, 18, 0.22);
   border-radius: 20px;
@@ -465,9 +468,14 @@
     0 14px 28px rgba(221, 9, 18, 0.4);
 }
 
+.cardActionLabel {
+  min-width: 0;
+}
+
 .cardActionIcon {
   width: 14px;
   height: 14px;
+  flex-shrink: 0;
 }
 
 .emptyState {
@@ -492,52 +500,306 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
+  .page,
+  .content,
+  .grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .page {
+    overflow-x: clip;
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(4px, 1.1vw, 8px);
+    width: 100%;
+  }
+
+  .grid > *,
+  .cardTilt {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .cardTilt,
+  .cardTilt:hover,
+  .cardTilt:focus-within {
+    z-index: 1;
+    transform: none !important;
+    border-radius: 10px;
+  }
+
   .card {
-    padding: 14px;
+    padding: clamp(6px, 1.4vw, 10px);
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
+
+  .card::before {
+    width: 3.5rem;
+    height: 3.5rem;
+    inset-inline-end: -42%;
+    inset-block-start: -36%;
   }
 
   .cardHead {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    row-gap: 8px;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .directionWrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .directionIcon {
+    width: 12px;
+    height: 12px;
   }
 
   .pairBlock {
-    flex: 1 1 8rem;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
-  .sourceChip {
-    margin-inline-start: auto;
+  .pairName,
+  .pairTime {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pairName {
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  .pairTime {
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  .sourceChip,
+  .outcomeChip {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-block: 2px;
+    padding-inline: 5px;
+    font-size: 8px;
+    line-height: 12px;
+    letter-spacing: 0.02em;
   }
 
   .outcomeBox {
-    flex-wrap: wrap;
-    align-items: flex-start;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    min-width: 0;
   }
 
   .outcomeBox > div {
     min-width: 0;
-    flex: 1 1 8rem;
+    flex: 1 1 0;
+  }
+
+  .outcomeLabel,
+  .metaLabel {
+    font-size: 8px;
+    line-height: 11px;
+  }
+
+  .outcomeValue,
+  .runningTimer {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .outcomeValue {
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .runningTimer {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .runningPulse {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
   }
 
   .metaGrid {
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+    min-width: 0;
+  }
+
+  .metaCell {
+    padding: 6px 8px;
+    border-radius: 8px;
+  }
+
+  .metaValue {
+    font-size: 10px;
+    line-height: 13px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .cardAction {
-    margin-top: 12px;
+    flex-shrink: 0;
+    margin-top: 8px;
+    padding: 7px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    line-height: 13px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .cardActionLabel {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .cardActionIcon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .cardAction:hover {
+    transform: none;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 480px) {
+  .cardHead {
+    gap: 4px;
+  }
+
+  .directionWrap {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .directionIcon {
+    width: 9px;
+    height: 9px;
+  }
+
+  .pairName {
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  .pairTime {
+    margin-top: 1px;
+    font-size: 8px;
+    line-height: 10px;
+  }
+
+  .sourceChip {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    flex-shrink: 0;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    overflow: hidden;
+    margin-inline-start: 0;
+  }
+
+  .outcomeChip {
+    display: none;
+  }
+
+  .sourceDot {
+    width: 6px;
+    height: 6px;
+    margin: 0;
+  }
+
+  .outcomeLabel,
+  .metaLabel {
+    display: none;
+  }
+
+  .outcomeBox {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    margin-top: 6px;
+    padding: 5px;
+  }
+
+  .outcomeValue {
+    margin: 0;
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .runningValueRow {
+    margin-top: 0;
+    gap: 4px;
+  }
+
+  .runningTimer {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
   .metaGrid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .metaCell {
+    padding: 4px 5px;
+    border-radius: 6px;
+  }
+
+  .metaValue {
+    margin: 0;
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  .cardAction {
+    margin-top: 6px;
+    padding: 5px 4px;
+    min-height: 26px;
+    gap: 0;
+  }
+
+  .cardActionLabel {
+    display: none;
   }
 }
 

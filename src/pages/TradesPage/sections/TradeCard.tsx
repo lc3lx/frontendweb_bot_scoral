@@ -77,8 +77,10 @@ export function TradeCard({ trade }: TradeCardProps) {
   const sourceLabel =
     trade.source === 'binolla' ? t.trades.source.binolla : t.trades.source.global;
 
+  const actionLabel = isRunning ? t.trades.actions.viewChart : t.trades.actions.details;
+
   return (
-    <HomeTilt maxTiltDeg={6} liftPx={10}>
+    <HomeTilt className={styles.cardTilt} maxTiltDeg={6} liftPx={10}>
       <article className={styles.card}>
         <div className={styles.cardHead}>
           <div
@@ -162,8 +164,9 @@ export function TradeCard({ trade }: TradeCardProps) {
         <Link
           className={styles.cardAction}
           to={isRunning ? `/trades/${trade.id}?live=1` : `/trades/${trade.id}`}
+          aria-label={actionLabel}
         >
-          {isRunning ? t.trades.actions.viewChart : t.trades.actions.details}
+          <span className={styles.cardActionLabel}>{actionLabel}</span>
           <img
             className={styles.cardActionIcon}
             src={dashboardAssets.iconChevronRightSm}
