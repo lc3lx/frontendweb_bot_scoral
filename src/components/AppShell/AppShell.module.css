@@ -39,6 +39,7 @@
 }
 
 .content {
+  position: relative;
   flex: 1;
   min-height: 0;
   width: 100%;
@@ -47,6 +48,7 @@
   overflow-y: auto;
   padding-block: 10px 24px;
   padding-inline: 8px;
+  background: transparent;
 }
 
 @keyframes shellWash {
