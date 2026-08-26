@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { AppShell } from '@components/AppShell';
 import { useI18n } from '@i18n';
@@ -7,7 +7,6 @@ import { DashboardContent } from '@pages/DashboardPage/DashboardContent';
 /** Figma frame "6" (736:8) — dashboard scrolled with profile account menu open. */
 export function DashboardScrollPage() {
   const { t } = useI18n();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.title = t.dashboardScroll.seo.title;
@@ -16,23 +15,15 @@ export function DashboardScrollPage() {
   }, [t.dashboardScroll.seo.description, t.dashboardScroll.seo.title]);
 
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    const target = container?.querySelector('[data-scroll-target="recent-trades"]');
-    if (!container || !target) return;
+    const target = document.querySelector('[data-scroll-target="recent-trades"]');
+    if (!(target instanceof HTMLElement)) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const targetRect = (target as HTMLElement).getBoundingClientRect();
-    const nextScrollTop = container.scrollTop + (targetRect.top - containerRect.top) - 24;
-    container.scrollTop = Math.max(0, nextScrollTop);
+    target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    window.scrollBy(0, -24);
   }, []);
 
   return (
-    <AppShell
-      title={t.dashboard.header.title}
-      activeNav="home"
-      profileDropdownOpen
-      scrollContainerRef={scrollContainerRef}
-    >
+    <AppShell title={t.dashboard.header.title} activeNav="home" profileDropdownOpen>
       <DashboardContent figmaNode="736:8" scrollTarget />
     </AppShell>
   );

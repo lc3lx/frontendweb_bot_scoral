@@ -79,6 +79,31 @@
   line-height: 19px;
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.navItem:hover:not(:disabled),
+.navItem:focus-visible:not(:disabled) {
+  background: #dd0101;
+  color: var(--color-text-on-accent);
+  font-weight: 600;
+}
+
+.navItem:hover:not(:disabled)::before,
+.navItem:focus-visible:not(:disabled)::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 1px;
+  top: 50%;
+  width: 4px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ff3b44;
+  transform: translateY(-50%);
 }
 
 .navItemActive {
@@ -99,6 +124,19 @@
   transform: translateY(-50%);
 }
 
+/* Move the active look to the hovered item */
+.nav:has(.navItem:hover) .navItemActive:not(:hover),
+.nav:has(.navItem:focus-visible) .navItemActive:not(:focus-visible) {
+  background: transparent;
+  color: #8a8688;
+  font-weight: 500;
+}
+
+.nav:has(.navItem:hover) .navItemActive:not(:hover)::before,
+.nav:has(.navItem:focus-visible) .navItemActive:not(:focus-visible)::before {
+  content: none;
+}
+
 .navIcon {
   width: 18px;
   height: 18px;
@@ -107,4 +145,16 @@
 
 .logout {
   color: #dd0101;
+}
+
+.logout:hover:not(:disabled),
+.logout:focus-visible:not(:disabled) {
+  background: rgba(221, 1, 1, 0.16);
+  color: #ff4d55;
+  font-weight: 600;
+}
+
+.logout:hover:not(:disabled)::before,
+.logout:focus-visible:not(:disabled)::before {
+  background: #dd0101;
 }

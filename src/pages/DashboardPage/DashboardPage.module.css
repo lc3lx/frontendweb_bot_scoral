@@ -282,7 +282,7 @@
 
 .rise:hover,
 .rise:focus-within {
-  z-index: 12;
+  z-index: 30;
 }
 
 .skeleton {
