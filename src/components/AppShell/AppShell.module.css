@@ -1,23 +1,65 @@
 .shell {
+  position: relative;
+  isolation: isolate;
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(180deg, #020101 18.97%, #890000 217.32%);
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: clip;
+  background-color: #050203;
   color: var(--color-text-primary);
   font-family: var(--font-family-primary);
 }
 
+.shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 48% at 12% -6%, rgba(86, 18, 26, 0.42) 0%, transparent 62%),
+    radial-gradient(55% 42% at 96% 14%, rgba(52, 10, 16, 0.28) 0%, transparent 58%),
+    radial-gradient(80% 55% at 50% 118%, rgba(38, 8, 12, 0.55) 0%, transparent 62%),
+    linear-gradient(180deg, #060304 0%, #0c0708 38%, #14090c 72%, #0a0506 100%);
+  background-repeat: no-repeat;
+  background-size: 140% 140%, 130% 130%, 160% 90%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
+  animation: shellWash 32s ease-in-out infinite alternate;
+}
+
 .main {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
+  overflow-x: clip;
 }
 
 .content {
   flex: 1;
   min-height: 0;
   width: 100%;
-  overflow: auto;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-block: 10px 24px;
   padding-inline: 8px;
+}
+
+@keyframes shellWash {
+  from {
+    background-position: 0% 0%, 100% 8%, 46% 100%, 0 0;
+  }
+  to {
+    background-position: 18% 10%, 82% 0%, 54% 92%, 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell::before {
+    animation: none;
+  }
 }

@@ -19,6 +19,17 @@ type DashboardContentProps = {
   scrollTarget?: boolean;
 };
 
+function HomeBackdrop() {
+  return (
+    <div className={styles.backdrop} aria-hidden="true">
+      <span className={styles.aurora} />
+      <span className={styles.orb} />
+      <span className={styles.orbAlt} />
+      <span className={styles.veil} />
+    </div>
+  );
+}
+
 export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<DashboardMockData | null>(null);
@@ -44,6 +55,7 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
   if (!data) {
     return (
       <div className={styles.page} data-figma-node={figmaNode}>
+        <HomeBackdrop />
         {error ? <p>{error}</p> : (
           <div className={styles.skeleton} aria-busy="true" aria-live="polite">
             <div className={styles.skelBlock} />
@@ -58,6 +70,7 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
+      <HomeBackdrop />
       <header className={styles.hero}>
         <div>
           <p className={styles.kicker}>{t.dashboard.hero.kicker}</p>
