@@ -8,6 +8,8 @@ export type TradingCandle = {
 };
 
 export type TradingMockData = {
+  /** Raw market symbol (e.g. EURUSD_otc). */
+  assetSymbol: string;
   pair: string;
   pairType: string;
   price: string;
@@ -30,7 +32,15 @@ export type TradingMockData = {
   };
 };
 
+export type TradingPairOption = {
+  symbol: string;
+  label: string;
+  type: string;
+  available: boolean;
+};
+
 export const tradingMockData: TradingMockData = {
+  assetSymbol: 'EURUSD_otc',
   pair: 'EUR/USD',
   pairType: 'OTC',
   price: '1.08423',

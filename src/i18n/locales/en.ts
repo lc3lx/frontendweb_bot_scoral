@@ -470,6 +470,18 @@ export const en: Messages = {
 
       down: 'DOWN',
 
+      placing: 'Placing trade…',
+
+      placed: 'Trade placed',
+
+      placeFailed: 'Could not place trade',
+
+      selectPair: 'Select pair',
+
+      noPairs: 'No pairs available',
+
+      chartEntry: 'ENTRY',
+
     },
 
     signal: {

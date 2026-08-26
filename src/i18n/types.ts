@@ -508,6 +508,18 @@ export type Messages = {
 
       down: string;
 
+      placing: string;
+
+      placed: string;
+
+      placeFailed: string;
+
+      selectPair: string;
+
+      noPairs: string;
+
+      chartEntry: string;
+
     };
 
     signal: {

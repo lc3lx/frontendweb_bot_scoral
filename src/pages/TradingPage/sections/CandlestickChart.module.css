@@ -6,6 +6,16 @@
   direction: ltr;
   unicode-bidi: isolate;
   border-radius: 12px;
+  touch-action: none;
+  user-select: none;
+}
+
+.pannable {
+  cursor: grab;
+}
+
+.dragging {
+  cursor: grabbing;
 }
 
 .chart {
@@ -24,6 +34,12 @@
 
 .liveBody {
   filter: brightness(1.14);
+}
+
+.hint {
+  user-select: none;
+  pointer-events: none;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
 }
 
 .empty {

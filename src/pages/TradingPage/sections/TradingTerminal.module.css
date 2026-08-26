@@ -87,12 +87,43 @@
   gap: 12px;
 }
 
+.pairPicker {
+  position: relative;
+  min-width: 0;
+}
+
+.pairButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+
+.pairButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .pairName {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
   color: #ffffff;
+}
+
+.pairChevron {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .pairType {
@@ -113,6 +144,68 @@
 
 .pairChange {
   color: #26c281;
+}
+
+.pairMenu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  inset-inline-start: 0;
+  min-width: min(260px, 72vw);
+  max-height: 240px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #10131a;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.pairEmpty {
+  padding: 10px 12px;
+  color: #6e6a6c;
+  font-size: 12px;
+}
+
+.pairOption {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: start;
+}
+
+.pairOption:hover,
+.pairOption:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+
+.pairOption:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pairOptionActive {
+  background: rgba(240, 69, 78, 0.16);
+}
+
+.pairOptionType {
+  color: #6e6a6c;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .expiryBadge {
@@ -235,6 +328,22 @@
   margin-top: 12px;
 }
 
+.feedback {
+  margin: 12px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.feedbackOk {
+  color: #4ade9a;
+}
+
+.feedbackErr {
+  color: #ff6b72;
+}
+
 .upButton,
 .downButton {
   display: inline-flex;
@@ -252,6 +361,14 @@
   line-height: 23px;
   letter-spacing: -0.38px;
   cursor: pointer;
+}
+
+.upButton:disabled,
+.downButton:disabled,
+.durationButton:disabled,
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .upButton {

@@ -467,6 +467,18 @@ export const ar: Messages = {
 
       down: 'هبوط',
 
+      placing: 'جاري تنفيذ الصفقة…',
+
+      placed: 'تم تنفيذ الصفقة',
+
+      placeFailed: 'تعذر تنفيذ الصفقة',
+
+      selectPair: 'اختر الزوج',
+
+      noPairs: 'لا توجد أزواج',
+
+      chartEntry: 'دخول',
+
     },
 
     signal: {

@@ -9,8 +9,9 @@ import { MARKET_FETCH_MS, timedSignal } from '@shared/api/timedSignal';
 import { getAccountStatusCached } from '@shared/api/botSessionCache';
 import { pickPreferredMarketAsset } from '@shared/market/preferAsset';
 import { t } from '@shared/i18n';
-import { tradingMockData, type TradingCandle, type TradingMockData } from './trading.mock';
+import { tradingMockData, type TradingCandle, type TradingMockData, type TradingPairOption } from './trading.mock';
 import { tradeService } from '@services/trades';
+import type { TradeRecord } from '@services/trades';
 
 const PERIOD_SEC = 60;
 const MAX_CANDLES = 80;
@@ -24,13 +25,55 @@ let durationSeconds = 60;
 /** In-memory forming series so ticks survive full refresh merge. */
 let liveCandleSeries: TradingCandle[] = [];
 
-export { LIVE_REFRESH_MS, LIVE_TICK_MS };
+export { LIVE_REFRESH_MS, LIVE_TICK_MS, PERIOD_SEC };
+
+export function formatMmSs(totalSec: number): string {
+  const s = Math.max(0, Math.floor(totalSec));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+}
+
+/** Seconds left in the current candle bucket (periodSec). */
+export function candleExpiryRemaining(periodSec = PERIOD_SEC): number {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const rem = periodSec - (nowSec % periodSec);
+  return rem === periodSec ? periodSec : rem;
+}
+
+const DURATION_OPTIONS = [
+  { label: '1 min', seconds: 60 },
+  { label: '2 min', seconds: 120 },
+  { label: '5 min', seconds: 300 },
+] as const;
 
 function formatPairLabel(symbol: string, name?: string): string {
   if (name && name.includes('/')) return name.split(' ')[0] ?? name;
   const base = symbol.replace(/_otc$/i, '');
   if (base.length === 6) return `${base.slice(0, 3)}/${base.slice(3)}`;
   return base;
+}
+
+function pairTypeFromSymbol(symbol: string): string {
+  return symbol.toLowerCase().includes('otc') ? 'OTC' : 'Global';
+}
+
+export function resolveEntryFromCandles(
+  candles: TradingCandle[],
+  createdAtMs: number,
+): { timeSec: number; price: number | undefined } {
+  const timeSec = Math.floor(createdAtMs / 1000);
+  let candleIndex = -1;
+  for (let i = 0; i < candles.length; i += 1) {
+    const candleTime = candles[i]?.time;
+    if (candleTime == null) continue;
+    if (candleTime <= timeSec) candleIndex = i;
+  }
+  if (candleIndex < 0 && candles.length > 0) candleIndex = candles.length - 1;
+  return {
+    timeSec,
+    price: candleIndex >= 0 ? candles[candleIndex]?.close : undefined,
+  };
 }
 
 function formatSignal(signal: string): string {
@@ -189,8 +232,9 @@ export const tradingService = {
       if (asset) selectedAsset = asset;
 
       if (asset) {
+        data.assetSymbol = asset;
         data.pair = formatPairLabel(asset, preferred?.name);
-        data.pairType = asset.toLowerCase().includes('otc') ? 'OTC' : 'Global';
+        data.pairType = pairTypeFromSymbol(asset);
         const [price, rsi, candles] = await Promise.all([
           marketApi.price(asset, timedSignal(MARKET_FETCH_MS)).catch(() => null),
           strategiesApi.rsiSignal(asset, PERIOD_SEC, timedSignal(MARKET_FETCH_MS)).catch(() => null),
@@ -237,6 +281,7 @@ export const tradingService = {
 
       data.amount = amount;
       data.duration = durationLabel;
+      data.expiry = formatMmSs(candleExpiryRemaining(PERIOD_SEC));
     } catch {
       /* defaults */
     }
@@ -292,7 +337,7 @@ export const tradingService = {
   },
 
   setAmount(value: string) {
-    amount = value;
+    amount = value.replace(/[^\d.]/g, '');
   },
 
   setDuration(label: string, seconds: number) {
@@ -300,8 +345,67 @@ export const tradingService = {
     durationSeconds = seconds;
   },
 
+  cycleDuration(): { label: string; seconds: number } {
+    const idx = DURATION_OPTIONS.findIndex((o) => o.seconds === durationSeconds);
+    const next = DURATION_OPTIONS[(idx + 1) % DURATION_OPTIONS.length]!;
+    durationLabel = next.label;
+    durationSeconds = next.seconds;
+    return { label: next.label, seconds: next.seconds };
+  },
+
+  getDurationSeconds(): number {
+    return durationSeconds;
+  },
+
   setSelectedAsset(symbol: string) {
     selectedAsset = symbol.trim() || null;
     liveCandleSeries = [];
+  },
+
+  getSelectedAsset(): string | null {
+    return selectedAsset;
+  },
+
+  async listPairs(): Promise<TradingPairOption[]> {
+    const assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
+    const list = assets?.assets ?? [];
+    return list
+      .filter((a) => a.symbol)
+      .map((a) => ({
+        symbol: a.symbol,
+        label: formatPairLabel(a.symbol, a.name),
+        type: pairTypeFromSymbol(a.symbol),
+        available: a.available !== false,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  },
+
+  /** Newest running trade for an asset (bot or user). */
+  async fetchActiveTrade(asset?: string | null): Promise<TradeRecord | null> {
+    const symbol = (asset ?? selectedAsset)?.trim();
+    if (!symbol) return null;
+    try {
+      const result = await tradeService.listTrades({ filter: 'live', page: 1, pageSize: 20 });
+      const matches = result.items
+        .filter((trade) => trade.status === 'running')
+        .filter((trade) => trade.pair.toLowerCase() === symbol.toLowerCase())
+        .sort((a, b) => b.openedAt - a.openedAt);
+      return matches[0] ?? null;
+    } catch {
+      return null;
+    }
+  },
+
+  /** Newest running trade across all assets (used to jump chart to bot entries). */
+  async fetchNewestLiveTrade(): Promise<TradeRecord | null> {
+    try {
+      const result = await tradeService.listTrades({ filter: 'live', page: 1, pageSize: 20 });
+      const matches = result.items
+        .filter((trade) => trade.status === 'running')
+        .sort((a, b) => b.openedAt - a.openedAt);
+      return matches[0] ?? null;
+    } catch {
+      return null;
+    }
   },
 };
