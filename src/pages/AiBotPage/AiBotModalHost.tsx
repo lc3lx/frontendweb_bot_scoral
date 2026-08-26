@@ -21,7 +21,7 @@ export function AiBotModalHost() {
     setTradingPairIds,
     toggleTradingPair,
     setStrategyGrid,
-    setBrandedStrategy,
+    selectBrandedStrategy,
     setBotSettings,
     persistBotSettings,
   } = useAiBotModals();
@@ -57,7 +57,7 @@ export function AiBotModalHost() {
         isOpen={activeModal === 'technicalIndicator'}
         selectedId={configuration.brandedStrategyId}
         onClose={closeModal}
-        onSelect={setBrandedStrategy}
+        onSelect={selectBrandedStrategy}
         onViewDetails={openStrategyDetail}
       />
 
@@ -68,8 +68,7 @@ export function AiBotModalHost() {
         onClose={closeModal}
         onBack={closeStrategyDetail}
         onConfirm={(id) => {
-          setBrandedStrategy(id);
-          closeModal();
+          selectBrandedStrategy(id);
         }}
       />
 

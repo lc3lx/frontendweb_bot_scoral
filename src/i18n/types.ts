@@ -376,6 +376,8 @@ export type Messages = {
 
       filtersAria: string;
 
+      empty: string;
+
       timeframes: {
 
         today: string;

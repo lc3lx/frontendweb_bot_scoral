@@ -338,6 +338,8 @@ export const en: Messages = {
 
       filtersAria: 'Performance timeframe',
 
+      empty: 'No settled trades in this period yet.',
+
       timeframes: {
 
         today: 'Today',

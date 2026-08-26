@@ -62,6 +62,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const [signalPulse, setSignalPulse] = useState(0);
   const targetsSeededRef = useRef(false);
   const pairsSeededRef = useRef(false);
+  const stakeModeSeededRef = useRef(false);
   const rotateIndexRef = useRef(0);
   const feedbackTimerRef = useRef<number | null>(null);
 
@@ -102,13 +103,14 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     if (!targetsSeededRef.current) {
       setProfitTarget(String(aiBotService.parseTargetAbs(next.targets.profitTarget, 50)));
       setLossLimit(String(aiBotService.parseTargetAbs(next.targets.lossLimit, 30)));
+      if (bot?.amount && bot.amount > 0) {
+        setTradeAmount(formatAmountDisplay(String(bot.amount)));
+      }
       targetsSeededRef.current = true;
     }
-    if (bot?.amount && bot.amount > 0) {
-      setTradeAmount(formatAmountDisplay(String(bot.amount)));
-    }
-    if (isBrandedStrategyId(bot?.stakeMode)) {
+    if (!stakeModeSeededRef.current && isBrandedStrategyId(bot?.stakeMode)) {
       setBrandedStrategy(bot.stakeMode);
+      stakeModeSeededRef.current = true;
     }
     if (!pairsSeededRef.current && bot) {
       if (bot.assets?.length) {
@@ -118,6 +120,9 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       }
       syncFromBotRuntime(bot);
       pairsSeededRef.current = true;
+      if (isBrandedStrategyId(bot.stakeMode)) {
+        stakeModeSeededRef.current = true;
+      }
     }
     if (next.status.botState === 'running') setActiveControl('start');
     else if (next.status.botState === 'paused') setActiveControl('pause');
@@ -225,6 +230,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         settings: botSettings,
       });
       pairsSeededRef.current = false;
+      stakeModeSeededRef.current = true;
       await load();
       void rotateSignal();
       const doneMessage =

@@ -17,7 +17,6 @@ import {
   getDefaultMarketTypeId,
   getDefaultStrategyGridId,
   getDefaultTradingPairIds,
-  isBrandedStrategyId,
   type BotRiskLevelId,
   type BotSettingsToggleId,
   type BrandedStrategyId,
@@ -65,6 +64,7 @@ type AiBotModalContextValue = {
   toggleTradingPair: (id: string) => void;
   setStrategyGrid: (id: StrategyGridId) => void;
   setBrandedStrategy: (id: BrandedStrategyId) => void;
+  selectBrandedStrategy: (id: BrandedStrategyId) => void;
   setBotSettings: (settings: BotSettingsState) => void;
   syncBotSettingsFromPage: (
     tradeAmount: string,
@@ -203,6 +203,29 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     setBrandedStrategyId(id);
   }, []);
 
+  const selectBrandedStrategy = useCallback(
+    (id: BrandedStrategyId) => {
+      setBrandedStrategyId(id);
+      setActiveModal(null);
+      setDetailStrategyId(null);
+      void aiBotService
+        .applyControl('apply', {
+          pairs: tradingPairIds.length ? tradingPairIds : undefined,
+          amount: aiBotService.parseAmount(botSettings.tradeAmount),
+          durationSeconds: 60,
+          profitTarget: aiBotService.parseTargetAbs(botSettings.profitTarget, 50),
+          lossLimit: aiBotService.parseTargetAbs(botSettings.lossLimit, 30),
+          stakeMode: id,
+          strategyId: strategyGridId,
+          settings: botSettings,
+        })
+        .catch(() => {
+          /* keep local selection even if persist fails */
+        });
+    },
+    [botSettings, strategyGridId, tradingPairIds],
+  );
+
   const setBotSettings = useCallback((settings: BotSettingsState) => {
     setBotSettingsState(settings);
   }, []);
@@ -234,9 +257,6 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       lossLimit: String(bot.dailyLossLimit),
       tradeAmount: bot.amount > 0 ? `$${bot.amount}` : current.tradeAmount,
     }));
-    if (isBrandedStrategyId(bot.stakeMode)) {
-      setBrandedStrategyId(bot.stakeMode);
-    }
     const strategy = bot.strategyId?.trim().toLowerCase();
     if (strategy) {
       setStrategyGridId(strategy);
@@ -273,6 +293,7 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       toggleTradingPair,
       setStrategyGrid,
       setBrandedStrategy,
+      selectBrandedStrategy,
       setBotSettings,
       syncBotSettingsFromPage,
       syncFromBotRuntime,
@@ -288,6 +309,7 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       openModal,
       openStrategyDetail,
       persistBotSettings,
+      selectBrandedStrategy,
       setBotSettings,
       setBrandedStrategy,
       setMarketType,

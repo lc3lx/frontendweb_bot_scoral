@@ -208,9 +208,9 @@
 }
 
 .stateChipRunning {
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(16, 185, 129, 0.14);
+  color: #4ade9a;
 }
 
 .stateChipPaused {

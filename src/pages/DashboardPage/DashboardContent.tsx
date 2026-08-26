@@ -110,7 +110,7 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
             <StatsRow data={data.stats} />
           </div>
           <div className={styles.rise} style={{ '--home-delay': 3 } as CSSProperties}>
-            <PerformanceSection data={data.performance} />
+            <PerformanceSection data={data.performance} trades={data.performanceTrades} />
           </div>
           <div
             className={styles.rise}

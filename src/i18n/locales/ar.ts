@@ -335,6 +335,8 @@ export const ar: Messages = {
 
       filtersAria: 'الإطار الزمني للأداء',
 
+      empty: 'لا توجد صفقات مكتملة في هذه الفترة بعد.',
+
       timeframes: {
 
         today: 'اليوم',

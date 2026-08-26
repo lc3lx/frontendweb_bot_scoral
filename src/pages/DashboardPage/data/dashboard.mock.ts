@@ -1,3 +1,5 @@
+import type { TradeDto } from '@shared/api';
+
 export type TradePlTone = 'profit' | 'loss' | 'running';
 
 export type DashboardTradeRow = {
@@ -29,6 +31,8 @@ export type DashboardMockData = {
     value: string;
     activeTimeframe: 'today' | '7d' | '30d' | 'all';
   };
+  /** Raw settled+open trades for the performance chart filters. */
+  performanceTrades: TradeDto[];
   botStatus: {
     pair: string;
     indicator: string;
@@ -59,6 +63,7 @@ export const dashboardMockData: DashboardMockData = {
     value: '+$1,824.60',
     activeTimeframe: 'today',
   },
+  performanceTrades: [],
   botStatus: {
     pair: 'EUR/USD',
     indicator: 'MACD',

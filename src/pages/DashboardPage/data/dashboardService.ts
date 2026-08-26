@@ -49,8 +49,15 @@ function mapTrade(trade: TradeDto): DashboardTradeRow {
 
 async function fetchTrades(): Promise<{ items: TradeDto[]; total: number } | null> {
   try {
-    const first = await tradesApi.list({ page: 1, pageSize: 100 });
-    return { items: first.items, total: first.total };
+    const pageSize = 100;
+    const first = await tradesApi.list({ page: 1, pageSize });
+    const items = [...first.items];
+    const totalPages = Math.min(5, Math.max(1, Math.ceil(first.total / pageSize)));
+    for (let page = 2; page <= totalPages; page += 1) {
+      const next = await tradesApi.list({ page, pageSize });
+      items.push(...next.items);
+    }
+    return { items, total: first.total };
   } catch {
     return null;
   }
@@ -98,6 +105,7 @@ export const dashboardService = {
           secondary: `${buckets.all.settled} settled`,
         };
         data.performance.value = formatSignedMoney(buckets.today.net);
+        data.performanceTrades = trades.items;
         data.trades = trades.items.slice(0, 5).map(mapTrade);
       }
 
