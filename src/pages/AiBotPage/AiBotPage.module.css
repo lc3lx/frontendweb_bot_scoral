@@ -1,4 +1,6 @@
 .page {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -400,16 +402,32 @@
   color: #fff;
 }
 
-/* Centered engine controls */
+/* Left targets + right controls */
+.opsRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.targetsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
 .controlsSection {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center;
   gap: 12px;
-  width: 100%;
-  max-width: 720px;
-  margin-inline: auto;
-  padding: 8px 0;
+  min-width: 0;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: #0b0708;
 }
 
 .controlsTitle {
@@ -418,7 +436,7 @@
 
 .controlsGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   width: 100%;
 }
@@ -458,15 +476,6 @@
   height: 22px;
 }
 
-.targetsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  max-width: 720px;
-  width: 100%;
-  margin-inline: auto;
-}
-
 .targetCard {
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -503,26 +512,62 @@
   letter-spacing: 0.12px;
 }
 
-.targetValueProfit {
-  margin: 6px 0 0;
-  font-size: 22px;
+.targetInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.targetInputWrap.targetInputProfit {
+  border: 1px solid rgba(74, 222, 154, 0.28);
+}
+
+.targetInputWrap.targetInputLoss {
+  border: 1px solid rgba(221, 9, 18, 0.28);
+}
+
+.targetSign {
+  font-size: 16px;
   font-weight: 700;
-  line-height: 24px;
-  letter-spacing: -0.44px;
+  line-height: 1;
+}
+
+.targetInputProfit .targetSign,
+.targetInputProfit.targetInput {
   color: #4ade9a;
 }
 
-.targetValueLoss {
-  margin: 6px 0 0;
+.targetInputLoss .targetSign,
+.targetInputLoss.targetInput {
+  color: #ff6b72;
+}
+
+.targetInput {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
   font-size: 22px;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 28px;
   letter-spacing: -0.44px;
-  color: #dd0912;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.targetInput::placeholder {
+  color: #6e6a6c;
+  opacity: 0.7;
 }
 
 .targetHint {
-  margin: 2px 0 0;
+  margin: 6px 0 0;
   font-size: 11px;
   line-height: 15px;
   color: #6e6a6c;
@@ -565,7 +610,8 @@
 
 @media (max-width: 1100px) {
   .topRow,
-  .midRow {
+  .midRow,
+  .opsRow {
     grid-template-columns: 1fr;
   }
 
@@ -576,7 +622,6 @@
 
 @media (max-width: 640px) {
   .configGrid,
-  .targetsGrid,
   .actionsGrid {
     grid-template-columns: 1fr;
   }

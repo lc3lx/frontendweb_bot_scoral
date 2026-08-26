@@ -289,6 +289,8 @@ type BotPreferences = {
   notificationsEnabled?: boolean;
   /** Which strategy the bot runs: 'rsi' or 'ema'. */
   strategyId?: string;
+  /** Stake progression mode (technical indicator). */
+  stakeMode?: string;
 };
 
 export const marketApi = {

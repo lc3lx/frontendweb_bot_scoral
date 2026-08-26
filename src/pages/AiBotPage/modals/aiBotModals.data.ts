@@ -297,9 +297,17 @@ export function getDefaultStrategyGridId(): StrategyGridId {
 }
 
 export function getDefaultBrandedStrategyId(): BrandedStrategyId {
-  return 'alpha-momentum';
+  return 'red-signal-pro';
 }
 
 export function getDefaultTradingPairId(): string {
   return 'eur-usd';
+}
+
+const BRANDED_STRATEGY_IDS = new Set<BrandedStrategyId>(
+  BRANDED_STRATEGY_OPTIONS.map((option) => option.id),
+);
+
+export function isBrandedStrategyId(value: string | null | undefined): value is BrandedStrategyId {
+  return Boolean(value && BRANDED_STRATEGY_IDS.has(value as BrandedStrategyId));
 }

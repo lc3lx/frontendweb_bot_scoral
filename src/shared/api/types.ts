@@ -141,6 +141,10 @@ export type BotRuntimeResponse = {
   stopReason?: string | null;
   /** Which strategy the bot runs: 'rsi' or 'ema'. */
   strategyId?: string | null;
+  /** Stake progression mode (technical indicator). */
+  stakeMode?: string | null;
+  /** Base stake before progression. */
+  baseAmount?: number | null;
 };
 
 export type StrategySignalResponse = {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { aiBotAssets } from '@assets';
 import { useI18n } from '@i18n';
@@ -11,6 +11,7 @@ import {
   type EngineControlId,
 } from './data/aiBot.mock';
 import { aiBotService } from './data/aiBotService';
+import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import styles from './AiBotPage.module.css';
 
 type AiBotContentProps = {
@@ -35,19 +36,36 @@ function formatAmountDisplay(value: string): string {
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
-  const { configuration, openModal, syncBotSettingsFromPage } = useAiBotModals();
+  const { configuration, openModal, syncBotSettingsFromPage, setBrandedStrategy } = useAiBotModals();
 
   const [activeControl, setActiveControl] = useState<EngineControlId>('stop');
   const [tradeAmount, setTradeAmount] = useState('$25');
+  const [profitTarget, setProfitTarget] = useState('50');
+  const [lossLimit, setLossLimit] = useState('30');
   const [busy, setBusy] = useState(false);
+  const targetsSeededRef = useRef(false);
 
   const load = useCallback(async () => {
-    const next = await aiBotService.fetchData(configuration.tradingPairId);
+    const [next, bot] = await Promise.all([
+      aiBotService.fetchData(configuration.tradingPairId),
+      aiBotService.fetchBotRuntime(),
+    ]);
     setData(next);
+    if (!targetsSeededRef.current) {
+      setProfitTarget(String(aiBotService.parseTargetAbs(next.targets.profitTarget, 50)));
+      setLossLimit(String(aiBotService.parseTargetAbs(next.targets.lossLimit, 30)));
+      targetsSeededRef.current = true;
+    }
+    if (bot?.amount && bot.amount > 0) {
+      setTradeAmount(formatAmountDisplay(String(bot.amount)));
+    }
+    if (isBrandedStrategyId(bot?.stakeMode)) {
+      setBrandedStrategy(bot.stakeMode);
+    }
     if (next.status.botState === 'running') setActiveControl('start');
     else if (next.status.botState === 'paused') setActiveControl('pause');
     else setActiveControl('stop');
-  }, [configuration.tradingPairId]);
+  }, [configuration.tradingPairId, setBrandedStrategy]);
 
   useEffect(() => {
     void load();
@@ -73,8 +91,9 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         pairs: [configuration.tradingPairId],
         amount: aiBotService.parseAmount(tradeAmount),
         durationSeconds: 60,
-        profitTarget: aiBotService.parseTargetAbs(data?.targets.profitTarget ?? '+$50', 50),
-        lossLimit: aiBotService.parseTargetAbs(data?.targets.lossLimit ?? '-$30', 30),
+        profitTarget: aiBotService.parseTargetAbs(profitTarget, 50),
+        lossLimit: aiBotService.parseTargetAbs(lossLimit, 30),
+        stakeMode: configuration.brandedStrategyId,
       });
       await load();
     } finally {
@@ -84,7 +103,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
 
   if (!data) {
     return (
-      <div className={styles.page} data-figma-node={figmaNode}>
+      <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
         <p>…</p>
       </div>
     );
@@ -180,7 +199,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const amountNumeric = sanitizeAmountInput(tradeAmount);
 
   return (
-    <div className={styles.page} data-figma-node={figmaNode}>
+    <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
       {/* Top: live signals | total balance */}
       <div className={styles.topRow}>
         <section className={styles.signalCard} aria-label={t.aiBot.status.aria}>
@@ -314,68 +333,92 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         </section>
       </div>
 
-      {/* Center: engine controls */}
-      <section className={styles.controlsSection} aria-label={t.aiBot.controls.title}>
-        <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
-          {t.aiBot.controls.title}
-        </p>
-        <div className={styles.controlsGrid}>
-          {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
-            <button
-              key={controlId}
-              type="button"
-              className={`${styles.controlButton}${
-                activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
-              }`}
-              disabled={busy}
-              onClick={() => void handleControl(controlId)}
-            >
+      {/* Left: daily targets (editable) | Right: engine controls alone */}
+      <div className={styles.opsRow}>
+        <div className={styles.targetsColumn}>
+          <article className={styles.targetCard}>
+            <div className={styles.targetHead}>
               <img
-                className={styles.controlIcon}
-                src={controlIcons[controlId]}
+                className={styles.targetIcon}
+                src={aiBotAssets.iconTargetUp}
                 alt=""
-                width={22}
-                height={22}
+                width={16}
+                height={16}
                 aria-hidden="true"
               />
-              {t.aiBot.controls[controlId]}
-            </button>
-          ))}
+              <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
+            </div>
+            <label className={`${styles.targetInputWrap} ${styles.targetInputProfit}`}>
+              <span className={styles.targetSign}>+$</span>
+              <input
+                className={`${styles.targetInput} ${styles.targetInputProfit}`}
+                type="text"
+                inputMode="decimal"
+                value={profitTarget}
+                onChange={(event) => setProfitTarget(sanitizeAmountInput(event.target.value))}
+                aria-label={t.aiBot.targets.profitTitle}
+                placeholder="50"
+              />
+            </label>
+            <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
+          </article>
+
+          <article className={styles.targetCard}>
+            <div className={styles.targetHead}>
+              <img
+                className={styles.targetIcon}
+                src={aiBotAssets.iconTargetDown}
+                alt=""
+                width={16}
+                height={16}
+                aria-hidden="true"
+              />
+              <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
+            </div>
+            <label className={`${styles.targetInputWrap} ${styles.targetInputLoss}`}>
+              <span className={styles.targetSign}>−$</span>
+              <input
+                className={`${styles.targetInput} ${styles.targetInputLoss}`}
+                type="text"
+                inputMode="decimal"
+                value={lossLimit}
+                onChange={(event) => setLossLimit(sanitizeAmountInput(event.target.value))}
+                aria-label={t.aiBot.targets.lossTitle}
+                placeholder="30"
+              />
+            </label>
+            <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
+          </article>
         </div>
-      </section>
 
-      <div className={styles.targetsGrid}>
-        <article className={styles.targetCard}>
-          <div className={styles.targetHead}>
-            <img
-              className={styles.targetIcon}
-              src={aiBotAssets.iconTargetUp}
-              alt=""
-              width={16}
-              height={16}
-              aria-hidden="true"
-            />
-            <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
+        <section className={styles.controlsSection} aria-label={t.aiBot.controls.title}>
+          <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
+            {t.aiBot.controls.title}
+          </p>
+          <div className={styles.controlsGrid}>
+            {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
+              <button
+                key={controlId}
+                type="button"
+                className={`${styles.controlButton}${
+                  activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
+                }`}
+                disabled={busy}
+                onClick={() => void handleControl(controlId)}
+              >
+                <img
+                  className={styles.controlIcon}
+                  src={controlIcons[controlId]}
+                  alt=""
+                  width={22}
+                  height={22}
+                  aria-hidden="true"
+                />
+                {t.aiBot.controls[controlId]}
+              </button>
+            ))}
           </div>
-          <p className={styles.targetValueProfit}>{data.targets.profitTarget}</p>
-          <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
-        </article>
-
-        <article className={styles.targetCard}>
-          <div className={styles.targetHead}>
-            <img
-              className={styles.targetIcon}
-              src={aiBotAssets.iconTargetDown}
-              alt=""
-              width={16}
-              height={16}
-              aria-hidden="true"
-            />
-            <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
-          </div>
-          <p className={styles.targetValueLoss}>{data.targets.lossLimit}</p>
-          <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
-        </article>
+        </section>
       </div>
 
       <div className={styles.actionsGrid}>

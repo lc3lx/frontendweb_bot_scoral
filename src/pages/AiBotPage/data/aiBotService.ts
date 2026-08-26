@@ -21,6 +21,11 @@ import {
   type BotRunState,
   type EngineControlId,
 } from './aiBot.mock';
+import {
+  BRANDED_STRATEGY_OPTIONS,
+  isBrandedStrategyId,
+  type BrandedStrategyId,
+} from '../modals/aiBotModals.data';
 
 function formatSignal(signal: string): string {
   const s = signal.toLowerCase();
@@ -47,6 +52,13 @@ function parseMoney(label: string | undefined, fallback: number): number {
   if (!label) return fallback;
   const n = Number.parseFloat(label.replace(/[^\d.-]/g, ''));
   return Number.isFinite(n) ? Math.abs(n) : fallback;
+}
+
+function mapStakeModeLabel(stakeMode: string | null | undefined): string | null {
+  if (!isBrandedStrategyId(stakeMode)) return null;
+  const option = BRANDED_STRATEGY_OPTIONS.find((item) => item.id === stakeMode);
+  if (!option) return null;
+  return t(`aiBot.modals.brandedStrategy.${option.titleKey}`);
 }
 
 export const aiBotService = {
@@ -91,7 +103,11 @@ export const aiBotService = {
         data.targets.profitTarget = `+$${bot.dailyProfitTarget}`;
         data.targets.lossLimit = `-$${bot.dailyLossLimit}`;
         data.status.strategy = strategyName;
-        data.status.indicator = t('common.rsi');
+        const indicatorLabel = mapStakeModeLabel(bot.stakeMode);
+        if (indicatorLabel) {
+          data.status.indicator = indicatorLabel;
+          data.configuration.indicator = indicatorLabel;
+        }
       }
 
       const asset =
@@ -139,6 +155,8 @@ export const aiBotService = {
       durationSeconds?: number;
       profitTarget?: number;
       lossLimit?: number;
+      stakeMode?: BrandedStrategyId;
+      strategyId?: string;
     },
   ): Promise<void> {
     const amount = config?.amount ?? 25;
@@ -146,11 +164,12 @@ export const aiBotService = {
     const pairs = config?.pairs?.length ? config.pairs : ['EURUSD_otc'];
     const profitTarget = config?.profitTarget ?? 50;
     const lossLimit = config?.lossLimit ?? 30;
+    const stakeMode = config?.stakeMode ?? 'red-signal-pro';
+    const strategyId = config?.strategyId ?? 'rsi';
+    const preferences = { strategyId, stakeMode };
 
     if (control === 'start') {
-      await botApi.start(pairs, amount, durationSeconds, profitTarget, lossLimit, {
-        strategyId: 'rsi',
-      });
+      await botApi.start(pairs, amount, durationSeconds, profitTarget, lossLimit, preferences);
       return;
     }
     if (control === 'pause') {
@@ -169,7 +188,7 @@ export const aiBotService = {
         durationSeconds,
         dailyProfitTarget: profitTarget,
         dailyLossLimit: lossLimit,
-        strategyId: 'rsi',
+        ...preferences,
       });
     }
   },
@@ -185,5 +204,9 @@ export const aiBotService = {
   async listPairs() {
     const assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
     return assets?.assets ?? [];
+  },
+
+  async fetchBotRuntime() {
+    return botApi.status().catch(() => null);
   },
 };
