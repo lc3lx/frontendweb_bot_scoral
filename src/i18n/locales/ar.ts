@@ -725,6 +725,10 @@ export const ar: Messages = {
 
       fresh: 'حديث · {seconds}ث',
 
+      profitTargetReached: 'تم بلوغ هدف الربح اليومي — توقف البوت تلقائياً.',
+
+      lossLimitReached: 'تم بلوغ حد الخسارة اليومي — توقف البوت تلقائياً.',
+
     },
 
     controls: {
@@ -738,6 +742,10 @@ export const ar: Messages = {
       stop: 'إيقاف',
 
       apply: 'تطبيق',
+
+      failed: 'تعذّر تحديث تحكم البوت. حاول مرة أخرى.',
+
+      selectPair: 'اختر زوج تداول واحد على الأقل قبل تشغيل البوت.',
 
     },
 
@@ -789,11 +797,11 @@ export const ar: Messages = {
 
       profitTitle: 'هدف الربح اليومي',
 
-      profitHint: 'إيقاف البوت عند الوصول',
+      profitHint: 'يتوقف البوت عند الوصول (يمكن إلغاؤه من إعدادات البوت)',
 
       lossTitle: 'حد الخسارة اليومي',
 
-      lossHint: 'حماية الإيقاف التلقائي',
+      lossHint: 'يتوقف البوت عند الوصول (يمكن إلغاؤه من إعدادات البوت)',
 
     },
 
@@ -841,7 +849,13 @@ export const ar: Messages = {
 
         titleEmphasis: 'شبكة استراتيجية',
 
-        subtitle: 'حدد شبكة المؤشرات التي يتبعها البوت.',
+        subtitle: 'اختر الاستراتيجية من كتالوج الباك المباشر.',
+
+        loading: 'جاري تحميل الاستراتيجيات…',
+
+        empty: 'لا توجد استراتيجيات متاحة الآن.',
+
+        comingSoon: 'قريباً',
 
         rsi: 'RSI',
 
@@ -851,6 +865,14 @@ export const ar: Messages = {
 
         stochastic: 'Stochastic',
 
+        smart: 'Smart',
+
+        ema: 'EMA + RSI',
+
+        alt5: 'Alternating Candles',
+
+        ai: 'AI',
+
         rsiDesc: 'انعكاسات زخم من مناطق التشبع.',
 
         bollingerDesc: 'اختراقات تقلب حول النطاقات.',
@@ -859,6 +881,14 @@ export const ar: Messages = {
 
         stochasticDesc: 'تذبذبات قصيرة من قيم Stochastic.',
 
+        smartDesc: 'يختار تلقائياً أفضل استراتيجية حسب حالة السوق.',
+
+        emaDesc: 'فلتر اتجاه EMA 9/21 مع تأكيد RSI للسكالب.',
+
+        alt5Desc: 'دخول بنمط الشموع المتناوبة على فريم 5 دقائق.',
+
+        aiDesc: 'طبقة استراتيجية عصبية — قريباً.',
+
         rsiBestFor: 'الأفضل للأسواق المتذبذبة',
 
         bollingerBestFor: 'الأفضل للاختراقات',
@@ -866,6 +896,14 @@ export const ar: Messages = {
         macdBestFor: 'الأفضل للجلسات الاتجاهية',
 
         stochasticBestFor: 'الأفضل للسكالب السريع',
+
+        smartBestFor: 'الأفضل عند تغيّر السوق كثيراً',
+
+        emaBestFor: 'الأفضل لسكالب الاتجاه القصير',
+
+        alt5BestFor: 'الأفضل لجلسات 5 دقائق المنتظمة',
+
+        aiBestFor: 'قريباً',
 
       },
 
@@ -995,7 +1033,7 @@ export const ar: Messages = {
 
             title: 'جني أرباح تلقائي',
 
-            description: 'إغلاق الصفقات تلقائياً عند الوصول لهدف الربح.',
+            description: 'إيقاف البوت عند بلوغ هدف الربح اليومي. عطّله ليستمر التداول حتى توقفه أنت.',
 
           },
 
@@ -1003,7 +1041,7 @@ export const ar: Messages = {
 
             title: 'وقف خسارة تلقائي',
 
-            description: 'إغلاق الصفقات تلقائياً عند بلوغ حد الخسارة.',
+            description: 'إيقاف البوت عند بلوغ حد الخسارة اليومي. عطّله ليستمر التداول حتى توقفه أنت.',
 
           },
 

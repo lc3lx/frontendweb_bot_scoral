@@ -184,6 +184,13 @@
   margin-top: 6px;
 }
 
+.stopReason {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: #ffb4b8;
+}
+
 .stateChip,
 .freshChip {
   display: inline-flex;
@@ -565,6 +572,18 @@
 
 .controlsTitle {
   position: relative;
+  text-align: center;
+}
+
+.controlError {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(221, 9, 18, 0.35);
+  border-radius: 10px;
+  background: rgba(221, 9, 18, 0.08);
+  color: #ffb4b8;
+  font-size: 12px;
+  line-height: 18px;
   text-align: center;
 }
 

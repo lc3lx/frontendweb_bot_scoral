@@ -4,7 +4,8 @@ export type RiskLevel = 'low' | 'medium' | 'high' | 'highPlus';
 
 export type MarketTypeId = 'global-indicators' | 'binolla-market';
 
-export type StrategyGridId = 'rsi' | 'bollinger' | 'macd' | 'stochastic';
+/** Backend strategy catalog id (e.g. rsi, ema, smart). */
+export type StrategyGridId = string;
 
 export type BrandedStrategyId =
   | 'alpha-momentum'
@@ -21,13 +22,25 @@ export type MarketTypeOption = {
   descriptionKey: 'globalIndicatorsDesc' | 'binollaMarketDesc';
 };
 
+export type StrategyPresentationKey =
+  | 'rsi'
+  | 'ema'
+  | 'smart'
+  | 'alt5'
+  | 'macd'
+  | 'ai'
+  | 'bollinger'
+  | 'stochastic';
+
 export type StrategyGridOption = {
   id: StrategyGridId;
+  name: string;
+  status: string;
+  enabled: boolean;
   preview: string;
-  titleKey: 'rsi' | 'bollinger' | 'macd' | 'stochastic';
-  descriptionKey: 'rsiDesc' | 'bollingerDesc' | 'macdDesc' | 'stochasticDesc';
-  bestForKey: 'rsiBestFor' | 'bollingerBestFor' | 'macdBestFor' | 'stochasticBestFor';
   risk: RiskLevel;
+  descriptionKey: StrategyPresentationKey;
+  bestForKey: StrategyPresentationKey;
 };
 
 export type TradingPairOption = {
@@ -99,40 +112,66 @@ export const MARKET_TYPE_OPTIONS: MarketTypeOption[] = [
   },
 ];
 
-export const STRATEGY_GRID_OPTIONS: StrategyGridOption[] = [
-  {
-    id: 'bollinger',
+type StrategyPresentation = {
+  preview: string;
+  risk: RiskLevel;
+  descriptionKey: StrategyPresentationKey;
+  bestForKey: StrategyPresentationKey;
+};
+
+/** Visual metadata for backend strategy ids — design stays the same. */
+export const STRATEGY_PRESENTATION: Record<string, StrategyPresentation> = {
+  smart: {
     preview: aiBotAssets.previewBollinger,
-    titleKey: 'bollinger',
-    descriptionKey: 'bollingerDesc',
-    bestForKey: 'bollingerBestFor',
     risk: 'medium',
+    descriptionKey: 'smart',
+    bestForKey: 'smart',
   },
-  {
-    id: 'rsi',
+  rsi: {
     preview: aiBotAssets.previewRsi,
-    titleKey: 'rsi',
-    descriptionKey: 'rsiDesc',
-    bestForKey: 'rsiBestFor',
     risk: 'low',
+    descriptionKey: 'rsi',
+    bestForKey: 'rsi',
   },
-  {
-    id: 'macd',
-    preview: aiBotAssets.previewMacd,
-    titleKey: 'macd',
-    descriptionKey: 'macdDesc',
-    bestForKey: 'macdBestFor',
-    risk: 'medium',
-  },
-  {
-    id: 'stochastic',
+  ema: {
     preview: aiBotAssets.previewStochastic,
-    titleKey: 'stochastic',
-    descriptionKey: 'stochasticDesc',
-    bestForKey: 'stochasticBestFor',
     risk: 'medium',
+    descriptionKey: 'ema',
+    bestForKey: 'ema',
   },
-];
+  alt5: {
+    preview: aiBotAssets.previewBollinger,
+    risk: 'medium',
+    descriptionKey: 'alt5',
+    bestForKey: 'alt5',
+  },
+  macd: {
+    preview: aiBotAssets.previewMacd,
+    risk: 'medium',
+    descriptionKey: 'macd',
+    bestForKey: 'macd',
+  },
+  ai: {
+    preview: aiBotAssets.previewStochastic,
+    risk: 'high',
+    descriptionKey: 'ai',
+    bestForKey: 'ai',
+  },
+};
+
+const DEFAULT_STRATEGY_PRESENTATION: StrategyPresentation = {
+  preview: aiBotAssets.previewRsi,
+  risk: 'medium',
+  descriptionKey: 'rsi',
+  bestForKey: 'rsi',
+};
+
+export function getStrategyPresentation(id: string): StrategyPresentation {
+  return STRATEGY_PRESENTATION[id.trim().toLowerCase()] ?? DEFAULT_STRATEGY_PRESENTATION;
+}
+
+/** @deprecated Prefer listStrategies() from aiBotService — kept as empty fallback. */
+export const STRATEGY_GRID_OPTIONS: StrategyGridOption[] = [];
 
 export const TRADING_PAIR_OPTIONS: TradingPairOption[] = [
   {
@@ -293,7 +332,7 @@ export function getDefaultMarketTypeId(): MarketTypeId {
 }
 
 export function getDefaultStrategyGridId(): StrategyGridId {
-  return 'bollinger';
+  return 'rsi';
 }
 
 export function getDefaultBrandedStrategyId(): BrandedStrategyId {

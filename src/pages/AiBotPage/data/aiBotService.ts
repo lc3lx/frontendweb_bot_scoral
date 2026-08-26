@@ -32,9 +32,36 @@ import {
 } from './aiBot.mock';
 import {
   BRANDED_STRATEGY_OPTIONS,
+  getStrategyPresentation,
   isBrandedStrategyId,
   type BrandedStrategyId,
+  type StrategyGridOption,
 } from '../modals/aiBotModals.data';
+import type { BotSettingsState } from '../modals/BotSettingsModal';
+import type { StrategyDto } from '@shared/api/types';
+
+const RUNNABLE_STRATEGY_IDS = new Set(['rsi', 'ema', 'smart', 'alt5']);
+
+function resolveStrategyId(strategyId?: string | null): string {
+  const id = strategyId?.trim().toLowerCase();
+  if (id && RUNNABLE_STRATEGY_IDS.has(id)) return id;
+  return 'rsi';
+}
+
+function mapRiskLevel(level: BotSettingsState['riskLevel']): string {
+  return `risk-${level}`;
+}
+
+function toBotPreferences(settings: BotSettingsState, strategyId?: string) {
+  return {
+    autoStopAtProfit: settings.toggles['auto-profit'],
+    autoStopAtLoss: settings.toggles['auto-loss'],
+    signalConfirmationEnabled: settings.toggles['signal-confirm'],
+    notificationsEnabled: settings.toggles.notifications,
+    riskLevel: mapRiskLevel(settings.riskLevel),
+    strategyId: resolveStrategyId(strategyId),
+  };
+}
 
 function formatSignal(signal: string): string {
   const s = signal.toLowerCase();
@@ -111,6 +138,7 @@ export const aiBotService = {
         data.configuration.strategy = strategyName;
         data.targets.profitTarget = `+$${bot.dailyProfitTarget}`;
         data.targets.lossLimit = `-$${bot.dailyLossLimit}`;
+        data.stopReason = bot.stopReason ?? null;
         data.status.strategy = strategyName;
         const indicatorLabel = mapStakeModeLabel(bot.stakeMode);
         if (indicatorLabel) {
@@ -166,6 +194,7 @@ export const aiBotService = {
       lossLimit?: number;
       stakeMode?: BrandedStrategyId;
       strategyId?: string;
+      settings?: BotSettingsState;
     },
   ): Promise<void> {
     const amount = config?.amount ?? 25;
@@ -174,10 +203,27 @@ export const aiBotService = {
     const profitTarget = config?.profitTarget ?? 50;
     const lossLimit = config?.lossLimit ?? 30;
     const stakeMode = config?.stakeMode ?? 'red-signal-pro';
-    const strategyId = config?.strategyId ?? 'rsi';
-    const preferences = { strategyId, stakeMode };
+    const preferences = {
+      ...toBotPreferences(config?.settings ?? {
+        toggles: {
+          'auto-profit': true,
+          'auto-loss': true,
+          'signal-confirm': false,
+          notifications: true,
+        },
+        riskLevel: 'medium',
+        tradeAmount: '$25',
+        duration: '1m',
+        profitTarget: '50',
+        lossLimit: '30',
+      }, config?.strategyId),
+      stakeMode,
+    };
 
     if (control === 'start') {
+      if (!config?.pairs?.length) {
+        throw new Error('Select at least one trading pair before starting the bot.');
+      }
       await botApi.start(pairs, amount, durationSeconds, profitTarget, lossLimit, preferences);
       return;
     }
@@ -190,9 +236,9 @@ export const aiBotService = {
       return;
     }
     if (control === 'apply') {
+      const hasPairs = Boolean(config?.pairs?.length);
       await botApi.apply({
-        asset: pairs[0],
-        assets: pairs,
+        ...(hasPairs ? { asset: pairs[0], assets: pairs } : {}),
         amount,
         durationSeconds,
         dailyProfitTarget: profitTarget,
@@ -237,5 +283,26 @@ export const aiBotService = {
 
   async fetchBotRuntime() {
     return botApi.status().catch(() => null);
+  },
+
+  async listStrategies(): Promise<StrategyGridOption[]> {
+    const response = await strategiesApi.list().catch(() => null);
+    const items: StrategyDto[] = response?.strategies ?? [];
+    return items.map((item) => {
+      const id = item.id.trim().toLowerCase();
+      const presentation = getStrategyPresentation(id);
+      const status = (item.status ?? '').toLowerCase();
+      const enabled = Boolean(item.enabled) && status !== 'comingsoon';
+      return {
+        id,
+        name: item.name || id.toUpperCase(),
+        status: item.status,
+        enabled,
+        preview: presentation.preview,
+        risk: presentation.risk,
+        descriptionKey: presentation.descriptionKey,
+        bestForKey: presentation.bestForKey,
+      };
+    });
   },
 };

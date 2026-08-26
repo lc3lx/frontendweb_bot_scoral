@@ -13,6 +13,7 @@ import {
 } from './data/aiBot.mock';
 import { aiBotService } from './data/aiBotService';
 import { isBrandedStrategyId } from './modals/aiBotModals.data';
+import { ApiClientError } from '@shared/api';
 import styles from './AiBotPage.module.css';
 
 type AiBotContentProps = {
@@ -46,7 +47,7 @@ function formatAmountDisplay(value: string): string {
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
-  const { configuration, openModal, syncBotSettingsFromPage, setBrandedStrategy, setTradingPairIds } =
+  const { configuration, botSettings, openModal, syncBotSettingsFromPage, setBrandedStrategy, setTradingPairIds, syncFromBotRuntime } =
     useAiBotModals();
 
   const [activeControl, setActiveControl] = useState<EngineControlId>('stop');
@@ -54,6 +55,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const [profitTarget, setProfitTarget] = useState('50');
   const [lossLimit, setLossLimit] = useState('30');
   const [busy, setBusy] = useState(false);
+  const [controlError, setControlError] = useState<string | null>(null);
   const targetsSeededRef = useRef(false);
   const pairsSeededRef = useRef(false);
 
@@ -81,12 +83,13 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       } else if (bot.asset) {
         setTradingPairIds([bot.asset]);
       }
+      syncFromBotRuntime(bot);
       pairsSeededRef.current = true;
     }
     if (next.status.botState === 'running') setActiveControl('start');
     else if (next.status.botState === 'paused') setActiveControl('pause');
     else setActiveControl('stop');
-  }, [configuration.tradingPairIds, setBrandedStrategy, setTradingPairIds]);
+  }, [configuration.tradingPairIds, setBrandedStrategy, setTradingPairIds, syncFromBotRuntime]);
 
   useEffect(() => {
     void load();
@@ -100,12 +103,17 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   }, [load]);
 
   useEffect(() => {
-    syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION);
-  }, [syncBotSettingsFromPage, tradeAmount]);
+    syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION, profitTarget, lossLimit);
+  }, [syncBotSettingsFromPage, tradeAmount, profitTarget, lossLimit]);
 
   async function handleControl(controlId: EngineControlId) {
     if (busy) return;
+    if (controlId === 'start' && configuration.tradingPairIds.length === 0) {
+      setControlError(t.aiBot.controls.selectPair);
+      return;
+    }
     setBusy(true);
+    setControlError(null);
     setActiveControl(controlId);
     try {
       await aiBotService.applyControl(controlId, {
@@ -117,8 +125,19 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         profitTarget: aiBotService.parseTargetAbs(profitTarget, 50),
         lossLimit: aiBotService.parseTargetAbs(lossLimit, 30),
         stakeMode: configuration.brandedStrategyId,
+        strategyId: configuration.strategyGridId,
+        settings: botSettings,
       });
       pairsSeededRef.current = false;
+      await load();
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setControlError(err.message);
+      } else if (err instanceof Error) {
+        setControlError(err.message);
+      } else {
+        setControlError(t.aiBot.controls.failed);
+      }
       await load();
     } finally {
       setBusy(false);
@@ -197,6 +216,13 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         ? t.aiBot.status.paused
         : t.aiBot.status.stopped;
 
+  const stopReasonLabel =
+    data.stopReason === 'DAILY_PROFIT_TARGET_REACHED'
+      ? t.aiBot.status.profitTargetReached
+      : data.stopReason === 'DAILY_LOSS_LIMIT_REACHED'
+        ? t.aiBot.status.lossLimitReached
+        : null;
+
   const stateChipClass =
     data.status.botState === 'running'
       ? styles.stateChipRunning
@@ -260,6 +286,9 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                         {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
                       </span>
                     </div>
+                    {stopReasonLabel && data.status.botState === 'stopped' ? (
+                      <p className={styles.stopReason}>{stopReasonLabel}</p>
+                    ) : null}
                   </div>
                 </div>
 
@@ -459,6 +488,11 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                 <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
                   {t.aiBot.controls.title}
                 </p>
+                {controlError ? (
+                  <p className={styles.controlError} role="alert">
+                    {controlError}
+                  </p>
+                ) : null}
                 <div className={styles.controlsGrid}>
                   {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
                     <button

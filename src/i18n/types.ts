@@ -766,6 +766,10 @@ export type Messages = {
 
       fresh: string;
 
+      profitTargetReached: string;
+
+      lossLimitReached: string;
+
     };
 
     controls: {
@@ -779,6 +783,10 @@ export type Messages = {
       stop: string;
 
       apply: string;
+
+      failed: string;
+
+      selectPair: string;
 
     };
 
@@ -884,6 +892,12 @@ export type Messages = {
 
         subtitle: string;
 
+        loading: string;
+
+        empty: string;
+
+        comingSoon: string;
+
         rsi: string;
 
         bollinger: string;
@@ -891,6 +905,14 @@ export type Messages = {
         macd: string;
 
         stochastic: string;
+
+        smart: string;
+
+        ema: string;
+
+        alt5: string;
+
+        ai: string;
 
         rsiDesc: string;
 
@@ -900,6 +922,14 @@ export type Messages = {
 
         stochasticDesc: string;
 
+        smartDesc: string;
+
+        emaDesc: string;
+
+        alt5Desc: string;
+
+        aiDesc: string;
+
         rsiBestFor: string;
 
         bollingerBestFor: string;
@@ -907,6 +937,14 @@ export type Messages = {
         macdBestFor: string;
 
         stochasticBestFor: string;
+
+        smartBestFor: string;
+
+        emaBestFor: string;
+
+        alt5BestFor: string;
+
+        aiBestFor: string;
 
       };
 

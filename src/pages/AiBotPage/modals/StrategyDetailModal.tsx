@@ -40,8 +40,16 @@ export function StrategyDetailModal({
           <img className={styles.backIcon} src={aiBotAssets.iconBack} alt="" aria-hidden="true" />
         </button>
       }
-      title={t.aiBot.modals.brandedStrategy[content.titleKey]}
-      subtitle={t.aiBot.modals.brandedStrategy[content.subtitleKey]}
+      title={
+        <span className={styles.modalTitleWhite}>
+          {t.aiBot.modals.brandedStrategy[content.titleKey]}
+        </span>
+      }
+      subtitle={
+        <span className={styles.modalSubtitleWhite}>
+          {t.aiBot.modals.brandedStrategy[content.subtitleKey]}
+        </span>
+      }
     >
       <div className={styles.detailLayout}>
         <div className={styles.chartPlaceholder}>

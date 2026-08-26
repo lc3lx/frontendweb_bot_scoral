@@ -14,6 +14,8 @@ export type BotSettingsState = {
   riskLevel: BotRiskLevelId;
   tradeAmount: string;
   duration: string;
+  profitTarget: string;
+  lossLimit: string;
 };
 
 type BotSettingsModalProps = {
@@ -21,7 +23,7 @@ type BotSettingsModalProps = {
   settings: BotSettingsState;
   onClose: () => void;
   onChange: (settings: BotSettingsState) => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
 };
 
 export function BotSettingsModal({
@@ -64,8 +66,7 @@ export function BotSettingsModal({
             type="button"
             className={styles.footerPrimary}
             onClick={() => {
-              onSave();
-              onClose();
+              void onSave();
             }}
           >
             {t.aiBot.modals.botSettings.save}

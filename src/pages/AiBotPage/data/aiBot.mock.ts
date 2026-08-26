@@ -35,6 +35,7 @@ export type AiBotMockData = {
     profitTarget: string;
     lossLimit: string;
   };
+  stopReason: string | null;
 };
 
 export const AI_BOT_MOCK: AiBotMockData = {
@@ -70,6 +71,7 @@ export const AI_BOT_MOCK: AiBotMockData = {
     profitTarget: '+$50',
     lossLimit: '-$30',
   },
+  stopReason: null,
 };
 
 export const TRADE_AMOUNTS = ['$10', '$25', '$50', '$100'] as const;

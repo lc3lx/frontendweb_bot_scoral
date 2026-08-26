@@ -30,14 +30,16 @@ export function TechnicalIndicatorModal({
       size="wide"
       figmaNode="737:7411"
       title={
-        <>
+        <span className={styles.modalTitleWhite}>
           {t.aiBot.modals.technicalIndicator.titlePrefix}
-          <span className={styles.titleRegular}>
-            {t.aiBot.modals.technicalIndicator.titleEmphasis}
-          </span>
-        </>
+          {t.aiBot.modals.technicalIndicator.titleEmphasis}
+        </span>
       }
-      subtitle={t.aiBot.modals.technicalIndicator.subtitle}
+      subtitle={
+        <span className={styles.modalSubtitleWhite}>
+          {t.aiBot.modals.technicalIndicator.subtitle}
+        </span>
+      }
     >
       <div className={styles.brandedGrid}>
         {BRANDED_STRATEGY_OPTIONS.map((option) => {

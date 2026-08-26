@@ -10,7 +10,7 @@ type AppModalProps = {
   isOpen: boolean;
   onClose: () => void;
   title: ReactNode;
-  subtitle?: string;
+  subtitle?: ReactNode;
   size?: AppModalSize;
   figmaNode?: string;
   footer?: ReactNode;

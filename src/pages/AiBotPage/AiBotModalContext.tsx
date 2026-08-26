@@ -1,22 +1,33 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import { useI18n } from '@i18n';
 
 import {
   BRANDED_STRATEGY_OPTIONS,
   MARKET_TYPE_OPTIONS,
-  STRATEGY_GRID_OPTIONS,
   getDefaultBrandedStrategyId,
   getDefaultMarketTypeId,
   getDefaultStrategyGridId,
   getDefaultTradingPairIds,
+  isBrandedStrategyId,
   type BotRiskLevelId,
   type BotSettingsToggleId,
   type BrandedStrategyId,
   type MarketTypeId,
   type StrategyGridId,
+  type StrategyGridOption,
 } from './modals/aiBotModals.data';
 import { formatSelectedPairsLabel } from '@shared/market/pairDisplay';
+import type { BotRuntimeResponse } from '@shared/api/types';
+import { aiBotService } from './data/aiBotService';
 import type { BotSettingsState } from './modals/BotSettingsModal';
 
 export type AiBotModalId =
@@ -43,6 +54,8 @@ type AiBotModalContextValue = {
   detailStrategyId: BrandedStrategyId | null;
   configuration: AiBotConfiguration;
   botSettings: BotSettingsState;
+  strategies: StrategyGridOption[];
+  strategiesLoading: boolean;
   openModal: (modal: AiBotModalId) => void;
   closeModal: () => void;
   openStrategyDetail: (strategyId: BrandedStrategyId) => void;
@@ -53,10 +66,23 @@ type AiBotModalContextValue = {
   setStrategyGrid: (id: StrategyGridId) => void;
   setBrandedStrategy: (id: BrandedStrategyId) => void;
   setBotSettings: (settings: BotSettingsState) => void;
-  syncBotSettingsFromPage: (tradeAmount: string, duration: string) => void;
+  syncBotSettingsFromPage: (
+    tradeAmount: string,
+    duration: string,
+    profitTarget: string,
+    lossLimit: string,
+  ) => void;
+  syncFromBotRuntime: (bot: BotRuntimeResponse) => void;
+  persistBotSettings: () => Promise<void>;
 };
 
 const AiBotModalContext = createContext<AiBotModalContextValue | null>(null);
+
+function parseRiskLevel(value: string | null | undefined): BotSettingsState['riskLevel'] {
+  if (value === 'risk-low') return 'low';
+  if (value === 'risk-high') return 'high';
+  return 'medium';
+}
 
 function buildDefaultBotSettings(): BotSettingsState {
   return {
@@ -69,6 +95,8 @@ function buildDefaultBotSettings(): BotSettingsState {
     riskLevel: 'medium',
     tradeAmount: '$25',
     duration: '1m',
+    profitTarget: '50',
+    lossLimit: '30',
   };
 }
 
@@ -87,10 +115,34 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     getDefaultBrandedStrategyId(),
   );
   const [botSettings, setBotSettingsState] = useState<BotSettingsState>(buildDefaultBotSettings());
+  const [strategies, setStrategies] = useState<StrategyGridOption[]>([]);
+  const [strategiesLoading, setStrategiesLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setStrategiesLoading(true);
+    void aiBotService
+      .listStrategies()
+      .then((items) => {
+        if (!active) return;
+        setStrategies(items);
+        setStrategyGridId((current) => {
+          if (items.some((item) => item.id === current && item.enabled)) return current;
+          const firstEnabled = items.find((item) => item.enabled);
+          return firstEnabled?.id ?? getDefaultStrategyGridId();
+        });
+      })
+      .finally(() => {
+        if (active) setStrategiesLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const configuration = useMemo<AiBotConfiguration>(() => {
     const marketOption = MARKET_TYPE_OPTIONS.find((item) => item.id === marketTypeId);
-    const strategyOption = STRATEGY_GRID_OPTIONS.find((item) => item.id === strategyGridId);
+    const strategyOption = strategies.find((item) => item.id === strategyGridId);
     const brandedOption = BRANDED_STRATEGY_OPTIONS.find((item) => item.id === brandedStrategyId);
     return {
       marketTypeId,
@@ -99,12 +151,12 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       brandedStrategyId,
       marketType: marketOption ? t.aiBot.modals.marketType[marketOption.titleKey] : marketTypeId,
       tradingPair: formatSelectedPairsLabel(tradingPairIds),
-      strategy: strategyOption ? t.aiBot.modals.strategyGrid[strategyOption.titleKey] : strategyGridId,
+      strategy: strategyOption?.name ?? strategyGridId,
       indicator: brandedOption
         ? t.aiBot.modals.brandedStrategy[brandedOption.titleKey]
         : brandedStrategyId,
     };
-  }, [brandedStrategyId, marketTypeId, strategyGridId, t.aiBot.modals, tradingPairIds]);
+  }, [brandedStrategyId, marketTypeId, strategies, strategyGridId, t.aiBot.modals, tradingPairIds]);
 
   const openModal = useCallback((modal: AiBotModalId) => {
     setActiveModal(modal);
@@ -155,13 +207,54 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     setBotSettingsState(settings);
   }, []);
 
-  const syncBotSettingsFromPage = useCallback((tradeAmount: string, duration: string) => {
+  const syncBotSettingsFromPage = useCallback(
+    (tradeAmount: string, duration: string, profitTarget: string, lossLimit: string) => {
+      setBotSettingsState((current) => ({
+        ...current,
+        tradeAmount,
+        duration,
+        profitTarget,
+        lossLimit,
+      }));
+    },
+    [],
+  );
+
+  const syncFromBotRuntime = useCallback((bot: BotRuntimeResponse) => {
     setBotSettingsState((current) => ({
       ...current,
-      tradeAmount,
-      duration,
+      toggles: {
+        'auto-profit': bot.autoStopAtProfit,
+        'auto-loss': bot.autoStopAtLoss,
+        'signal-confirm': bot.signalConfirmationEnabled,
+        notifications: bot.notificationsEnabled,
+      },
+      riskLevel: parseRiskLevel(bot.riskLevel),
+      profitTarget: String(bot.dailyProfitTarget),
+      lossLimit: String(bot.dailyLossLimit),
+      tradeAmount: bot.amount > 0 ? `$${bot.amount}` : current.tradeAmount,
     }));
+    if (isBrandedStrategyId(bot.stakeMode)) {
+      setBrandedStrategyId(bot.stakeMode);
+    }
+    const strategy = bot.strategyId?.trim().toLowerCase();
+    if (strategy) {
+      setStrategyGridId(strategy);
+    }
   }, []);
+
+  const persistBotSettings = useCallback(async () => {
+    await aiBotService.applyControl('apply', {
+      pairs: tradingPairIds.length ? tradingPairIds : undefined,
+      amount: aiBotService.parseAmount(botSettings.tradeAmount),
+      durationSeconds: 60,
+      profitTarget: aiBotService.parseTargetAbs(botSettings.profitTarget, 50),
+      lossLimit: aiBotService.parseTargetAbs(botSettings.lossLimit, 30),
+      stakeMode: brandedStrategyId,
+      strategyId: strategyGridId,
+      settings: botSettings,
+    });
+  }, [botSettings, brandedStrategyId, strategyGridId, tradingPairIds]);
 
   const value = useMemo(
     () => ({
@@ -169,6 +262,8 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       detailStrategyId,
       configuration,
       botSettings,
+      strategies,
+      strategiesLoading,
       openModal,
       closeModal,
       openStrategyDetail,
@@ -180,6 +275,8 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       setBrandedStrategy,
       setBotSettings,
       syncBotSettingsFromPage,
+      syncFromBotRuntime,
+      persistBotSettings,
     }),
     [
       activeModal,
@@ -190,13 +287,17 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       detailStrategyId,
       openModal,
       openStrategyDetail,
+      persistBotSettings,
       setBotSettings,
       setBrandedStrategy,
       setMarketType,
       setStrategyGrid,
       setTradingPairIds,
+      strategies,
+      strategiesLoading,
       toggleTradingPair,
       syncBotSettingsFromPage,
+      syncFromBotRuntime,
     ],
   );
 

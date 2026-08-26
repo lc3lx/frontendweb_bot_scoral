@@ -728,6 +728,10 @@ export const en: Messages = {
 
       fresh: 'Fresh · {seconds}s',
 
+      profitTargetReached: 'Daily profit target reached — bot auto-stopped.',
+
+      lossLimitReached: 'Daily loss limit reached — bot auto-stopped.',
+
     },
 
     controls: {
@@ -741,6 +745,10 @@ export const en: Messages = {
       stop: 'Stop',
 
       apply: 'Apply',
+
+      failed: 'Could not update bot controls. Please try again.',
+
+      selectPair: 'Select at least one trading pair before starting the bot.',
 
     },
 
@@ -792,11 +800,11 @@ export const en: Messages = {
 
       profitTitle: 'Daily Profit Target',
 
-      profitHint: 'Stop bot when reached',
+      profitHint: 'Bot stops when reached (disable in Bot Settings)',
 
       lossTitle: 'Daily Loss Limit',
 
-      lossHint: 'Auto-stop protection',
+      lossHint: 'Bot stops when reached (disable in Bot Settings)',
 
     },
 
@@ -844,7 +852,13 @@ export const en: Messages = {
 
         titleEmphasis: 'Strategy Grid',
 
-        subtitle: 'Pick the indicator grid the bot should follow.',
+        subtitle: 'Pick the strategy the bot should run from the live catalog.',
+
+        loading: 'Loading strategies…',
+
+        empty: 'No strategies available right now.',
+
+        comingSoon: 'Coming soon',
 
         rsi: 'RSI',
 
@@ -854,6 +868,14 @@ export const en: Messages = {
 
         stochastic: 'Stochastic',
 
+        smart: 'Smart',
+
+        ema: 'EMA + RSI',
+
+        alt5: 'Alternating Candles',
+
+        ai: 'AI',
+
         rsiDesc: 'Momentum reversals from overbought and oversold zones.',
 
         bollingerDesc: 'Volatility breakouts around moving average bands.',
@@ -862,6 +884,14 @@ export const en: Messages = {
 
         stochasticDesc: 'Short-term swings from stochastic extremes.',
 
+        smartDesc: 'Auto-routes the best strategy by current market regime.',
+
+        emaDesc: 'EMA 9/21 trend filter with RSI confirmation for scalps.',
+
+        alt5Desc: 'Alternating candle pattern entries on the 5-minute chart.',
+
+        aiDesc: 'Neural strategy layer — launching soon.',
+
         rsiBestFor: 'Best for ranging markets',
 
         bollingerBestFor: 'Best for volatile breakouts',
@@ -869,6 +899,14 @@ export const en: Messages = {
         macdBestFor: 'Best for trending sessions',
 
         stochasticBestFor: 'Best for quick scalps',
+
+        smartBestFor: 'Best when markets change often',
+
+        emaBestFor: 'Best for short trend scalps',
+
+        alt5BestFor: 'Best for patterned 5m sessions',
+
+        aiBestFor: 'Coming soon',
 
       },
 
@@ -998,7 +1036,7 @@ export const en: Messages = {
 
             title: 'Auto take profit',
 
-            description: 'Close trades automatically when profit target is reached.',
+            description: 'Stop the bot when daily profit target is reached. Turn off to keep trading until you stop.',
 
           },
 
@@ -1006,7 +1044,7 @@ export const en: Messages = {
 
             title: 'Auto stop loss',
 
-            description: 'Close trades automatically when loss limit is hit.',
+            description: 'Stop the bot when daily loss limit is reached. Turn off to keep trading until you stop.',
 
           },
 

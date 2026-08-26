@@ -12,6 +12,8 @@ export function AiBotModalHost() {
     detailStrategyId,
     configuration,
     botSettings,
+    strategies,
+    strategiesLoading,
     closeModal,
     closeStrategyDetail,
     openStrategyDetail,
@@ -21,6 +23,7 @@ export function AiBotModalHost() {
     setStrategyGrid,
     setBrandedStrategy,
     setBotSettings,
+    persistBotSettings,
   } = useAiBotModals();
 
   return (
@@ -35,6 +38,8 @@ export function AiBotModalHost() {
       <StrategyGridModal
         isOpen={activeModal === 'strategyGrid'}
         selectedId={configuration.strategyGridId}
+        strategies={strategies}
+        loading={strategiesLoading}
         onClose={closeModal}
         onSelect={setStrategyGrid}
       />
@@ -73,7 +78,9 @@ export function AiBotModalHost() {
         settings={botSettings}
         onClose={closeModal}
         onChange={setBotSettings}
-        onSave={closeModal}
+        onSave={() => {
+          void persistBotSettings().finally(() => closeModal());
+        }}
       />
     </>
   );
