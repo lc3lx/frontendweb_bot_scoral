@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { aiBotAssets } from '@assets';
+import { aiBotAssets, dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { HomeTilt } from '@pages/DashboardPage/HomeTilt';
 
 import { useAiBotModals } from './AiBotModalContext';
 import {
@@ -19,6 +20,15 @@ type AiBotContentProps = {
 };
 
 const DEFAULT_DURATION = '1m';
+
+function AiBotBackdrop() {
+  return (
+    <div className={styles.backdrop} aria-hidden="true">
+      <img className={styles.bg} src={dashboardAssets.homeBg} alt="" />
+      <span className={styles.veil} />
+    </div>
+  );
+}
 
 function sanitizeAmountInput(raw: string): string {
   const cleaned = raw.replace(/[^\d.]/g, '');
@@ -118,7 +128,10 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   if (!data) {
     return (
       <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
-        <p>…</p>
+        <AiBotBackdrop />
+        <div className={styles.content}>
+          <p>…</p>
+        </div>
       </div>
     );
   }
@@ -214,237 +227,277 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
 
   return (
     <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
-      {/* Top: live signals | total balance */}
-      <div className={styles.topRow}>
-        <section className={styles.signalCard} aria-label={t.aiBot.status.aria}>
-          <div className={styles.statusHead}>
-            <div className={styles.botIconWrap}>
-              <img
-                className={styles.botIcon}
-                src={aiBotAssets.iconBotLarge}
-                alt=""
-                width={28}
-                height={28}
-                aria-hidden="true"
-              />
-            </div>
-            <div className={styles.statusCopy}>
-              <p className={styles.statusName}>{data.status.name}</p>
-              <div className={styles.statusMeta}>
-                <span className={`${styles.stateChip} ${stateChipClass}`}>
-                  <span className={styles.stateDot} aria-hidden="true" />
-                  {stateLabel}
-                </span>
-                <span className={styles.freshChip}>
-                  {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
-                </span>
-              </div>
-            </div>
-          </div>
+      <AiBotBackdrop />
 
-          <div className={styles.signalGrid}>
-            {signalRows.map((row) => (
-              <div key={row.label} className={styles.signalCell}>
-                <p className={styles.signalLabel}>{row.label}</p>
-                <p
-                  className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
-                    row.ltr ? ` ${styles.ltrValue}` : ''
-                  }`}
-                >
-                  {row.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.performanceCard} aria-label={t.aiBot.performance.title}>
-          <p className={styles.balanceLabel}>{t.aiBot.performance.totalBalance}</p>
-          <p className={styles.balanceValue}>{data.performance.totalBalance}</p>
-          <div className={styles.statsGrid}>
-            {performanceStats.map((stat) => (
-              <div key={stat.id} className={styles.statCell}>
-                <p className={styles.statLabel}>{stat.label}</p>
-                <p className={`${styles.statValue} ${statValueClass(stat.tone)}`}>{stat.value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      {/* Mid: trading configuration | trade amount */}
-      <div className={styles.midRow}>
-        <section aria-label={t.aiBot.configuration.title}>
-          <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite}`}>
-            {t.aiBot.configuration.title}
-          </p>
-          <div className={styles.configGrid}>
-            {configRows.map((row) => (
-              <button
-                key={row.id}
-                type="button"
-                className={styles.settingRow}
-                onClick={() => openModal(row.modal)}
+      <div className={styles.content}>
+        {/* Top: live signals | total balance */}
+        <div className={styles.topRow}>
+          <div className={styles.cardWrap}>
+            <HomeTilt maxTiltDeg={6} liftPx={12}>
+              <section
+                className={`${styles.homeCard} ${styles.signalCard}`}
+                aria-label={t.aiBot.status.aria}
               >
-                <span className={styles.settingIconWrap}>
-                  <img
-                    className={styles.settingIcon}
-                    src={row.icon}
-                    alt=""
-                    width={18}
-                    height={18}
-                    aria-hidden="true"
-                  />
-                </span>
-                <span className={styles.settingCopy}>
-                  <p className={styles.settingLabel}>{row.label}</p>
-                  <p className={styles.settingValue}>{row.value}</p>
-                </span>
-                <img
-                  className={styles.settingChevron}
-                  src={aiBotAssets.iconChevron}
-                  alt=""
-                  width={16}
-                  height={16}
-                  data-flip-rtl="true"
-                  aria-hidden="true"
-                />
-              </button>
-            ))}
-          </div>
-        </section>
+                <div className={styles.statusHead}>
+                  <div className={styles.botIconWrap}>
+                    <img
+                      className={styles.botIcon}
+                      src={aiBotAssets.iconBotLarge}
+                      alt=""
+                      width={28}
+                      height={28}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className={styles.statusCopy}>
+                    <p className={styles.statusName}>{data.status.name}</p>
+                    <div className={styles.statusMeta}>
+                      <span className={`${styles.stateChip} ${stateChipClass}`}>
+                        <span className={styles.stateDot} aria-hidden="true" />
+                        {stateLabel}
+                      </span>
+                      <span className={styles.freshChip}>
+                        {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-        <section className={styles.paramCard} aria-label={t.aiBot.parameters.tradeAmount}>
-          <div className={styles.paramHeader}>
-            <p className={styles.paramTitle}>{t.aiBot.parameters.tradeAmount}</p>
+                <div className={styles.signalGrid}>
+                  {signalRows.map((row) => (
+                    <div key={row.label} className={styles.signalCell}>
+                      <p className={styles.signalLabel}>{row.label}</p>
+                      <p
+                        className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
+                          row.ltr ? ` ${styles.ltrValue}` : ''
+                        }`}
+                      >
+                        {row.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </HomeTilt>
           </div>
-          <label className={styles.amountInputWrap}>
-            <span className={styles.amountCurrency}>$</span>
-            <input
-              className={styles.amountInput}
-              type="text"
-              inputMode="decimal"
-              value={amountNumeric}
-              onChange={(event) => setTradeAmount(formatAmountDisplay(event.target.value))}
-              aria-label={t.aiBot.parameters.tradeAmount}
-              placeholder="25"
-            />
-          </label>
-          <div className={styles.chipGrid4}>
-            {TRADE_AMOUNTS.map((amount) => (
-              <button
-                key={amount}
-                type="button"
-                className={`${styles.chipButton}${
-                  tradeAmount === amount ? ` ${styles.chipButtonActive}` : ''
-                }`}
-                onClick={() => setTradeAmount(amount)}
+
+          <div className={styles.cardWrap}>
+            <HomeTilt maxTiltDeg={5} liftPx={10}>
+              <section
+                className={`${styles.homeCard} ${styles.performanceCard}`}
+                aria-label={t.aiBot.performance.title}
               >
-                {amount}
-              </button>
-            ))}
+                <p className={styles.balanceLabel}>{t.aiBot.performance.totalBalance}</p>
+                <p className={styles.balanceValue}>{data.performance.totalBalance}</p>
+                <div className={styles.statsGrid}>
+                  {performanceStats.map((stat) => (
+                    <div key={stat.id} className={styles.statCell}>
+                      <p className={styles.statLabel}>{stat.label}</p>
+                      <p className={`${styles.statValue} ${statValueClass(stat.tone)}`}>{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </HomeTilt>
           </div>
-        </section>
-      </div>
-
-      {/* Left: daily targets (editable) | Right: engine controls alone */}
-      <div className={styles.opsRow}>
-        <div className={styles.targetsColumn}>
-          <article className={styles.targetCard}>
-            <div className={styles.targetHead}>
-              <img
-                className={styles.targetIcon}
-                src={aiBotAssets.iconTargetUp}
-                alt=""
-                width={16}
-                height={16}
-                aria-hidden="true"
-              />
-              <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
-            </div>
-            <label className={`${styles.targetInputWrap} ${styles.targetInputProfit}`}>
-              <span className={styles.targetSign}>+$</span>
-              <input
-                className={`${styles.targetInput} ${styles.targetInputProfit}`}
-                type="text"
-                inputMode="decimal"
-                value={profitTarget}
-                onChange={(event) => setProfitTarget(sanitizeAmountInput(event.target.value))}
-                aria-label={t.aiBot.targets.profitTitle}
-                placeholder="50"
-              />
-            </label>
-            <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
-          </article>
-
-          <article className={styles.targetCard}>
-            <div className={styles.targetHead}>
-              <img
-                className={styles.targetIcon}
-                src={aiBotAssets.iconTargetDown}
-                alt=""
-                width={16}
-                height={16}
-                aria-hidden="true"
-              />
-              <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
-            </div>
-            <label className={`${styles.targetInputWrap} ${styles.targetInputLoss}`}>
-              <span className={styles.targetSign}>−$</span>
-              <input
-                className={`${styles.targetInput} ${styles.targetInputLoss}`}
-                type="text"
-                inputMode="decimal"
-                value={lossLimit}
-                onChange={(event) => setLossLimit(sanitizeAmountInput(event.target.value))}
-                aria-label={t.aiBot.targets.lossTitle}
-                placeholder="30"
-              />
-            </label>
-            <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
-          </article>
         </div>
 
-        <section className={styles.controlsSection} aria-label={t.aiBot.controls.title}>
-          <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
-            {t.aiBot.controls.title}
-          </p>
-          <div className={styles.controlsGrid}>
-            {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
-              <button
-                key={controlId}
-                type="button"
-                className={`${styles.controlButton}${
-                  activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
-                }`}
-                disabled={busy}
-                onClick={() => void handleControl(controlId)}
+        {/* Mid: trading configuration | trade amount */}
+        <div className={styles.midRow}>
+          <section aria-label={t.aiBot.configuration.title}>
+            <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite}`}>
+              {t.aiBot.configuration.title}
+            </p>
+            <HomeTilt maxTiltDeg={5} liftPx={8}>
+              <div className={`${styles.homeCard} ${styles.configPanel}`}>
+                <div className={styles.configGrid}>
+                  {configRows.map((row) => (
+                    <button
+                      key={row.id}
+                      type="button"
+                      className={styles.settingRow}
+                      onClick={() => openModal(row.modal)}
+                    >
+                      <span className={styles.settingIconWrap}>
+                        <img
+                          className={styles.settingIcon}
+                          src={row.icon}
+                          alt=""
+                          width={18}
+                          height={18}
+                          aria-hidden="true"
+                        />
+                      </span>
+                      <span className={styles.settingCopy}>
+                        <p className={styles.settingLabel}>{row.label}</p>
+                        <p className={styles.settingValue}>{row.value}</p>
+                      </span>
+                      <img
+                        className={styles.settingChevron}
+                        src={aiBotAssets.iconChevron}
+                        alt=""
+                        width={16}
+                        height={16}
+                        data-flip-rtl="true"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </HomeTilt>
+          </section>
+
+          <div className={styles.cardWrap}>
+            <HomeTilt maxTiltDeg={5} liftPx={8}>
+              <section
+                className={`${styles.homeCard} ${styles.paramCard}`}
+                aria-label={t.aiBot.parameters.tradeAmount}
               >
-                <img
-                  className={styles.controlIcon}
-                  src={controlIcons[controlId]}
-                  alt=""
-                  width={22}
-                  height={22}
-                  aria-hidden="true"
-                />
-                {t.aiBot.controls[controlId]}
-              </button>
-            ))}
+                <div className={styles.paramHeader}>
+                  <p className={styles.paramTitle}>{t.aiBot.parameters.tradeAmount}</p>
+                </div>
+                <label className={styles.amountInputWrap}>
+                  <span className={styles.amountCurrency}>$</span>
+                  <input
+                    className={styles.amountInput}
+                    type="text"
+                    inputMode="decimal"
+                    value={amountNumeric}
+                    onChange={(event) => setTradeAmount(formatAmountDisplay(event.target.value))}
+                    aria-label={t.aiBot.parameters.tradeAmount}
+                    placeholder="25"
+                  />
+                </label>
+                <div className={styles.chipGrid4}>
+                  {TRADE_AMOUNTS.map((amount) => (
+                    <button
+                      key={amount}
+                      type="button"
+                      className={`${styles.chipButton}${
+                        tradeAmount === amount ? ` ${styles.chipButtonActive}` : ''
+                      }`}
+                      onClick={() => setTradeAmount(amount)}
+                    >
+                      {amount}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </HomeTilt>
           </div>
-        </section>
-      </div>
+        </div>
 
-      <div className={styles.actionsGrid}>
-        <button type="button" className={styles.ghostButton} disabled>
-          {t.aiBot.actions.showChart}
-        </button>
-        <button type="button" className={styles.ghostButton} onClick={() => openModal('botSettings')}>
-          {t.aiBot.actions.botSettings}
-        </button>
-      </div>
+        {/* Left: daily targets (editable) | Right: engine controls alone */}
+        <div className={styles.opsRow}>
+          <div className={styles.targetsColumn}>
+            <HomeTilt maxTiltDeg={4} liftPx={8}>
+              <article className={`${styles.homeCard} ${styles.targetCard}`}>
+                <div className={styles.targetHead}>
+                  <img
+                    className={styles.targetIcon}
+                    src={aiBotAssets.iconTargetUp}
+                    alt=""
+                    width={16}
+                    height={16}
+                    aria-hidden="true"
+                  />
+                  <p className={styles.targetTitleProfit}>{t.aiBot.targets.profitTitle}</p>
+                </div>
+                <label className={`${styles.targetInputWrap} ${styles.targetInputProfit}`}>
+                  <span className={styles.targetSign}>+$</span>
+                  <input
+                    className={`${styles.targetInput} ${styles.targetInputProfit}`}
+                    type="text"
+                    inputMode="decimal"
+                    value={profitTarget}
+                    onChange={(event) => setProfitTarget(sanitizeAmountInput(event.target.value))}
+                    aria-label={t.aiBot.targets.profitTitle}
+                    placeholder="50"
+                  />
+                </label>
+                <p className={styles.targetHint}>{t.aiBot.targets.profitHint}</p>
+              </article>
+            </HomeTilt>
 
-      <p className={styles.disclaimer}>{t.aiBot.disclaimer}</p>
+            <HomeTilt maxTiltDeg={4} liftPx={8}>
+              <article className={`${styles.homeCard} ${styles.targetCard}`}>
+                <div className={styles.targetHead}>
+                  <img
+                    className={styles.targetIcon}
+                    src={aiBotAssets.iconTargetDown}
+                    alt=""
+                    width={16}
+                    height={16}
+                    aria-hidden="true"
+                  />
+                  <p className={styles.targetTitleLoss}>{t.aiBot.targets.lossTitle}</p>
+                </div>
+                <label className={`${styles.targetInputWrap} ${styles.targetInputLoss}`}>
+                  <span className={styles.targetSign}>−$</span>
+                  <input
+                    className={`${styles.targetInput} ${styles.targetInputLoss}`}
+                    type="text"
+                    inputMode="decimal"
+                    value={lossLimit}
+                    onChange={(event) => setLossLimit(sanitizeAmountInput(event.target.value))}
+                    aria-label={t.aiBot.targets.lossTitle}
+                    placeholder="30"
+                  />
+                </label>
+                <p className={styles.targetHint}>{t.aiBot.targets.lossHint}</p>
+              </article>
+            </HomeTilt>
+          </div>
+
+          <div className={styles.cardWrap}>
+            <HomeTilt maxTiltDeg={5} liftPx={8}>
+              <section
+                className={`${styles.homeCard} ${styles.controlsSection}`}
+                aria-label={t.aiBot.controls.title}
+              >
+                <p className={`${styles.sectionLabel} ${styles.sectionLabelWhite} ${styles.controlsTitle}`}>
+                  {t.aiBot.controls.title}
+                </p>
+                <div className={styles.controlsGrid}>
+                  {(['start', 'pause', 'stop', 'apply'] as const).map((controlId) => (
+                    <button
+                      key={controlId}
+                      type="button"
+                      className={`${styles.controlButton}${
+                        activeControl === controlId ? ` ${styles.controlButtonActive}` : ''
+                      }`}
+                      disabled={busy}
+                      onClick={() => void handleControl(controlId)}
+                    >
+                      <img
+                        className={styles.controlIcon}
+                        src={controlIcons[controlId]}
+                        alt=""
+                        width={22}
+                        height={22}
+                        aria-hidden="true"
+                      />
+                      {t.aiBot.controls[controlId]}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </HomeTilt>
+          </div>
+        </div>
+
+        <div className={styles.actionsGrid}>
+          <button type="button" className={styles.ghostButton} disabled>
+            {t.aiBot.actions.showChart}
+          </button>
+          <button type="button" className={styles.ghostButton} onClick={() => openModal('botSettings')}>
+            {t.aiBot.actions.botSettings}
+          </button>
+        </div>
+
+        <p className={styles.disclaimer}>{t.aiBot.disclaimer}</p>
+      </div>
     </div>
   );
 }
