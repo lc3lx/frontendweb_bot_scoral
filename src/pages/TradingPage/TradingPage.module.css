@@ -1,8 +1,73 @@
 .page {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  isolation: isolate;
+  min-height: calc(100dvh - 110px);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  min-height: 100%;
+}
+
+.bg,
+.veil {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bg {
+  top: 50%;
+  left: 50%;
+  width: 118%;
+  height: 118%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  user-select: none;
+  animation: bgDrift 28s ease-in-out infinite alternate;
+}
+
+.veil {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 2, 3, 0.18) 0%,
+    rgba(5, 2, 3, 0.06) 45%,
+    rgba(5, 2, 3, 0.22) 100%
+  );
+}
+
+@keyframes bgDrift {
+  from {
+    transform: translate(-50%, -50%) scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate(-52%, -48%) scale(1.08) translate3d(1.5%, -1%, 0);
+  }
+}
+
+.pageHeader,
+.grid,
+.loading {
+  position: relative;
+  z-index: 1;
+}
+
+.loading {
+  margin: 0;
+  color: #8a8688;
 }
 
 .pageHeader {
@@ -19,15 +84,6 @@
   line-height: 32px;
   letter-spacing: -0.56px;
   color: #ffffff;
-}
-
-.pageSubtitle {
-  margin: 4px 0 0;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 17px;
-  color: #8a8688;
-  letter-spacing: 0.12px;
 }
 
 .statusRow {
@@ -112,5 +168,12 @@
 
   .statusRow {
     flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg {
+    animation: none !important;
+    transform: translate(-50%, -50%) scale(1.04);
   }
 }

@@ -213,12 +213,7 @@ export function TradesDetailContent({ tradeId, isLiveView, figmaNode }: TradesDe
         </div>
 
         <div className={styles.chartWrap}>
-          <CandlestickChart
-            candles={detail.chart.candles}
-            yAxis={detail.chart.yAxis}
-            xAxis={detail.chart.xAxis}
-            currentPrice={detail.chart.currentPrice}
-          />
+          <CandlestickChart candles={detail.chart.candles} height={240} />
         </div>
       </article>
 

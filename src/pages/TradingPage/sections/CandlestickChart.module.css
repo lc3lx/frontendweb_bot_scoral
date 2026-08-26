@@ -1,47 +1,38 @@
 .wrap {
+  position: relative;
   width: 100%;
-  height: 240px;
+  min-height: 280px;
   overflow: hidden;
   direction: ltr;
   unicode-bidi: isolate;
+  border-radius: 12px;
 }
 
 .chart {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #131722;
 }
 
-.gridLine {
-  stroke: rgba(255, 255, 255, 0.04);
-  stroke-width: 1;
+.axisLabel {
+  user-select: none;
+  pointer-events: none;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
 }
 
-.yLabel {
-  fill: #6b6768;
-  font-size: 11px;
-  font-family: Inter, sans-serif;
+.liveBody {
+  filter: brightness(1.14);
 }
 
-.xLabel {
-  fill: #5a5658;
-  font-size: 10px;
-  font-family: Inter, sans-serif;
-}
-
-.priceLine {
-  stroke: #dd0912;
-  stroke-width: 1;
-  opacity: 0.7;
-}
-
-.priceBadge {
-  fill: #dd0912;
-}
-
-.priceBadgeText {
-  fill: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: Inter, sans-serif;
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  border-radius: 12px;
+  background: #131722;
+  color: #787b86;
+  font-size: 13px;
 }

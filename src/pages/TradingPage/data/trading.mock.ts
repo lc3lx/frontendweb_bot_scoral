@@ -3,6 +3,8 @@ export type TradingCandle = {
   close: number;
   high: number;
   low: number;
+  /** Candle open time in unix seconds — used for live rollover. */
+  time?: number;
 };
 
 export type TradingMockData = {

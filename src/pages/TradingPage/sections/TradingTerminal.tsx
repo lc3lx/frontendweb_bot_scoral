@@ -57,12 +57,7 @@ export function TradingTerminal({ data }: TradingTerminalProps) {
         </div>
 
         <div className={styles.chartWrap}>
-          <CandlestickChart
-            candles={data.candles}
-            yAxis={data.yAxis}
-            xAxis={data.xAxis}
-            currentPrice={data.currentPrice}
-          />
+          <CandlestickChart candles={data.candles} height={300} />
         </div>
       </div>
 

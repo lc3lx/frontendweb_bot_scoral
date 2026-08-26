@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { tradingAssets } from '@assets';
+import { dashboardAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 
-import { tradingService } from './data/tradingService';
+import { LIVE_REFRESH_MS, LIVE_TICK_MS, tradingService } from './data/tradingService';
 import type { TradingMockData } from './data/trading.mock';
 import styles from './TradingPage.module.css';
 import { AiSignalPanel } from './sections/AiSignalPanel';
@@ -12,6 +12,15 @@ import { TradingTerminal } from './sections/TradingTerminal';
 type TradingContentProps = {
   figmaNode: string;
 };
+
+function TradingBackdrop() {
+  return (
+    <div className={styles.backdrop} aria-hidden="true">
+      <img className={styles.bg} src={dashboardAssets.homeBg} alt="" />
+      <span className={styles.veil} />
+    </div>
+  );
+}
 
 export function TradingContent({ figmaNode }: TradingContentProps) {
   const { t } = useI18n();
@@ -23,19 +32,56 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let active = true;
+
+    void (async () => {
+      const next = await tradingService.fetchData();
+      if (active) setData(next);
+    })();
+
+    const refreshTimer = window.setInterval(() => {
+      void (async () => {
+        try {
+          const next = await tradingService.fetchData();
+          if (active) setData(next);
+        } catch {
+          /* ignore */
+        }
+      })();
+    }, LIVE_REFRESH_MS);
+
+    const tickTimer = window.setInterval(() => {
+      void (async () => {
+        try {
+          const price = await tradingService.fetchLivePrice();
+          if (!active || price == null) return;
+          setData((current) => (current ? tradingService.applyLiveQuote(current, price) : current));
+        } catch {
+          /* ignore */
+        }
+      })();
+    }, LIVE_TICK_MS);
+
+    return () => {
+      active = false;
+      window.clearInterval(refreshTimer);
+      window.clearInterval(tickTimer);
+    };
+  }, []);
 
   if (!data) {
     return (
       <div className={styles.page} data-figma-node={figmaNode}>
-        <p>…</p>
+        <TradingBackdrop />
+        <p className={styles.loading}>…</p>
       </div>
     );
   }
 
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
+      <TradingBackdrop />
+
       <div className={styles.pageHeader}>
         <h2 className={styles.pageTitle}>{t.trading.header.title}</h2>
 

@@ -9,13 +9,22 @@ import { MARKET_FETCH_MS, timedSignal } from '@shared/api/timedSignal';
 import { getAccountStatusCached } from '@shared/api/botSessionCache';
 import { pickPreferredMarketAsset } from '@shared/market/preferAsset';
 import { t } from '@shared/i18n';
-import { tradingMockData, type TradingMockData } from './trading.mock';
+import { tradingMockData, type TradingCandle, type TradingMockData } from './trading.mock';
 import { tradeService } from '@services/trades';
+
+const PERIOD_SEC = 60;
+const MAX_CANDLES = 80;
+const LIVE_REFRESH_MS = 10_000;
+const LIVE_TICK_MS = 3_000;
 
 let selectedAsset: string | null = null;
 let amount = '25';
 let durationLabel = '1 min';
 let durationSeconds = 60;
+/** In-memory forming series so ticks survive full refresh merge. */
+let liveCandleSeries: TradingCandle[] = [];
+
+export { LIVE_REFRESH_MS, LIVE_TICK_MS };
 
 function formatPairLabel(symbol: string, name?: string): string {
   if (name && name.includes('/')) return name.split(' ')[0] ?? name;
@@ -29,6 +38,121 @@ function formatSignal(signal: string): string {
   if (s === 'call') return t('common.callUp');
   if (s === 'put') return t('common.putDown');
   return t('common.none');
+}
+
+function toUnixSec(timestamp: string | undefined): number | undefined {
+  if (!timestamp) return undefined;
+  const ms = Date.parse(timestamp);
+  if (!Number.isFinite(ms)) return undefined;
+  return Math.floor(ms / 1000);
+}
+
+function stitchOpenToPrevClose(candles: TradingCandle[]): TradingCandle[] {
+  if (candles.length === 0) return candles;
+  const out: TradingCandle[] = [{ ...candles[0]! }];
+  for (let i = 1; i < candles.length; i++) {
+    const prev = out[i - 1]!;
+    const cur = candles[i]!;
+    const open = prev.close;
+    const close = cur.close;
+    out.push({
+      ...cur,
+      open,
+      high: Math.max(cur.high, open, close),
+      low: Math.min(cur.low, open, close),
+      close,
+    });
+  }
+  return out;
+}
+
+function applyQuoteToCandles(
+  candles: TradingCandle[],
+  price: number,
+  periodSec: number,
+): TradingCandle[] {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const bucket = Math.floor(nowSec / periodSec) * periodSec;
+  const next = candles.map((c) => ({ ...c }));
+
+  if (next.length === 0) {
+    return [{ open: price, high: price, low: price, close: price, time: bucket }];
+  }
+
+  const last = next[next.length - 1]!;
+  const lastBucket =
+    last.time != null && Number.isFinite(last.time)
+      ? Math.floor(last.time / periodSec) * periodSec
+      : bucket;
+
+  if (bucket > lastBucket) {
+    const open = last.close;
+    next.push({
+      open,
+      high: Math.max(open, price),
+      low: Math.min(open, price),
+      close: price,
+      time: bucket,
+    });
+    return next.length > MAX_CANDLES ? next.slice(-MAX_CANDLES) : next;
+  }
+
+  last.close = price;
+  last.high = Math.max(last.high, price);
+  last.low = Math.min(last.low, price);
+  if (last.time == null) last.time = lastBucket;
+  next[next.length - 1] = last;
+  return next;
+}
+
+function mergeServerWithLive(server: TradingCandle[], live: TradingCandle[]): TradingCandle[] {
+  if (live.length === 0) return server;
+  if (server.length === 0) return live;
+
+  const lastServer = server[server.length - 1]!;
+  const lastLive = live[live.length - 1]!;
+  const serverBucket =
+    lastServer.time != null ? Math.floor(lastServer.time / PERIOD_SEC) * PERIOD_SEC : null;
+  const liveBucket =
+    lastLive.time != null ? Math.floor(lastLive.time / PERIOD_SEC) * PERIOD_SEC : null;
+
+  // Prefer live forming candle when same bucket.
+  if (serverBucket != null && liveBucket != null && serverBucket === liveBucket) {
+    return [...server.slice(0, -1), lastLive];
+  }
+  if (liveBucket != null && (serverBucket == null || liveBucket > serverBucket)) {
+    return [...server, lastLive].slice(-MAX_CANDLES);
+  }
+  return server;
+}
+
+function buildAxis(candles: TradingCandle[], price: number): Pick<TradingMockData, 'yAxis' | 'xAxis' | 'currentPrice' | 'price'> {
+  const highs = candles.map((c) => c.high);
+  const lows = candles.map((c) => c.low);
+  const lo = Math.min(...lows, price);
+  const hi = Math.max(...highs, price);
+  const span = hi - lo || price * 1e-4 || 0.0001;
+  const steps = 4;
+  const yAxis = Array.from({ length: steps + 1 }, (_, i) => {
+    const v = hi - (span * i) / steps;
+    return v.toFixed(v >= 1 ? 4 : 5);
+  });
+  const xAxis = candles
+    .filter((_, i) => i % Math.max(1, Math.floor(candles.length / 4)) === 0 || i === candles.length - 1)
+    .slice(0, 5)
+    .map((c) => {
+      if (c.time == null) return '';
+      const d = new Date(c.time * 1000);
+      return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+    })
+    .filter(Boolean);
+
+  return {
+    yAxis,
+    xAxis: xAxis.length ? xAxis : ['', '', '', '', 'Now'],
+    currentPrice: price.toFixed(4),
+    price: price.toFixed(5),
+  };
 }
 
 export const tradingService = {
@@ -69,21 +193,36 @@ export const tradingService = {
         data.pairType = asset.toLowerCase().includes('otc') ? 'OTC' : 'Global';
         const [price, rsi, candles] = await Promise.all([
           marketApi.price(asset, timedSignal(MARKET_FETCH_MS)).catch(() => null),
-          strategiesApi.rsiSignal(asset, 60, timedSignal(MARKET_FETCH_MS)).catch(() => null),
-          marketApi.candles(asset, 60, timedSignal(MARKET_FETCH_MS)).catch(() => null),
+          strategiesApi.rsiSignal(asset, PERIOD_SEC, timedSignal(MARKET_FETCH_MS)).catch(() => null),
+          marketApi.candles(asset, PERIOD_SEC, timedSignal(MARKET_FETCH_MS)).catch(() => null),
         ]);
-        if (price?.price != null) {
-          data.price = price.price.toFixed(5);
-          data.currentPrice = price.price.toFixed(4);
-        }
+
+        let series: TradingCandle[] = [];
         if (candles?.candles?.length) {
-          data.candles = candles.candles.slice(-20).map((c) => ({
-            open: c.open,
-            close: c.close,
-            high: c.high,
-            low: c.low,
-          }));
+          series = stitchOpenToPrevClose(
+            candles.candles.slice(-MAX_CANDLES).map((c) => ({
+              open: c.open,
+              close: c.close,
+              high: c.high,
+              low: c.low,
+              time: toUnixSec(c.timestamp),
+            })),
+          );
         }
+
+        series = mergeServerWithLive(series, liveCandleSeries);
+
+        const livePx = price?.price;
+        if (livePx != null && Number.isFinite(livePx)) {
+          series = applyQuoteToCandles(series, livePx, PERIOD_SEC);
+          Object.assign(data, buildAxis(series, livePx));
+        } else if (series.length) {
+          Object.assign(data, buildAxis(series, series[series.length - 1]!.close));
+        }
+
+        liveCandleSeries = series;
+        data.candles = series;
+
         if (rsi) {
           data.signal = {
             lastSignal: formatSignal(rsi.signal),
@@ -103,6 +242,27 @@ export const tradingService = {
     }
 
     return data;
+  },
+
+  async fetchLivePrice(): Promise<number | null> {
+    if (!selectedAsset) return null;
+    const quote = await marketApi.price(selectedAsset, timedSignal(MARKET_FETCH_MS)).catch(() => null);
+    return quote?.price ?? null;
+  },
+
+  applyLiveQuote(current: TradingMockData, price: number): TradingMockData {
+    const nextCandles = applyQuoteToCandles(
+      current.candles.length ? current.candles : liveCandleSeries,
+      price,
+      PERIOD_SEC,
+    );
+    liveCandleSeries = nextCandles;
+    return {
+      ...current,
+      candles: nextCandles,
+      ...buildAxis(nextCandles, price),
+      change: current.change,
+    };
   },
 
   async placeTrade(direction: 'up' | 'down'): Promise<string> {
@@ -142,5 +302,6 @@ export const tradingService = {
 
   setSelectedAsset(symbol: string) {
     selectedAsset = symbol.trim() || null;
+    liveCandleSeries = [];
   },
 };

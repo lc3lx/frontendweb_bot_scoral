@@ -141,10 +141,11 @@
 
 .chartWrap {
   margin-top: 12px;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.35);
+  background: #131722;
+  overflow: hidden;
 }
 
 .controls {

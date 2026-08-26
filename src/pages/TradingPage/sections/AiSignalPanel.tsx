@@ -1,5 +1,8 @@
+import { Link } from 'react-router-dom';
+
 import { tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { ROUTES } from '@router/routes';
 
 import type { TradingMockData } from '../data/trading.mock';
 import styles from './AiSignalPanel.module.css';
@@ -54,9 +57,9 @@ export function AiSignalPanel({ signal }: AiSignalPanelProps) {
           ))}
         </div>
 
-        <button type="button" className={styles.cta}>
+        <Link to={ROUTES.aiBot} className={styles.cta}>
           {t.trading.signal.openBot}
-        </button>
+        </Link>
       </section>
     </aside>
   );
