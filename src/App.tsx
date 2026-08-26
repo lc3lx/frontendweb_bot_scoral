@@ -1,5 +1,6 @@
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { LanguageSwitcher } from '@components/LanguageSwitcher';
+import { PageTransition } from '@components/PageTransition';
 import { I18nProvider } from '@i18n';
 import { AppRouter } from '@router';
 import { ROUTES } from '@router/routes';
@@ -12,6 +13,7 @@ function AppChrome() {
 
   return (
     <>
+      <PageTransition />
       {!onLanding ? <LanguageSwitcher /> : null}
       <div className={styles.app} data-route={onLanding ? 'landing' : 'app'}>
         <AppRouter />

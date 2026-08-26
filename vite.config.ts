@@ -66,4 +66,5 @@ export default defineConfig({
     cssCodeSplit: true,
     sourcemap: true,
   },
+  assetsInclude: ['**/*.mpeg'],
 });
