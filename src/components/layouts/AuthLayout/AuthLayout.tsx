@@ -25,7 +25,7 @@ export function AuthLayout() {
 
         if (location.pathname === ROUTES.pendingApproval) {
           if (status.botAccess === 'Allowed') {
-            navigate(ROUTES.dashboard, { replace: true });
+            navigate(ROUTES.home, { replace: true });
             return;
           }
           if (status.approvalStatus === 'Rejected') {
@@ -37,8 +37,6 @@ export function AuthLayout() {
         const isGuestRoute =
           location.pathname === ROUTES.login ||
           location.pathname === ROUTES.signup ||
-          location.pathname === ROUTES.splash ||
-          location.pathname === ROUTES.splashAlt ||
           location.pathname === ROUTES.linkBinolla;
 
         if (isGuestRoute && location.pathname !== ROUTES.linkBinolla) {

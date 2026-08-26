@@ -1,0 +1,196 @@
+.header {
+  /* Full-bleed bottom border — Figma App border rgba(221,9,18,0.18) ~0.977px */
+  border-bottom: 0.977px solid rgba(221, 9, 18, 0.18);
+  background-color: var(--color-bg-primary);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 6.221rem; /* ~99.54px content band @1440 */
+  width: 100%;
+}
+
+.logoLink {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  line-height: 0;
+}
+
+.logo {
+  display: block;
+  width: clamp(10rem, 9rem + 2.5vw, 12.5rem); /* ~160 → 200px — wider transparent PNG */
+  height: auto;
+  aspect-ratio: 401 / 122;
+  object-fit: contain;
+}
+
+.nav {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 0;
+}
+
+.navList {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.305rem; /* ~4.885px Figma */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.navList::-webkit-scrollbar {
+  display: none;
+}
+
+.navItem {
+  flex-shrink: 0;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.611rem 1.221rem; /* ~9.77 / 19.54 */
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family-primary);
+  font-size: clamp(0.9375rem, 0.88rem + 0.25vw, 1.069rem); /* ~17.1px */
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.43;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--color-text-primary);
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.langToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(221, 9, 18, 0.35);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.langToggle:hover {
+  background: rgba(221, 9, 18, 0.18);
+  border-color: rgba(221, 9, 18, 0.7);
+}
+
+.langToggle:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+.langCode {
+  white-space: nowrap;
+}
+
+.cta {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  /* Two actions now live here (log in + create account), so they need separating. */
+  gap: var(--space-2);
+}
+
+/* Tablet: keep row, allow nav to scroll between logo and CTA */
+@media (max-width: 1024px) {
+  .bar {
+    gap: var(--space-3);
+    min-height: 5.5rem;
+  }
+
+  .nav {
+    justify-content: flex-start;
+    margin-inline: var(--space-2);
+  }
+
+  .actions {
+    gap: 0.5rem;
+  }
+}
+
+/* Phablet / mobile: logo + actions on first row, nav scrolls below */
+@media (max-width: 768px) {
+  .bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'logo actions'
+      'nav nav';
+    align-items: center;
+    row-gap: var(--space-3);
+    min-height: unset;
+    padding-block: var(--space-4);
+  }
+
+  .logoLink {
+    grid-area: logo;
+  }
+
+  .actions {
+    grid-area: actions;
+  }
+
+  .nav {
+    grid-area: nav;
+    justify-content: flex-start;
+    margin-inline: 0;
+    width: 100%;
+  }
+
+  .navList {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 430px) {
+  .cta :global(button) {
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    font-size: var(--font-size-md);
+  }
+
+  .langToggle {
+    min-height: 2.5rem;
+    padding-inline: 0.7rem;
+    font-size: 0.8125rem;
+  }
+
+  .logo {
+    width: 10rem;
+  }
+}

@@ -1,0 +1,302 @@
+.hero {
+  position: relative;
+  /* Allow decorative glows to paint; PageShell clips page overflow */
+  overflow: visible;
+  /* Phones start ~48px below header (Figma y148 − header ~100) */
+  padding-block-start: clamp(1.5rem, 1rem + 1.5vw, 3rem);
+  /* Room before Feature Strip (Figma strip y947 − phones bottom ~897 ≈ 50px) */
+  padding-block-end: clamp(2rem, 1.25rem + 2vw, 3.125rem);
+}
+
+.glowLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Figma Ellipse 101 — 388:1529 (x:-48 y:-122 w:754 h:596) */
+.glowLeft {
+  position: absolute;
+  top: -18%;
+  left: -6%;
+  width: min(47.124rem, 92vw);
+  height: auto;
+  aspect-ratio: 754 / 596;
+  max-width: none;
+}
+
+/* Figma Ellipse 102 — 388:1530 (x:826 y:200 w:646 h:646) */
+.glowRight {
+  position: absolute;
+  top: 6%;
+  right: -4%;
+  width: min(40.375rem, 70vw);
+  height: auto;
+  aspect-ratio: 1;
+  max-width: none;
+}
+
+.layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 41.01rem) minmax(0, 1fr);
+  align-items: start;
+  column-gap: clamp(1.25rem, 0.5rem + 3vw, 7.6875rem); /* → ~123px @1440 */
+  width: 100%;
+  min-width: 0;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 41.01rem; /* Figma 656.17 */
+  min-width: 0;
+  width: 100%;
+  /* Copy sits ~49px lower than phones (Figma y197 vs y148) */
+  padding-block-start: clamp(1.25rem, 0.75rem + 1.5vw, 3.0625rem);
+}
+
+/* Soft badge → Figma 55:517 */
+.eyebrow {
+  gap: 0.611rem !important; /* 9.771px icon margin */
+  padding: 0.672rem 1.282rem !important; /* 10.748 / 20.519 */
+  border-width: 0.977px !important;
+  border-color: rgba(221, 9, 18, 0.18) !important;
+  border-radius: var(--radius-pill) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--color-text-body) !important;
+  font-size: clamp(0.875rem, 0.3rem + 0.85vw, 1.069rem) !important; /* → 17.099 @1440 */
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.428 !important; /* 24.427 / 17.099 */
+  white-space: nowrap;
+}
+
+.eyebrow :global(img),
+.eyebrow :global(svg) {
+  width: 1.221rem; /* 19.542 */
+  height: 1.221rem;
+}
+
+.title {
+  margin-block-start: 1.49rem; /* badge frame 70.35 − badge 46.5 ≈ 23.85; use frame rhythm */
+  max-width: 41.07rem; /* 657.1 */
+  font-family: var(--font-family-primary);
+  font-size: clamp(2rem, 1.15rem + 3.2vw, 4rem); /* → 64 */
+  font-weight: var(--font-weight-black);
+  line-height: 1.443; /* 92.336 / 64 */
+  letter-spacing: 0;
+  color: var(--color-text-heading); /* #f7eeee */
+}
+
+.description {
+  margin-block-start: 2.137rem; /* Figma pt 34.198 */
+  max-width: 41.07rem;
+  font-family: var(--font-family-primary);
+  font-size: clamp(1rem, 0.88rem + 0.72vw, 1.527rem); /* → 24.427 @1440 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.6; /* 39.084 / 24.427 */
+  color: var(--color-text-body); /* #b7a6a6 */
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem; /* 20px Figma */
+  margin-block-start: 2.748rem; /* 43.969 */
+  width: 100%;
+}
+
+/* Pin CTA metrics to Figma 55:529 / 55:534 without changing shared Button defaults */
+.actions :global(a),
+.actions :global(button) {
+  min-height: 3.481rem; /* 55.695 */
+  font-size: 1.221rem; /* 19.542 */
+  line-height: 1.5; /* 29.313 / 19.542 */
+}
+
+.ctaArrow {
+  display: block;
+}
+
+:global([dir='rtl']) .ctaArrow {
+  transform: scaleX(-1);
+}
+
+/* Figma secondary CTA 55:534 */
+.secondaryCta {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-width: 0.977px !important;
+  border-color: rgba(221, 9, 18, 0.18) !important;
+  padding-inline: 1.588rem !important; /* 25.404 */
+}
+
+.visual {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-width: 0;
+  width: 100%;
+}
+
+.phonesDuo {
+  display: block;
+  width: min(100%, 35.1875rem); /* 563px */
+  height: auto;
+  aspect-ratio: 563 / 749;
+  object-fit: contain;
+}
+
+.phonesStack {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+}
+
+.phone {
+  display: block;
+  width: min(42vw, 12.5rem);
+  height: auto;
+  aspect-ratio: 249 / 591;
+  object-fit: contain;
+}
+
+/* Desktop-narrow / laptop: keep two columns, tighten type */
+@media (max-width: 1280px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    column-gap: clamp(1.25rem, 1rem + 1.5vw, 3rem);
+  }
+
+  .title {
+    margin-block-start: clamp(0.875rem, 0.6rem + 0.8vw, 1.49rem);
+  }
+
+  .description {
+    margin-block-start: clamp(1.25rem, 1rem + 1vw, 2.137rem);
+  }
+
+  .actions {
+    margin-block-start: clamp(1.5rem, 1.15rem + 1.2vw, 2.748rem);
+  }
+
+  .glowRight {
+    right: -8%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    column-gap: clamp(1rem, 0.75rem + 1vw, 2rem);
+  }
+
+  .copy {
+    padding-block-start: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
+  }
+
+  .title {
+    font-size: clamp(1.85rem, 1.1rem + 2.2vw, 3rem);
+  }
+
+  .glowLeft {
+    width: min(36rem, 85vw);
+  }
+
+  .glowRight {
+    width: min(28rem, 60vw);
+  }
+
+  .visual {
+    justify-content: center;
+  }
+}
+
+/* Tablet: stack — copy first, phones second */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    row-gap: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .copy {
+    max-width: 100%;
+    padding-block-start: 0;
+  }
+
+  .eyebrow {
+    white-space: normal;
+  }
+
+  .visual {
+    order: 2;
+    justify-content: center;
+  }
+
+  .phone {
+    width: min(44vw, 11.5rem);
+  }
+
+  .glowRight {
+    top: auto;
+    bottom: -5%;
+    right: 50%;
+    translate: 50% 0;
+    width: min(28rem, 80vw);
+  }
+
+  .glowLeft {
+    top: -5%;
+    left: -12%;
+  }
+}
+
+/* Phablet */
+@media (max-width: 430px) {
+  .hero {
+    padding-block-start: 1.25rem;
+    padding-block-end: 2rem;
+  }
+
+  .eyebrow {
+    padding: 0.55rem 0.9rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .phonesStack {
+    gap: 0.5rem;
+  }
+
+  .phone {
+    width: min(46vw, 9.75rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .title {
+    font-size: clamp(1.75rem, 1.5rem + 1.2vw, 2rem);
+  }
+
+  .phone {
+    width: min(45vw, 8.75rem);
+  }
+}
+
+@media (max-width: 320px) {
+  .phone {
+    width: min(44vw, 8rem);
+  }
+}

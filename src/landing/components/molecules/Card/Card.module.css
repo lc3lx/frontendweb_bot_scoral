@@ -1,0 +1,66 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  border-style: solid;
+  border-width: 0.977px;
+  border-radius: var(--radius-card);
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.pad_none {
+  padding: 0;
+}
+
+.pad_sm {
+  padding: clamp(1rem, 0.85rem + 0.6vw, 1.5rem);
+}
+
+.pad_md {
+  /* Figma Article: ~31px x / ~37px y */
+  padding: clamp(1.25rem, 1rem + 1vw, 2.311rem) clamp(1.25rem, 1rem + 0.9vw, 1.936rem);
+}
+
+.pad_lg {
+  padding: clamp(1.5rem, 1.2rem + 1.2vw, 2.5rem);
+}
+
+.default {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-default);
+}
+
+.glow {
+  background: linear-gradient(180deg, var(--color-card-from) 0%, var(--color-card-to) 100%);
+  border-color: var(--color-card-border);
+}
+
+.flat {
+  background: transparent;
+  border-color: var(--color-border-subtle);
+}
+
+.glow:hover {
+  box-shadow: var(--glow-red-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .glow:hover {
+    transform: translateY(var(--motion-hover-lift));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .glow:hover {
+    transform: none;
+  }
+}

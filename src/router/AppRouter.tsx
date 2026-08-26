@@ -5,11 +5,11 @@ import { AccountPage } from '@pages/AccountPage';
 import { AiBotPage } from '@pages/AiBotPage';
 import { DashboardPage } from '@pages/DashboardPage';
 import { DashboardScrollPage } from '@pages/DashboardScrollPage';
+import { LandingPage } from '@pages/LandingPage';
 import { LinkBinollaPage } from '@pages/LinkBinollaPage';
 import { LoginPage } from '@pages/LoginPage';
 import { PendingApprovalPage } from '@pages/PendingApprovalPage';
 import { SignupPage } from '@pages/SignupPage';
-import { SplashPage } from '@pages/SplashPage';
 import { TradesDetailPage } from '@pages/TradesDetailPage';
 import { TradesPage } from '@pages/TradesPage';
 import { TradingPage } from '@pages/TradingPage';
@@ -19,9 +19,10 @@ import { ROUTES } from './routes';
 export function AppRouter() {
   return (
     <Routes>
+      {/* Public marketing home — no layout chrome, the landing brings its own. */}
+      <Route path={ROUTES.landing} element={<LandingPage />} />
+
       <Route element={<AuthLayout />}>
-        <Route path={ROUTES.splash} element={<SplashPage />} />
-        <Route path={ROUTES.splashAlt} element={<SplashPage />} />
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.signup} element={<SignupPage />} />
         <Route path={ROUTES.pendingApproval} element={<PendingApprovalPage />} />
@@ -29,8 +30,8 @@ export function AppRouter() {
       </Route>
 
       <Route element={<AppLayout />}>
-        <Route path={ROUTES.dashboard} element={<DashboardPage />} />
-        <Route path={ROUTES.dashboardScroll} element={<DashboardScrollPage />} />
+        <Route path={ROUTES.home} element={<DashboardPage />} />
+        <Route path={ROUTES.homeScroll} element={<DashboardScrollPage />} />
         <Route path={ROUTES.trading} element={<TradingPage />} />
         <Route path={ROUTES.trades} element={<TradesPage />} />
         <Route path={ROUTES.tradesDetail} element={<TradesDetailPage />} />
@@ -38,7 +39,7 @@ export function AppRouter() {
         <Route path={`${ROUTES.account}/*`} element={<AccountPage />} />
       </Route>
 
-      <Route path="*" element={<Navigate to={ROUTES.splash} replace />} />
+      <Route path="*" element={<Navigate to={ROUTES.landing} replace />} />
     </Routes>
   );
 }

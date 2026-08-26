@@ -12,7 +12,7 @@ export function canTrade(botAccess?: string | null): boolean {
 /** Web: pending users stay on /pending-approval; approved users go to dashboard. */
 export function routeForWebAccess(botAccess?: string | null): string {
   if (botAccess === 'Allowed') {
-    return ROUTES.dashboard;
+    return ROUTES.home;
   }
   if (botAccess === 'AdminApprovalRequired') {
     return ROUTES.pendingApproval;
@@ -23,7 +23,7 @@ export function routeForWebAccess(botAccess?: string | null): string {
   if (botAccess === 'NotEligible') {
     return ROUTES.login;
   }
-  return ROUTES.dashboard;
+  return ROUTES.home;
 }
 
 export function routeAfterWebAuth(botAccess?: string | null): string {

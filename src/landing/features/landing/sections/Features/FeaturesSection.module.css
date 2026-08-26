@@ -1,0 +1,125 @@
+.features {
+  position: relative;
+  overflow-x: clip;
+  /* Feature Strip (~y971) → Features title (y1051) ≈ 80px; keep consistent band */
+  padding-block-start: clamp(2.5rem, 1.75rem + 2vw, 4.5rem);
+  padding-block-end: clamp(2.5rem, 1.75rem + 2.5vw, 5rem);
+}
+
+/* Pin Features subtitle (475:130) under SectionTitle */
+.heading :global([class*='description']) {
+  margin-top: clamp(0.5rem, 0.35rem + 0.4vw, 0.625rem); /* ~10px after title block */
+  max-width: 57.0625rem; /* 913px */
+  font-size: clamp(1rem, 0.85rem + 0.58vw, 1.374rem); /* → 21.985 @1440 */
+  line-height: 1.556; /* 34.198 / 21.985 */
+  color: var(--color-text-body);
+  white-space: normal;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2.875rem; /* 46px Figma card gutters */
+  align-items: stretch;
+  width: 100%;
+  margin: 0;
+  margin-block-start: clamp(2.5rem, 1.75rem + 2.5vw, 7.333rem); /* → ~117px to cards */
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+}
+
+.card {
+  flex: 1 1 auto;
+  min-height: 17.3125rem; /* 277px Figma */
+  height: 100%;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  width: 1.974rem; /* 31.58 */
+  height: 1.974rem;
+  aspect-ratio: 1;
+}
+
+.cardTitle {
+  margin-block-start: 0;
+  padding-block-start: 0.625rem; /* 10px Figma heading pt */
+  font-size: clamp(1.0625rem, 0.85rem + 0.62vw, 1.41rem); /* → 22.557 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.4; /* 31.58 / 22.557 */
+  color: var(--color-text-heading);
+}
+
+.cardBody {
+  margin-block-start: 0.846rem; /* 13.534 */
+  max-width: 15.297rem; /* 244.74 */
+  font-size: clamp(0.9375rem, 0.85rem + 0.31vw, 1.128rem); /* → 18.046 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5; /* 27.068 / 18.046 */
+  color: var(--color-text-body);
+}
+
+/* Desktop-narrow: keep 4 cols, tighten gap */
+@media (max-width: 1280px) {
+  .grid {
+    gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+    margin-block-start: clamp(2.25rem, 1.5rem + 2vw, 4rem);
+  }
+}
+
+/* Laptop: 2×2 */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.25rem, 1rem + 1.25vw, 1.75rem);
+  }
+
+  .card {
+    min-height: 15.5rem;
+  }
+
+  .cardBody {
+    max-width: 100%;
+  }
+}
+
+/* Tablet / phablet */
+@media (max-width: 768px) {
+  .features {
+    padding-block-start: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .grid {
+    margin-block-start: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
+  }
+}
+
+/* Mobile: single column */
+@media (max-width: 430px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card {
+    min-height: unset;
+  }
+
+  .heading :global([class*='description']) {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading,
+  .grid {
+    animation: none !important;
+  }
+}

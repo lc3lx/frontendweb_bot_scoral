@@ -1,0 +1,15 @@
+/**
+ * Theme surface — Landing uses a single dark brand theme.
+ * Additional themes can extend this file later without touching sections.
+ */
+:root {
+  color-scheme: dark;
+
+  --theme-bg: var(--color-bg-primary);
+  --theme-surface: var(--color-bg-surface);
+  --theme-elevated: var(--color-bg-elevated);
+  --theme-text: var(--color-text-primary);
+  --theme-text-muted: var(--color-text-muted);
+  --theme-accent: var(--color-red-primary);
+  --theme-border: var(--color-border-default);
+}

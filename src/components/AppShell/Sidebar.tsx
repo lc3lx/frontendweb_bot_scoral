@@ -19,7 +19,7 @@ type NavItemConfig = {
 };
 
 const NAV_ITEMS: NavItemConfig[] = [
-  { id: 'home', labelKey: 'home', icon: dashboardAssets.iconNavHome, to: ROUTES.dashboard },
+  { id: 'home', labelKey: 'home', icon: dashboardAssets.iconNavHome, to: ROUTES.home },
   { id: 'trading', labelKey: 'trading', icon: dashboardAssets.iconNavTrading, to: ROUTES.trading },
   { id: 'trades', labelKey: 'trades', icon: dashboardAssets.iconNavTrades, to: ROUTES.trades },
   { id: 'aiBot', labelKey: 'aiBot', icon: dashboardAssets.iconNavAiBot, to: ROUTES.aiBot },

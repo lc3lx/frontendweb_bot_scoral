@@ -71,7 +71,7 @@ function mapMessage(code: string, fallback: string): string {
     case 'TELEGRAM_TAKEN':
       return t('api.telegramTaken');
     case 'INVALID_CREDENTIALS':
-      return t('api.invalidCredentials');
+      return fallback?.trim() ? fallback : t('api.invalidCredentials');
     case 'PASSWORD_NOT_SET':
       return t('api.passwordNotSet');
     default:

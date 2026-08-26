@@ -1,0 +1,278 @@
+.footer {
+  position: relative;
+  overflow-x: clip;
+  background: var(--color-footer-bg);
+  /* Figma 385:1415 — content y49, frame h414, copyright ends ~370 → pad-bottom 44 */
+  padding-block: 3.0625rem 2.75rem; /* 49px / 44px */
+  isolation: isolate;
+}
+
+.glow {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  /* Figma 385:1470 — 1282.5 × 192.38, blur 125, top overhang */
+  inset-inline-start: 50%;
+  top: -5.9945rem; /* -95.91 */
+  width: min(80.15625rem, 120%);
+  height: 12.02375rem;
+  translate: -50% 0;
+  border-radius: 80.15625rem;
+  background: linear-gradient(
+    to top,
+    rgba(221, 9, 18, 0) 20%,
+    var(--color-red-primary) 100%
+  );
+  filter: blur(7.8125rem); /* 125px */
+  opacity: 0.9;
+}
+
+.topBorder {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 50%;
+  top: 0;
+  width: min(72rem, calc(100% - 2rem));
+  height: 1px;
+  translate: -50% 0;
+  background: linear-gradient(
+    90deg,
+    var(--color-footer-border-edge) 0%,
+    var(--color-footer-border-mid) 50%,
+    var(--color-footer-border-edge) 100%
+  );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  /* Outer shell mirrors Container full + gutter; band stays 1152px */
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-inline-gutter);
+  box-sizing: border-box;
+}
+
+.band {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 72rem; /* 1152px Figma content band */
+  margin-inline: auto;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(2rem, 4vw, 10rem);
+  min-height: 13.8125rem; /* 221px */
+  /* Content bottom → disclaimer block ≈ 32px */
+  margin-block-end: 2rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem; /* 10px */
+  /* Figma brand column width — keeps menus at x≈841 */
+  width: min(100%, 26.8125rem); /* 429px */
+  max-width: 26.8125rem;
+}
+
+.logoLink {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 0.25rem;
+  outline-offset: 0.25rem;
+}
+
+.logo {
+  display: block;
+  width: 12.5rem; /* ~200px — matches Header max; keeps ~61px height */
+  height: auto;
+  aspect-ratio: 401 / 122;
+  object-fit: contain;
+}
+
+.disclaimer {
+  margin: 0;
+  max-width: 20.6875rem; /* 331px */
+  font-family: var(--font-family-primary);
+  font-size: 0.7375rem; /* 11.8px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.125rem; /* 18px */
+  color: var(--color-footer-muted);
+}
+
+.disclaimerLink {
+  color: var(--color-red-primary);
+  text-decoration: none;
+}
+
+.disclaimerLink:hover {
+  text-decoration: underline;
+}
+
+.menus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem; /* 48px */
+  width: 28.5rem; /* 456px */
+  max-width: 100%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* ~8px title → first link */
+  width: 7.5rem; /* 120px */
+  min-width: 7.5rem;
+}
+
+.groupTitle {
+  margin: 0;
+  font-family: var(--font-family-primary);
+  font-size: 1.1rem; /* 17.6px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.8rem; /* 28.8px */
+  color: var(--color-text-primary);
+}
+
+.linkList {
+  display: flex;
+  flex-direction: column;
+  /* Additional / Follow Us — Figma gap 15.194 → top-to-top ≈ 38.2 with 23px rows */
+  gap: 0.949625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* General column — Figma absolute rhythm 31px top-to-top */
+.linkListDense {
+  gap: 0.5rem; /* 8px + 23px row ≈ 31 */
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  height: 1.4375rem; /* 23px Figma text frame */
+  font-family: var(--font-family-primary);
+  font-size: 0.85rem; /* 13.6px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.4rem; /* 22.4px */
+  color: var(--color-footer-muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--color-text-primary);
+}
+
+/* Figma 385:1429 — 18px band with 1px rule centered */
+.dividerWrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 1.125rem; /* 18px */
+  /* Group end → copyright ≈ 25px */
+  margin-block-end: 1.5625rem;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-footer-divider);
+  border: 0;
+  margin: 0;
+}
+
+.copyright {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-family-primary);
+  font-size: 1.0686875rem; /* 17.099px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5266875rem; /* 24.427px */
+  color: var(--color-text-body);
+}
+
+.companyLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.companyLink:hover {
+  color: var(--color-red-primary);
+}
+
+@media (max-width: 1024px) {
+  .top {
+    flex-direction: column;
+    gap: 2.5rem;
+    min-height: 0;
+  }
+
+  .brand {
+    width: 100%;
+    max-width: 26.8125rem;
+  }
+
+  .menus {
+    width: 100%;
+    max-width: none;
+    justify-content: flex-start;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding-block: 2.5rem 2rem;
+  }
+
+  .menus {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
+  }
+
+  .group {
+    width: auto;
+    min-width: 0;
+  }
+
+  .copyright {
+    font-size: clamp(0.875rem, 0.8rem + 0.4vw, 1.0687rem);
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 430px) {
+  .inner {
+    padding-inline: max(1rem, env(safe-area-inset-left))
+      max(1rem, env(safe-area-inset-right));
+  }
+
+  .menus {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    filter: none;
+    opacity: 0.35;
+  }
+
+  .footer {
+    scroll-margin-block: 0;
+  }
+}

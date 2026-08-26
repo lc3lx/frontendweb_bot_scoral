@@ -1,0 +1,40 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 58.625rem; /* ~938px Figma SectionTitle */
+  margin-inline: auto;
+}
+
+.align_start {
+  align-items: flex-start;
+  margin-inline: 0;
+}
+
+.align_center {
+  align-items: center;
+}
+
+.eyebrow {
+  width: 100%;
+}
+
+.title {
+  width: 100%;
+  margin-top: 0.916rem; /* ~14.66px Figma */
+  font-size: clamp(1.75rem, 1.1rem + 2.85vw, 3.664rem); /* → 58.6px @1440 */
+  line-height: 1.25; /* Figma 73.282 / 58.626 */
+  font-weight: var(--font-weight-extrabold);
+}
+
+.description {
+  width: 100%;
+  max-width: 57rem;
+  margin-top: clamp(0.75rem, 0.5rem + 0.8vw, 1.22rem);
+}
+
+@media (max-width: 768px) {
+  .root {
+    max-width: 100%;
+  }
+}

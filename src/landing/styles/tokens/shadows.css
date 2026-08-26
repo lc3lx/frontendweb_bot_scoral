@@ -1,0 +1,10 @@
+/**
+ * Shadow / glow tokens — Landing Page red atmosphere ellipses.
+ */
+:root {
+  --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --glow-red-soft: 0 0 120px rgba(221, 9, 18, 0.28);
+  --glow-red-strong: 0 0 180px rgba(93, 6, 8, 0.55);
+  --glow-button: 0 0 17.1px rgba(221, 9, 18, 0.22);
+  --glow-button-hover: 0 0 24px rgba(221, 9, 18, 0.4);
+}

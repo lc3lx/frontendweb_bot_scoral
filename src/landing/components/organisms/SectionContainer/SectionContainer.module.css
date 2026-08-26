@@ -1,0 +1,65 @@
+.section {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+}
+
+.bg_default {
+  background-color: var(--theme-bg);
+}
+
+.bg_surface {
+  background-color: var(--theme-surface);
+}
+
+.bg_transparent {
+  background-color: transparent;
+}
+
+.bg_glow {
+  background-color: var(--theme-bg);
+}
+
+/* Decorative glow — allowed as non-layout absolute decoration */
+.bg_glow::before {
+  content: '';
+  position: absolute;
+  inset-inline: 10%;
+  top: 20%;
+  height: min(40vw, 28rem);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(221, 9, 18, 0.18) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.space_none {
+  padding-block: 0;
+}
+
+.space_sm {
+  padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+}
+
+.space_md {
+  padding-block: clamp(2.5rem, 1.75rem + 3vw, 5rem);
+}
+
+.space_lg {
+  padding-block: var(--space-section-y);
+}
+
+@media (max-width: 430px) {
+  .space_lg {
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4rem);
+  }
+}

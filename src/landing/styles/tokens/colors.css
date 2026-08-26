@@ -1,0 +1,73 @@
+/**
+ * Color tokens — Landing Page.
+ * Source: Figma file 2Xub9DUc8qXvRygoo6mBDv
+ * Pages: "font and color" + "landing page" / Desktop - 1 (385:1473)
+ *
+ * Values will be verified against node fills during section implementation.
+ */
+:root {
+  /* Brand */
+  --color-bg-primary: #020101;
+  --color-bg-surface: #0b0708;
+  --color-bg-elevated: #121011;
+  --color-bg-overlay: rgba(2, 1, 1, 0.72);
+
+  --color-red-primary: #dd0912;
+  --color-red-bright: #dd0101;
+  --color-red-dark: #a10406;
+  --color-red-glow: #5d0608;
+  --color-red-soft: #ff5a63;
+
+  --color-green-profit: #53d258;
+  --color-green-success: #12e655;
+
+  --color-text-primary: #ffffff;
+  --color-text-heading: #f7eeee;
+  --color-text-secondary: #cecece;
+  --color-text-body: #b7a6a6;
+  --color-text-muted: #8a8688;
+  --color-text-subtle: #989898;
+  --color-text-caption: #666666;
+
+  --color-card-from: #090303;
+  --color-card-to: #200302;
+  --color-card-border: rgba(221, 9, 18, 0.4);
+
+  /* Bonus packages — Figma 641:182 / 642:463 */
+  --color-plan-gold-from: #936822;
+  --color-plan-gold-to: #4d3610;
+  --color-plan-gold-border: rgba(147, 104, 34, 0.4);
+  --color-plan-gold-cta: #ff9e00;
+  --color-plan-popular-badge: #3d302e;
+
+  /* AI Bot Engine cards — Figma 55:172 / 488:89 */
+  --color-engine-card: #0f0f0f;
+  --color-engine-icon-plate: #1d1b1c;
+  --color-engine-card-border: rgba(221, 9, 18, 0.18);
+  --color-text-engine: #848485;
+
+  /* Trading Integration cards — Figma 55:231 / 55:246 */
+  --color-trading-card: #0b0506;
+  --color-trading-chart: #120708;
+  --color-trading-card-border: rgba(221, 9, 18, 0.18);
+  --color-trading-down-bg: rgba(255, 255, 255, 0.03);
+
+  /* Statistics — Figma 55:274 / 55:299 */
+  --color-stats-card: rgba(255, 255, 255, 0.04);
+  --color-stats-positive: #22c55e;
+  --color-stats-status-bg: rgba(221, 9, 18, 0.15);
+  --color-stats-divider: rgba(221, 9, 18, 0.18);
+
+  /* Footer — Figma 385:1415 */
+  --color-footer-bg: #060202;
+  --color-footer-muted: #9e9e9e;
+  --color-footer-divider: #2b2b2b;
+  --color-footer-border-edge: #0d0d0d;
+  --color-footer-border-mid: rgba(255, 255, 255, 0.4);
+
+  --color-border-default: rgba(255, 255, 255, 0.06);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  --color-focus-ring: rgba(221, 9, 18, 0.45);
+}

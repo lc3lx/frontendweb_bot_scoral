@@ -1,0 +1,11 @@
+/**
+ * Layout tokens — Desktop-first frame that scales fluidly.
+ * Figma root: Desktop - 1 (385:1473) = 1440 × 6367
+ */
+:root {
+  --layout-max-width: 90rem; /* 1440px */
+  --layout-content-max: 83.875rem; /* ~1342px content band */
+  --layout-nav-height: clamp(4.5rem, 4rem + 1vw, 6.28rem); /* ~100.5px @1440 */
+  --layout-grid-columns: 12;
+  --layout-grid-gap: clamp(1rem, 0.75rem + 1vw, 1.5rem);
+}

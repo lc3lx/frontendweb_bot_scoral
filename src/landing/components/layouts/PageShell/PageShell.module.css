@@ -1,0 +1,8 @@
+.shell {
+  width: 100%;
+  min-height: 100dvh;
+  margin-inline: auto;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  overflow-x: clip;
+}

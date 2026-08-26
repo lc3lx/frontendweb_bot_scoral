@@ -1,0 +1,1 @@
+export { ComponentLabPage } from './ComponentLabPage';

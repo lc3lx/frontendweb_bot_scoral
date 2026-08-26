@@ -1,0 +1,130 @@
+.tradeTracking {
+  position: relative;
+  overflow-x: clip;
+  /* Statistics pad-bottom covers gap to this title (~70.7px) */
+  padding-block-start: 0;
+  /* Cards bottom ~5343.7 → Security title y5424 ≈ 80.3px */
+  padding-block-end: 5.01875rem; /* 80.3px */
+}
+
+.heading {
+  margin-inline: auto;
+}
+
+.heading :global([class*='title']) {
+  line-height: 1.25; /* 73.282 / 58.626 */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+  /* Figma card gutters ≈ 19px */
+  gap: 1.1875rem;
+  align-items: stretch;
+  width: 100%;
+  /* 4×320.977 + 3×19 = 1340.908 */
+  max-width: 83.80675rem;
+  margin: 0 auto;
+  /* Title end → cards ≈ 40px */
+  margin-block-start: 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+}
+
+.card {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 14.397rem; /* 230.351px */
+  height: 100%;
+  /* Figma 55:323 — gradient top #200302 → bottom #090303 */
+  padding: 2.311rem 1.936rem; /* 36.977 / 30.977 */
+  background: linear-gradient(180deg, var(--color-card-to) 0%, var(--color-card-from) 100%);
+  border-color: var(--color-card-border);
+  border-width: 0.977px;
+  border-radius: 1.25rem; /* 20px */
+  box-shadow: none;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  width: 1.832rem; /* 29.313 */
+  height: 1.832rem;
+  aspect-ratio: 1;
+}
+
+.cardTitle {
+  margin: 0;
+  padding-block-start: 1.25rem; /* 20px */
+  font-size: clamp(1.0625rem, 0.72rem + 0.72vw, 1.3740625rem); /* → 21.985 @1440 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5; /* 32.977 / 21.985 */
+  color: var(--color-text-heading);
+}
+
+@media (min-width: 1280px) {
+  .cardTitle {
+    font-size: 1.3740625rem; /* lock Figma 21.985px */
+    line-height: 2.0610625rem; /* 32.977px */
+  }
+
+  .card {
+    /* Content+padding ≈ 244.9; Figma frame 230.35 understates padded content.
+       Keep min-height from Figma; allow natural height so body is not clipped. */
+    min-height: 14.397rem;
+  }
+}
+
+.cardBody {
+  margin: 0;
+  margin-block-start: 0.916rem; /* 14.656 */
+  max-width: 16.9466rem; /* 271.145 */
+  font-size: clamp(0.9375rem, 0.88rem + 0.22vw, 1.0687rem); /* → 17.099 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.428;
+  color: var(--color-text-body);
+}
+
+.empty {
+  margin-block-start: 2.5rem;
+  text-align: center;
+  font-family: var(--font-family-primary);
+  font-size: 1.0687rem;
+  color: var(--color-text-body);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 0.75rem + 1vw, 1.1875rem);
+  }
+
+  .cardBody {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-block-start: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+  }
+
+  .card {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tradeTracking {
+    scroll-margin-block: 0;
+  }
+}

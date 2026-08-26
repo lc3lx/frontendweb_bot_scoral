@@ -1,0 +1,20 @@
+/**
+ * Radius tokens — Landing Page cards / controls.
+ * Exact radii verified per node during section implementation.
+ */
+:root {
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-card: 2.076rem; /* ~33.22px — Figma Article card */
+  --radius-plan-card: 1.25rem; /* 20px — Bonus package cards */
+  --radius-engine-card: 1.221375rem; /* 19.542px — Bot Engine card */
+  --radius-engine-icon: 0.75rem; /* 12px — Bot Engine icon plate */
+  --radius-trading-card: 2.44275rem; /* 39.084px — Trading cards */
+  --radius-trading-chart: 1.221375rem; /* 19.542px — chart panel */
+  --radius-stats-card: 1.221375rem; /* 19.542px — metric / trades cards */
+  --radius-pill: 999px;
+}

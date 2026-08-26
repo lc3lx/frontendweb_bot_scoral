@@ -1,0 +1,123 @@
+.security {
+  position: relative;
+  overflow-x: clip;
+  /* Trade Tracking pad-bottom covers gap to this title (~80.3px) */
+  padding-block-start: 0;
+  /* Cards end ~5872.7 → Footer y5953 ≈ 80.3px */
+  padding-block-end: 5.01875rem;
+}
+
+.heading {
+  margin-inline: auto;
+}
+
+.heading :global([class*='title']) {
+  line-height: 1.25;
+  max-width: 47rem; /* ~752px Figma heading band */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  /* Figma gap ≈ 28px */
+  gap: 1.75rem;
+  align-items: stretch;
+  width: 100%;
+  /* 3×428 + 2×28 = 1340 */
+  max-width: 83.75rem;
+  margin: 0 auto;
+  /* Title → cards ≈ 40px */
+  margin-block-start: 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+}
+
+.card {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  /* Figma cards are fixed 300px — lock to avoid content-driven drift */
+  height: 18.75rem;
+  min-height: 18.75rem;
+  padding: 1.893125rem; /* 30.29px */
+  background: var(--color-trading-card); /* #0b0506 */
+  border-color: var(--color-trading-card-border);
+  border-width: 0.977px;
+  border-radius: var(--radius-card); /* 33.221px */
+  box-shadow: none;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  width: 1.832rem; /* 29.313 */
+  height: 1.832rem;
+  aspect-ratio: 1;
+}
+
+.cardTitle {
+  margin: 0;
+  padding-block-start: 2.44275rem; /* 39.084px */
+  font-size: clamp(1.125rem, 0.95rem + 0.55vw, 1.5267rem); /* → 24.427 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.4; /* 34.198 / 24.427 */
+  color: var(--color-text-heading);
+}
+
+.cardBody {
+  margin: 0;
+  margin-block-start: 0.916rem; /* 14.656 */
+  max-width: 22.977rem; /* 367.634 */
+  font-size: clamp(1rem, 0.92rem + 0.3vw, 1.221375rem); /* → 19.542 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5; /* 29.313 / 19.542 */
+  color: var(--color-text-body);
+}
+
+@media (min-width: 1280px) {
+  .cardTitle {
+    font-size: 1.5266875rem;
+    line-height: 2.137375rem;
+  }
+
+  .cardBody {
+    font-size: 1.221375rem; /* 19.542px */
+    line-height: 1.8320625rem; /* 29.313px */
+  }
+}
+
+.empty {
+  margin-block-start: 2.5rem;
+  text-align: center;
+  font-family: var(--font-family-primary);
+  font-size: 1.0687rem;
+  color: var(--color-text-body);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: clamp(1rem, 0.75rem + 1vw, 1.75rem);
+  }
+
+  .card {
+    height: auto;
+    min-height: 18.75rem;
+  }
+
+  .cardBody {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .security {
+    scroll-margin-block: 0;
+  }
+}

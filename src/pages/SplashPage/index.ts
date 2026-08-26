@@ -1,1 +1,0 @@
-export { SplashPage } from './SplashPage';

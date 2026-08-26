@@ -1,0 +1,288 @@
+.trading {
+  position: relative;
+  overflow-x: clip;
+  /*
+   * Figma gap Bot Engine cards → Trading cards = 80px.
+   * BotEngine already applies the same bottom clamp — subtract it so the
+   * combined gap stays exactly 80px (not double-counted).
+   */
+  padding-block-start: calc(5rem - clamp(2.5rem, 1.75rem + 2.5vw, 5rem));
+  /* Trading cards bottom y3961.488 → Statistics title y4061.488 = 100px */
+  padding-block-end: 6.25rem;
+}
+
+.layout {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  /* Copy → Binolla ≈39px @1440 */
+  gap: clamp(1.5rem, 1rem + 2vw, 2.4375rem);
+  width: 100%;
+}
+
+.copy {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 40.733rem; /* 651.725px */
+  padding-block-start: 0;
+}
+
+.copy :global([class*='title']) {
+  /* Multi-line heading — was 1 (too tight) */
+  line-height: 1.25;
+  max-width: 40.763rem;
+}
+
+.copy :global([class*='description']) {
+  margin-top: 1.5267rem; /* 24.427px */
+  max-width: 40.763rem;
+  font-size: clamp(1rem, 0.85rem + 0.58vw, 1.374rem); /* → 21.985 @1440 */
+  line-height: 1.95;
+  color: var(--color-text-body);
+  white-space: normal;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.75rem; /* 12px — Figma Binolla → Signal */
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  height: auto;
+  min-height: 0;
+  padding: 1.58775rem; /* 25.404px */
+  background: var(--color-trading-card);
+  /* Inset stroke — Chromium rounds 0.977px borders to 1px and inflates auto height */
+  border-color: transparent;
+  border-width: 0;
+  border-radius: var(--radius-trading-card);
+  box-shadow: inset 0 0 0 0.977px var(--color-trading-card-border);
+}
+
+.binolla {
+  flex: 1 1 16rem;
+  max-width: 21.7309rem; /* 347.695px */
+}
+
+.signal {
+  flex: 1 1 14rem;
+  max-width: 17.7805rem; /* 284.489px */
+}
+
+@media (min-width: 1280px) {
+  .copy {
+    /* Cards y3513, copy y3561 → +48px */
+    padding-block-start: 3rem;
+  }
+
+  .panel {
+    height: auto;
+    min-height: 28.0305rem; /* 448.489px — Figma card frame */
+  }
+
+  .binolla,
+  .signal {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .binolla {
+    width: 21.7309rem;
+  }
+
+  .signal {
+    width: 17.7805rem;
+  }
+}
+
+.binollaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.cardTitle {
+  font-size: 1.221375rem; /* 19.542px */
+  line-height: 1.5; /* 29.313 / 19.542 */
+  font-weight: var(--font-weight-bold);
+}
+
+.pair {
+  flex-shrink: 0;
+  font-size: 1.221375rem;
+  line-height: 1.5;
+  font-weight: var(--font-weight-regular);
+}
+
+.chartWell {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 17.099rem; /* 273.588px */
+  margin-block-start: 1.221375rem; /* 19.542px */
+  overflow: hidden;
+  border-radius: var(--radius-trading-chart);
+  background: var(--color-trading-chart);
+}
+
+.candles {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.916rem; /* ~14.66px — 155.77 − 141.11 */
+  width: 100%;
+  margin-block-start: 1.221375rem;
+}
+
+.actionBtn {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 8.8197rem; /* 141.115px */
+  /* Override Button.md full-width rule under 430px */
+  width: auto !important;
+  min-height: 3.4809rem; /* 55.695px */
+  padding-inline: 1.525rem;
+  font-size: 1.221375rem;
+  line-height: 1.5;
+}
+
+.btnDown {
+  color: var(--color-text-primary);
+  background-color: var(--color-trading-down-bg);
+  border-color: var(--color-trading-card-border);
+  box-shadow: none;
+}
+
+.btnDown:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(221, 9, 18, 0.32);
+  box-shadow: none;
+}
+
+.signalTitle {
+  width: 100%;
+  font-size: 1.221375rem;
+  line-height: 1.5;
+  font-weight: var(--font-weight-bold);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* was 19.542px — more space between signal rows */
+  width: 100%;
+  margin: 0;
+  margin-block-start: 1.8315rem; /* 29.313px before first row */
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0;
+}
+
+.rowLabel,
+.rowValue {
+  margin: 0;
+  font-size: clamp(0.9375rem, 0.88rem + 0.22vw, 1.0687rem); /* → 17.099 @1440 */
+  line-height: 1.6;
+  font-weight: var(--font-weight-regular);
+}
+
+.rowLabel {
+  color: var(--color-text-heading);
+}
+
+.rowValue {
+  flex-shrink: 0;
+  text-align: end;
+  color: var(--color-text-primary);
+}
+
+.rowValueAccent {
+  color: var(--color-red-primary);
+}
+
+@media (max-width: 1200px) {
+  .layout {
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  .copy {
+    flex: 1 1 auto;
+    max-width: 100%;
+    padding-block-start: 0;
+  }
+
+  .cards {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .binolla,
+  .signal {
+    max-width: none;
+    flex: 1 1 calc(50% - 0.375rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .cards {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .binolla,
+  .signal {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+  }
+
+  .chartWell {
+    height: clamp(12rem, 55vw, 17.099rem);
+  }
+
+  .actions {
+    gap: 0.75rem;
+  }
+
+  .actionBtn {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trading {
+    scroll-margin-block: 0;
+  }
+}

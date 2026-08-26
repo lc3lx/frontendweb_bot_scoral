@@ -1,0 +1,16 @@
+/**
+ * Breakpoint tokens — Landing Page (responsive-first).
+ * Required viewports: 320, 360, 390, 402, 430, 768, 1024, 1280, 1440+.
+ */
+:root {
+  --bp-xs: 320px;
+  --bp-sm: 360px;
+  --bp-sm-plus: 390px;
+  --bp-figma-mobile: 402px;
+  --bp-phablet: 430px;
+  --bp-tablet: 768px;
+  --bp-laptop: 1024px;
+  --bp-desktop: 1280px;
+  --bp-desktop-lg: 1440px; /* Figma Desktop - 1 width */
+  --bp-wide: 1600px;
+}

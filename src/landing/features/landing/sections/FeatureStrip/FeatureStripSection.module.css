@@ -1,0 +1,87 @@
+.strip {
+  position: relative;
+  overflow-x: clip;
+  /* Figma strip y947 vs phones bottom ~897 → ~50px; keep balanced band */
+  padding-block: clamp(1.25rem, 1rem + 1vw, 2rem);
+}
+
+.list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 0.75rem + 1.5vw, 2.4375rem); /* ~39px item gaps @1440 */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  max-width: 68.869rem; /* 1101.9px Figma group width */
+  margin-inline: auto;
+}
+
+.item {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 0.611rem; /* 9.771px Figma */
+  min-width: 0;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  width: 1.221rem; /* 19.542 */
+  height: 1.221rem;
+}
+
+.label {
+  font-family: var(--font-family-primary);
+  font-size: clamp(0.8125rem, 0.3rem + 0.85vw, 1.069rem); /* → 17.099 @1440 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.428; /* 24.427 / 17.099 */
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+/* Laptop: allow wrap to two rows without overflow */
+@media (max-width: 1280px) {
+  .list {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+    column-gap: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .list {
+    justify-content: center;
+  }
+}
+
+/* Tablet / mobile: wrap; keep readable tap targets */
+@media (max-width: 768px) {
+  .list {
+    justify-content: flex-start;
+    column-gap: clamp(1rem, 0.75rem + 2vw, 1.75rem);
+  }
+}
+
+@media (max-width: 430px) {
+  .list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+
+  .label {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list {
+    animation: none !important;
+  }
+}

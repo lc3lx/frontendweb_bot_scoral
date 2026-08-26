@@ -1,0 +1,1 @@
+export { FeatureStripSection } from './FeatureStripSection';

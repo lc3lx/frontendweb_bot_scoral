@@ -27,6 +27,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@i18n/*": ["src/i18n/*"],
       "@i18n": ["src/i18n/index.ts"],
+      "@landing/*": ["src/landing/*"],
       "@layouts/*": ["src/components/layouts/*"],
       "@layouts": ["src/components/layouts/index.ts"],
       "@pages/*": ["src/pages/*"],

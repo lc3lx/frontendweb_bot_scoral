@@ -1,0 +1,187 @@
+.pricing {
+  position: relative;
+  overflow-x: clip;
+  padding-block-start: clamp(2.5rem, 1.75rem + 2vw, 4.5rem);
+  padding-block-end: clamp(2.75rem, 2rem + 2.5vw, 5.5rem);
+}
+
+.heading {
+  max-width: 58.626rem;
+  margin-inline: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 19.6875rem); /* 315px Figma cards */
+  justify-content: center;
+  gap: 1.6875rem; /* 27px gutters 49 → 391 → 733 → 1075 */
+  width: 100%;
+  margin: 0;
+  margin-block-start: clamp(2rem, 1.25rem + 2vw, 4.125rem); /* title → cards ~104px */
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+  min-width: 0;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 19.6875rem;
+  min-height: 31.3125rem; /* 501px */
+  padding: 3.646rem 1.375rem 2.125rem; /* 58 / 22 / 34 */
+  border-width: 0.977px;
+  border-style: solid;
+  border-radius: var(--radius-plan-card);
+}
+
+.cardRed {
+  background: linear-gradient(180deg, var(--color-card-from) 0%, var(--color-card-to) 100%);
+  border-color: var(--color-card-border);
+}
+
+.cardGold {
+  background: linear-gradient(
+    180deg,
+    var(--color-plan-gold-from) 0%,
+    var(--color-plan-gold-to) 100%
+  );
+  border-color: var(--color-plan-gold-border);
+}
+
+.glow {
+  position: absolute;
+  top: -7.125rem; /* -114px */
+  inset-inline-start: -6rem; /* -96px */
+  width: 18.875rem; /* 302px */
+  height: 19.6875rem; /* 315px */
+  max-width: none;
+  pointer-events: none;
+}
+
+.badge {
+  position: absolute;
+  top: 1.021rem; /* 16.34 */
+  inset-inline-end: 1.4375rem; /* 23px */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 7.75rem; /* 124px */
+  height: 2rem; /* 32px */
+  border-radius: 2rem;
+  background: var(--color-plan-popular-badge);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card .planTitle {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 2.25rem; /* 36px */
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.22;
+  color: var(--color-text-primary);
+}
+
+.rows {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.625rem; /* 26px → 50px row pitch with 24px type */
+  margin: 1.75rem 0 0; /* 28px after 44px title → y130 */
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1.125rem; /* ~18px icon → label */
+  min-height: 1.5rem;
+}
+
+.rowIcon {
+  display: block;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+  object-fit: none;
+}
+
+.rowLabel {
+  font-size: 1.25rem; /* 20px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.2;
+  color: var(--color-text-primary);
+}
+
+.cta {
+  position: relative;
+  z-index: 1;
+  width: 16.875rem; /* 270px */
+  min-height: 3.75rem; /* 60px */
+  margin-block-start: auto;
+  margin-inline: auto;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.cardGold .cta {
+  background-color: var(--color-plan-gold-cta);
+  box-shadow: none;
+}
+
+.cardGold .cta:hover:not(:disabled) {
+  background-color: #ffb020;
+  box-shadow: none;
+}
+
+@media (max-width: 1360px) {
+  .grid {
+    grid-template-columns: repeat(2, 19.6875rem);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 19.6875rem;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .grid {
+    grid-template-columns: minmax(0, 19.6875rem);
+    width: 100%;
+  }
+
+  .gridItem,
+  .card {
+    width: 100%;
+    max-width: 19.6875rem;
+    margin-inline: auto;
+  }
+
+  .cta {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading,
+  .grid {
+    animation: none !important;
+  }
+}
