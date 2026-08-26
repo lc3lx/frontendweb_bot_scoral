@@ -22,10 +22,7 @@ type DashboardContentProps = {
 function HomeBackdrop() {
   return (
     <div className={styles.backdrop} aria-hidden="true">
-      <span className={styles.aurora} />
-      <span className={styles.orb} />
-      <span className={styles.orbAlt} />
-      <img className={styles.mark} src={dashboardAssets.homeMark} alt="" />
+      <img className={styles.bg} src={dashboardAssets.homeBg} alt="" />
       <span className={styles.veil} />
     </div>
   );
