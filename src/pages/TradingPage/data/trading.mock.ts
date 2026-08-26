@@ -37,6 +37,8 @@ export type TradingPairOption = {
   label: string;
   type: string;
   available: boolean;
+  base: string;
+  quote: string;
 };
 
 export const tradingMockData: TradingMockData = {

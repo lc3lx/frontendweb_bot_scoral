@@ -95,7 +95,7 @@
 .pairButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -109,6 +109,36 @@
 .pairButton:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+.pairFlags {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.pairFlagBase,
+.pairFlagQuote {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pairFlagBase {
+  left: 0;
+  top: 2px;
+  z-index: 1;
+}
+
+.pairFlagQuote {
+  right: 0;
+  bottom: 2px;
+  z-index: 2;
 }
 
 .pairName {
@@ -144,68 +174,6 @@
 
 .pairChange {
   color: #26c281;
-}
-
-.pairMenu {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 8px);
-  inset-inline-start: 0;
-  min-width: min(260px, 72vw);
-  max-height: 240px;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
-  overflow: auto;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: #10131a;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-}
-
-.pairEmpty {
-  padding: 10px 12px;
-  color: #6e6a6c;
-  font-size: 12px;
-}
-
-.pairOption {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: start;
-}
-
-.pairOption:hover,
-.pairOption:focus-visible {
-  background: rgba(255, 255, 255, 0.06);
-  outline: none;
-}
-
-.pairOption:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pairOptionActive {
-  background: rgba(240, 69, 78, 0.16);
-}
-
-.pairOptionType {
-  color: #6e6a6c;
-  font-size: 11px;
-  font-weight: 500;
 }
 
 .expiryBadge {

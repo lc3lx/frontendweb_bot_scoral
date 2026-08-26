@@ -728,6 +728,8 @@ export const en: Messages = {
 
       fresh: 'Fresh · {seconds}s',
 
+      scanningPairs: 'Scanning {count} pairs',
+
       profitTargetReached: 'Daily profit target reached — bot auto-stopped.',
 
       lossLimitReached: 'Daily loss limit reached — bot auto-stopped.',
@@ -749,6 +751,22 @@ export const en: Messages = {
       failed: 'Could not update bot controls. Please try again.',
 
       selectPair: 'Select at least one trading pair before starting the bot.',
+
+      started: 'Bot started — scanning your selected pairs.',
+
+      paused: 'Bot paused. Signals keep updating.',
+
+      stopped: 'Bot stopped. No new trades will be opened.',
+
+      applied: 'Settings applied to the bot.',
+
+      starting: 'Starting bot…',
+
+      pausing: 'Pausing bot…',
+
+      stopping: 'Stopping bot…',
+
+      applying: 'Applying settings…',
 
     },
 

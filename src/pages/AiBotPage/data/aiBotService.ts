@@ -97,13 +97,22 @@ function mapStakeModeLabel(stakeMode: string | null | undefined): string | null 
   return t(`aiBot.modals.brandedStrategy.${option.titleKey}`);
 }
 
+export type AiBotSignalSnapshot = {
+  signal: string;
+  signalSide: 'up' | 'down' | 'none';
+  strength: string;
+  updated: string;
+  freshSeconds: number;
+  market: string;
+  marketLabel: string;
+};
+
 export const aiBotService = {
   async fetchData(preferredAsset?: string | null): Promise<AiBotMockData> {
     const data = structuredClone(AI_BOT_MOCK);
 
     try {
-      const [status, balance, trades, bot, strategies] = await Promise.all([
-        getAccountStatusCached().catch(() => null),
+      const [balance, trades, bot, strategies] = await Promise.all([
         binollaApi.balance(timedSignal(MARKET_FETCH_MS)).catch(() => null),
         tradesApi.list({ page: 1, pageSize: 100 }).catch(() => null),
         botApi.status().catch(() => null),
@@ -151,30 +160,9 @@ export const aiBotService = {
         (bot?.asset ?? bot?.assets?.[0] ?? preferredAsset ?? '').trim() || null;
 
       if (asset) {
-        data.status.market = asset;
+        data.status.market = formatPairLabel(asset);
         if (!bot?.asset && !bot?.assets?.[0]) {
           data.configuration.tradingPair = preferredAsset ?? asset;
-        }
-      }
-
-      if (asset && canBrowseMarket(status?.botAccess)) {
-        const rsi = await strategiesApi
-          .rsiSignal(asset, 60, timedSignal(MARKET_FETCH_MS))
-          .catch(() => null);
-        if (rsi) {
-          data.status.signal = formatSignal(rsi.signal);
-          data.status.signalSide = signalSide(rsi.signal);
-          data.status.strength = Number(rsi.liveRsi ?? rsi.rsi).toFixed(2);
-          const candleMs = Date.parse(rsi.candleTime);
-          data.status.updated = Number.isFinite(candleMs)
-            ? new Date(candleMs).toLocaleTimeString('en-GB', { hour12: false })
-            : new Date().toLocaleTimeString('en-GB', { hour12: false });
-          data.status.freshSeconds = Number.isFinite(candleMs)
-            ? Math.max(0, Math.floor((Date.now() - candleMs) / 1000))
-            : 0;
-          data.status.indicator = t('common.rsi');
-          data.status.strategy = strategyName;
-          data.status.market = rsi.asset || asset;
         }
       }
     } catch {
@@ -182,6 +170,38 @@ export const aiBotService = {
     }
 
     return data;
+  },
+
+  async fetchSignalSnapshot(asset: string): Promise<AiBotSignalSnapshot | null> {
+    const symbol = asset.trim();
+    if (!symbol) return null;
+
+    try {
+      const status = await getAccountStatusCached().catch(() => null);
+      if (!canBrowseMarket(status?.botAccess)) return null;
+
+      const rsi = await strategiesApi
+        .rsiSignal(symbol, 60, timedSignal(MARKET_FETCH_MS))
+        .catch(() => null);
+      if (!rsi) return null;
+
+      const candleMs = Date.parse(rsi.candleTime);
+      return {
+        signal: formatSignal(rsi.signal),
+        signalSide: signalSide(rsi.signal),
+        strength: Number(rsi.liveRsi ?? rsi.rsi).toFixed(2),
+        updated: Number.isFinite(candleMs)
+          ? new Date(candleMs).toLocaleTimeString('en-GB', { hour12: false })
+          : new Date().toLocaleTimeString('en-GB', { hour12: false }),
+        freshSeconds: Number.isFinite(candleMs)
+          ? Math.max(0, Math.floor((Date.now() - candleMs) / 1000))
+          : 0,
+        market: rsi.asset || symbol,
+        marketLabel: formatPairLabel(rsi.asset || symbol),
+      };
+    } catch {
+      return null;
+    }
   },
 
   async applyControl(

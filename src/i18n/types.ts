@@ -766,6 +766,8 @@ export type Messages = {
 
       fresh: string;
 
+      scanningPairs: string;
+
       profitTargetReached: string;
 
       lossLimitReached: string;
@@ -787,6 +789,22 @@ export type Messages = {
       failed: string;
 
       selectPair: string;
+
+      started: string;
+
+      paused: string;
+
+      stopped: string;
+
+      applied: string;
+
+      starting: string;
+
+      pausing: string;
+
+      stopping: string;
+
+      applying: string;
 
     };
 

@@ -192,7 +192,8 @@
 }
 
 .stateChip,
-.freshChip {
+.freshChip,
+.rotateChip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -240,12 +241,36 @@
   font-weight: 500;
 }
 
+.rotateChip {
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  background: rgba(96, 165, 250, 0.1);
+  color: #93c5fd;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
 .signalGrid {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 18px;
+}
+
+.signalGridPulse {
+  animation: signalSwap 420ms ease;
+}
+
+@keyframes signalSwap {
+  from {
+    opacity: 0.35;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .signalCell {
@@ -587,6 +612,18 @@
   text-align: center;
 }
 
+.controlFeedback {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #86efac;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+
 .controlsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -791,7 +828,8 @@
   .statCell,
   .settingRow,
   .controlButton,
-  .ghostButton {
+  .ghostButton,
+  .signalGridPulse {
     animation: none !important;
     transition: none !important;
   }

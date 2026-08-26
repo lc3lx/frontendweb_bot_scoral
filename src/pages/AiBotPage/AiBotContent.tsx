@@ -7,6 +7,7 @@ import { HomeTilt } from '@pages/DashboardPage/HomeTilt';
 import { useAiBotModals } from './AiBotModalContext';
 import {
   SIGNAL_POLL_MS,
+  SIGNAL_ROTATE_MS,
   TRADE_AMOUNTS,
   type AiBotMockData,
   type EngineControlId,
@@ -14,6 +15,7 @@ import {
 import { aiBotService } from './data/aiBotService';
 import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import { ApiClientError } from '@shared/api';
+import { formatPairLabel } from '@shared/market/pairDisplay';
 import styles from './AiBotPage.module.css';
 
 type AiBotContentProps = {
@@ -56,8 +58,22 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const [lossLimit, setLossLimit] = useState('30');
   const [busy, setBusy] = useState(false);
   const [controlError, setControlError] = useState<string | null>(null);
+  const [controlFeedback, setControlFeedback] = useState<string | null>(null);
+  const [signalPulse, setSignalPulse] = useState(0);
   const targetsSeededRef = useRef(false);
   const pairsSeededRef = useRef(false);
+  const rotateIndexRef = useRef(0);
+  const feedbackTimerRef = useRef<number | null>(null);
+
+  const showFeedback = useCallback((message: string) => {
+    setControlFeedback(message);
+    setControlError(null);
+    if (feedbackTimerRef.current) window.clearTimeout(feedbackTimerRef.current);
+    feedbackTimerRef.current = window.setTimeout(() => {
+      setControlFeedback(null);
+      feedbackTimerRef.current = null;
+    }, 4500);
+  }, []);
 
   const load = useCallback(async () => {
     const primaryPair = configuration.tradingPairIds[0] ?? null;
@@ -65,7 +81,24 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       aiBotService.fetchData(primaryPair),
       aiBotService.fetchBotRuntime(),
     ]);
-    setData(next);
+    setData((prev) => {
+      if (!prev) return next;
+      return {
+        ...next,
+        status: {
+          ...next.status,
+          // Keep rotating signal fields until the rotator overwrites them.
+          signal: prev.status.signal,
+          signalSide: prev.status.signalSide,
+          strength: prev.status.strength,
+          updated: prev.status.updated,
+          freshSeconds: prev.status.freshSeconds,
+          market: prev.status.market,
+          indicator: configuration.indicator || next.status.indicator,
+          strategy: configuration.strategy || next.status.strategy,
+        },
+      };
+    });
     if (!targetsSeededRef.current) {
       setProfitTarget(String(aiBotService.parseTargetAbs(next.targets.profitTarget, 50)));
       setLossLimit(String(aiBotService.parseTargetAbs(next.targets.lossLimit, 30)));
@@ -89,7 +122,45 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     if (next.status.botState === 'running') setActiveControl('start');
     else if (next.status.botState === 'paused') setActiveControl('pause');
     else setActiveControl('stop');
-  }, [configuration.tradingPairIds, setBrandedStrategy, setTradingPairIds, syncFromBotRuntime]);
+  }, [
+    configuration.indicator,
+    configuration.strategy,
+    configuration.tradingPairIds,
+    setBrandedStrategy,
+    setTradingPairIds,
+    syncFromBotRuntime,
+  ]);
+
+  const rotateSignal = useCallback(async () => {
+    const pairs = configuration.tradingPairIds.filter(Boolean);
+    if (pairs.length === 0) return;
+
+    const index = rotateIndexRef.current % pairs.length;
+    const asset = pairs[index]!;
+    rotateIndexRef.current = (index + 1) % pairs.length;
+
+    const snapshot = await aiBotService.fetchSignalSnapshot(asset);
+    if (!snapshot) return;
+
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        status: {
+          ...prev.status,
+          signal: snapshot.signal,
+          signalSide: snapshot.signalSide,
+          strength: snapshot.strength,
+          updated: snapshot.updated,
+          freshSeconds: snapshot.freshSeconds,
+          market: snapshot.marketLabel,
+          indicator: configuration.indicator || prev.status.indicator,
+          strategy: configuration.strategy || prev.status.strategy,
+        },
+      };
+    });
+    setSignalPulse((value) => value + 1);
+  }, [configuration.indicator, configuration.strategy, configuration.tradingPairIds]);
 
   useEffect(() => {
     void load();
@@ -103,18 +174,43 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   }, [load]);
 
   useEffect(() => {
+    void rotateSignal();
+    const id = window.setInterval(() => {
+      void rotateSignal();
+    }, SIGNAL_ROTATE_MS);
+    return () => window.clearInterval(id);
+  }, [rotateSignal]);
+
+  useEffect(() => {
     syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION, profitTarget, lossLimit);
   }, [syncBotSettingsFromPage, tradeAmount, profitTarget, lossLimit]);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) window.clearTimeout(feedbackTimerRef.current);
+    };
+  }, []);
 
   async function handleControl(controlId: EngineControlId) {
     if (busy) return;
     if (controlId === 'start' && configuration.tradingPairIds.length === 0) {
       setControlError(t.aiBot.controls.selectPair);
+      setControlFeedback(null);
       return;
     }
     setBusy(true);
     setControlError(null);
     setActiveControl(controlId);
+    const pendingMessage =
+      controlId === 'start'
+        ? t.aiBot.controls.starting
+        : controlId === 'pause'
+          ? t.aiBot.controls.pausing
+          : controlId === 'stop'
+            ? t.aiBot.controls.stopping
+            : t.aiBot.controls.applying;
+    setControlFeedback(pendingMessage);
+
     try {
       await aiBotService.applyControl(controlId, {
         pairs: configuration.tradingPairIds.length
@@ -130,6 +226,16 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       });
       pairsSeededRef.current = false;
       await load();
+      void rotateSignal();
+      const doneMessage =
+        controlId === 'start'
+          ? t.aiBot.controls.started
+          : controlId === 'pause'
+            ? t.aiBot.controls.paused
+            : controlId === 'stop'
+              ? t.aiBot.controls.stopped
+              : t.aiBot.controls.applied;
+      showFeedback(doneMessage);
     } catch (err) {
       if (err instanceof ApiClientError) {
         setControlError(err.message);
@@ -138,6 +244,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       } else {
         setControlError(t.aiBot.controls.failed);
       }
+      setControlFeedback(null);
       await load();
     } finally {
       setBusy(false);
@@ -243,9 +350,13 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       ltr: true,
     },
     { label: t.aiBot.status.strength, value: data.status.strength, ltr: true },
-    { label: t.aiBot.status.indicator, value: data.status.indicator },
-    { label: t.aiBot.status.strategy, value: data.status.strategy },
-    { label: t.aiBot.status.market, value: data.status.market || configuration.tradingPair, ltr: true },
+    { label: t.aiBot.status.indicator, value: configuration.indicator || data.status.indicator },
+    { label: t.aiBot.status.strategy, value: configuration.strategy || data.status.strategy },
+    {
+      label: t.aiBot.status.market,
+      value: data.status.market || formatPairLabel(configuration.tradingPairIds[0] ?? '') || configuration.tradingPair,
+      ltr: true,
+    },
     { label: t.aiBot.status.updated, value: data.status.updated, ltr: true },
   ];
 
@@ -263,6 +374,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
               <section
                 className={`${styles.homeCard} ${styles.signalCard}`}
                 aria-label={t.aiBot.status.aria}
+                data-signal-pulse={signalPulse}
               >
                 <div className={styles.statusHead}>
                   <div className={styles.botIconWrap}>
@@ -285,6 +397,14 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                       <span className={styles.freshChip}>
                         {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
                       </span>
+                      {configuration.tradingPairIds.length > 1 ? (
+                        <span className={styles.rotateChip}>
+                          {t.aiBot.status.scanningPairs.replace(
+                            '{count}',
+                            String(configuration.tradingPairIds.length),
+                          )}
+                        </span>
+                      ) : null}
                     </div>
                     {stopReasonLabel && data.status.botState === 'stopped' ? (
                       <p className={styles.stopReason}>{stopReasonLabel}</p>
@@ -292,7 +412,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                   </div>
                 </div>
 
-                <div className={styles.signalGrid}>
+                <div key={signalPulse} className={`${styles.signalGrid} ${styles.signalGridPulse}`}>
                   {signalRows.map((row) => (
                     <div key={row.label} className={styles.signalCell}>
                       <p className={styles.signalLabel}>{row.label}</p>
@@ -491,6 +611,11 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                 {controlError ? (
                   <p className={styles.controlError} role="alert">
                     {controlError}
+                  </p>
+                ) : null}
+                {controlFeedback ? (
+                  <p className={styles.controlFeedback} role="status">
+                    {controlFeedback}
                   </p>
                 ) : null}
                 <div className={styles.controlsGrid}>

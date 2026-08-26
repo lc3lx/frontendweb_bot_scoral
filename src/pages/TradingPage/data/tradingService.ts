@@ -7,7 +7,8 @@ import {
 import { canBrowseMarket, canTrade, getAdminNotApprovedTradeMessage } from '@shared/access/webAccess';
 import { MARKET_FETCH_MS, timedSignal } from '@shared/api/timedSignal';
 import { getAccountStatusCached } from '@shared/api/botSessionCache';
-import { pickPreferredMarketAsset } from '@shared/market/preferAsset';
+import { pickPreferredMarketAsset, filterFxCurrencyAssets, isPreferredMarketSymbol } from '@shared/market/preferAsset';
+import { formatPairLabel, parseFxPair, pairTypeFromSymbol } from '@shared/market/pairDisplay';
 import { t } from '@shared/i18n';
 import { tradingMockData, type TradingCandle, type TradingMockData, type TradingPairOption } from './trading.mock';
 import { tradeService } from '@services/trades';
@@ -46,17 +47,6 @@ const DURATION_OPTIONS = [
   { label: '2 min', seconds: 120 },
   { label: '5 min', seconds: 300 },
 ] as const;
-
-function formatPairLabel(symbol: string, name?: string): string {
-  if (name && name.includes('/')) return name.split(' ')[0] ?? name;
-  const base = symbol.replace(/_otc$/i, '');
-  if (base.length === 6) return `${base.slice(0, 3)}/${base.slice(3)}`;
-  return base;
-}
-
-function pairTypeFromSymbol(symbol: string): string {
-  return symbol.toLowerCase().includes('otc') ? 'OTC' : 'Global';
-}
 
 export function resolveEntryFromCandles(
   candles: TradingCandle[],
@@ -368,16 +358,27 @@ export const tradingService = {
 
   async listPairs(): Promise<TradingPairOption[]> {
     const assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
-    const list = assets?.assets ?? [];
-    return list
-      .filter((a) => a.symbol)
-      .map((a) => ({
-        symbol: a.symbol,
-        label: formatPairLabel(a.symbol, a.name),
-        type: pairTypeFromSymbol(a.symbol),
-        available: a.available !== false,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+    if (!assets?.assets?.length) return [];
+
+    const fxAssets = filterFxCurrencyAssets(assets.assets);
+    return fxAssets
+      .map((asset) => {
+        const parsed = parseFxPair(asset.symbol);
+        return {
+          symbol: asset.symbol,
+          label: formatPairLabel(asset.symbol, asset.name),
+          type: pairTypeFromSymbol(asset.symbol),
+          available: asset.available !== false,
+          base: parsed?.base ?? '',
+          quote: parsed?.quote ?? '',
+        };
+      })
+      .sort((a, b) => {
+        const aPreferred = isPreferredMarketSymbol(a.symbol) ? 0 : 1;
+        const bPreferred = isPreferredMarketSymbol(b.symbol) ? 0 : 1;
+        if (aPreferred !== bPreferred) return aPreferred - bPreferred;
+        return a.label.localeCompare(b.label);
+      });
   },
 
   /** Newest running trade for an asset (bot or user). */
