@@ -206,10 +206,15 @@
     visibility 0s;
 }
 
+/* Single grid child so collapsed 0fr actually collapses (no implicit auto row). */
+.drawerInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .drawerNav,
 .drawerCta {
   min-height: 0;
-  overflow: hidden;
 }
 
 .drawerList {
@@ -275,7 +280,19 @@
   width: 100%;
 }
 
+@media (max-width: 1024px) {
+  .bar {
+    min-height: 4.25rem;
+    padding-block: 0.5rem;
+  }
+}
+
 @media (max-width: 430px) {
+  .bar {
+    min-height: 3.5rem;
+    padding-block: 0.35rem;
+  }
+
   .cta :global(a),
   .cta :global(button) {
     min-height: 2.75rem;
@@ -290,7 +307,12 @@
   }
 
   .logo {
-    width: 9rem;
+    width: 8.25rem;
+  }
+
+  .menuToggle {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 }
 

@@ -155,23 +155,25 @@ export function HeaderSection() {
           // out of the tab order — React 18 has no typed `inert`.
           aria-hidden={!menuOpen}
         >
-          <nav className={styles.drawerNav} aria-label={t.a11y.primaryNav}>
-            <ul className={styles.drawerList}>
-              {HEADER_NAV_ITEMS.map((item, index) => (
-                <li
-                  key={item.id}
-                  className={styles.drawerItem}
-                  style={{ '--drawer-index': index } as CSSProperties}
-                >
-                  <a className={styles.drawerLink} href={item.href} onClick={closeMenu}>
-                    {t.header.nav[item.id]}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className={styles.drawerInner}>
+            <nav className={styles.drawerNav} aria-label={t.a11y.primaryNav}>
+              <ul className={styles.drawerList}>
+                {HEADER_NAV_ITEMS.map((item, index) => (
+                  <li
+                    key={item.id}
+                    className={styles.drawerItem}
+                    style={{ '--drawer-index': index } as CSSProperties}
+                  >
+                    <a className={styles.drawerLink} href={item.href} onClick={closeMenu}>
+                      {t.header.nav[item.id]}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          <div className={styles.drawerCta}>{actionButtons}</div>
+            <div className={styles.drawerCta}>{actionButtons}</div>
+          </div>
         </div>
       )}
     </SectionContainer>
