@@ -27,7 +27,7 @@ export function TradeTrackingSection() {
       aria-labelledby="trade-tracking-heading"
     >
       <SectionTitle
-        className={`${styles.heading} motionSlideUp`}
+        className={`${styles.heading} motionDepthIn`}
         align="center"
         titleAs="h2"
         eyebrow={t.tradeTracking.eyebrow}
@@ -35,7 +35,7 @@ export function TradeTrackingSection() {
       />
 
       {hasCards ? (
-        <ul className={`${styles.grid} motionFadeIn motionStaggerChildren`}>
+        <ul className={`${styles.grid} motionStaggerDepth`}>
           {TRADE_TRACKING_CARDS.map((card) => {
             const copy = t.tradeTracking.cards[card.id as keyof typeof t.tradeTracking.cards];
             return (
@@ -44,7 +44,7 @@ export function TradeTrackingSection() {
                   as="article"
                   variant="glow"
                   padding="none"
-                  className={styles.card}
+                  className={`${styles.card} motionLift3d`}
                   data-figma-node={card.figmaNodeId}
                   aria-label={copy.title}
                 >

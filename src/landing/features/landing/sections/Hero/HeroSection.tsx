@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { Badge } from '@landing/components/atoms/Badge';
 import { Button } from '@landing/components/atoms/Button';
 import { Text } from '@landing/components/atoms/Text';
+import { TiltSurface } from '@landing/components/molecules/TiltSurface';
 import { SectionContainer } from '@landing/components/organisms/SectionContainer';
 import { BREAKPOINTS } from '@landing/constants/breakpoints';
 import { FIGMA_LANDING_NODES } from '@landing/constants/figma';
 import { useMinWidth } from '@landing/hooks/useBreakpoint';
 import { useI18n } from '@landing/i18n';
 import { LazyImage, preloadHeroAsset } from '@landing/performance';
+import { cn } from '@landing/utils/cn';
 import { heroAssets } from '../../data';
 import { LANDING_SECTION_IDS } from '../../constants/sectionIds';
 import { CREATE_ACCOUNT_HREF, TELEGRAM_BOT_HREF } from '../../constants/links';
@@ -15,6 +17,7 @@ import styles from './HeroSection.module.css';
 
 /**
  * Landing Hero — Figma 55:515 (copy) + 388:1507 (phones) + 388:1529/1530 (glows)
+ * Depth: drifting glows, 3D copy entrance, floating tilted phones.
  */
 export function HeroSection() {
   const { t } = useI18n();
@@ -33,12 +36,12 @@ export function HeroSection() {
       spacing="none"
       width="full"
       background="transparent"
-      className={styles.hero}
+      className={cn(styles.hero, 'scene3d')}
       data-figma-node={FIGMA_LANDING_NODES.heroCopy}
     >
       <div className={styles.glowLayer} aria-hidden="true">
         <img
-          className={styles.glowLeft}
+          className={cn(styles.glowLeft, 'motionGlowDrift')}
           src={heroAssets.glowLeft}
           alt=""
           width={754}
@@ -48,7 +51,7 @@ export function HeroSection() {
           fetchPriority="low"
         />
         <img
-          className={styles.glowRight}
+          className={cn(styles.glowRight, 'motionGlowDriftAlt')}
           src={heroAssets.glowRight}
           alt=""
           width={646}
@@ -60,7 +63,7 @@ export function HeroSection() {
       </div>
 
       <div className={styles.layout}>
-        <div className={`${styles.copy} motionSlideUp`}>
+        <div className={cn(styles.copy, 'motionDepthIn')}>
           <Badge
             variant="soft"
             className={styles.eyebrow}
@@ -124,36 +127,40 @@ export function HeroSection() {
         </div>
 
         <div
-          className={`${styles.visual} motionScaleIn`}
+          className={cn(styles.visual, 'motionOrbitIn')}
           data-figma-node={FIGMA_LANDING_NODES.heroPhones}
         >
-          {isDesktopPhones ? (
-            <LazyImage
-              className={styles.phonesDuo}
-              src={heroAssets.phonesDuo}
-              alt={t.hero.phonesDuoAlt}
-              width={563}
-              height={749}
-              priority
-            />
-          ) : (
-            <div className={styles.phonesStack}>
-              <LazyImage
-                className={styles.phone}
-                src={heroAssets.phoneSplash}
-                alt={t.hero.phoneSplashAlt}
-                width={249}
-                height={591}
-              />
-              <LazyImage
-                className={styles.phone}
-                src={heroAssets.phoneDashboard}
-                alt={t.hero.phoneDashboardAlt}
-                width={249}
-                height={591}
-              />
+          <TiltSurface className={styles.phoneStage} maxTiltDeg={10} liftPx={18} glare>
+            <div className={cn(styles.phoneFloat, 'tilt3dLayer', 'motionFloat3d')}>
+              {isDesktopPhones ? (
+                <LazyImage
+                  className={styles.phonesDuo}
+                  src={heroAssets.phonesDuo}
+                  alt={t.hero.phonesDuoAlt}
+                  width={563}
+                  height={749}
+                  priority
+                />
+              ) : (
+                <div className={styles.phonesStack}>
+                  <LazyImage
+                    className={styles.phone}
+                    src={heroAssets.phoneSplash}
+                    alt={t.hero.phoneSplashAlt}
+                    width={249}
+                    height={591}
+                  />
+                  <LazyImage
+                    className={cn(styles.phone, 'motionFloat3dDelayed')}
+                    src={heroAssets.phoneDashboard}
+                    alt={t.hero.phoneDashboardAlt}
+                    width={249}
+                    height={591}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </TiltSurface>
         </div>
       </div>
     </SectionContainer>

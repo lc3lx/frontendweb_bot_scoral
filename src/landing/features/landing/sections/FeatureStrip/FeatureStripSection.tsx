@@ -23,9 +23,9 @@ export function FeatureStripSection() {
       data-figma-node={FIGMA_LANDING_NODES.featureStrip}
       aria-label={t.a11y.productHighlights}
     >
-      <ul className={`${styles.list} motionFadeIn motionStaggerChildren`}>
+      <ul className={`${styles.list} motionStaggerDepth`}>
         {FEATURE_STRIP_ITEMS.map((item) => (
-          <li key={item.id} className={styles.item} data-figma-node={item.figmaNodeId}>
+          <li key={item.id} className={`${styles.item} motionLift3d`} data-figma-node={item.figmaNodeId}>
             <img
               className={styles.icon}
               src={item.iconSrc}

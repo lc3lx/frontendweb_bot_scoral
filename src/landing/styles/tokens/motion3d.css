@@ -181,6 +181,108 @@
   }
 }
 
+/* Soft entrance that swings up from below with a slight yaw. */
+.motionOrbitIn {
+  opacity: 0;
+  transform: perspective(var(--depth-perspective)) translateY(36px) translateZ(-80px)
+    rotateX(8deg) rotateY(-6deg);
+  transform-origin: 50% 80%;
+  will-change: opacity, transform;
+}
+
+.motionOrbitIn.is-visible {
+  animation: motion-orbit-in var(--motion-duration-slower) var(--motion-ease-emphasized) both;
+}
+
+@keyframes motion-orbit-in {
+  to {
+    opacity: 1;
+    transform: perspective(var(--depth-perspective)) translateY(0) translateZ(0) rotateX(0)
+      rotateY(0);
+  }
+}
+
+/* Ambient glow drift — decorative layers only. */
+.motionGlowDrift {
+  animation: motion-glow-drift 14s var(--motion-ease-standard) infinite alternate;
+  will-change: transform, opacity;
+}
+
+.motionGlowDriftAlt {
+  animation: motion-glow-drift-alt 18s var(--motion-ease-standard) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes motion-glow-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  to {
+    transform: translate3d(4%, 3%, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes motion-glow-drift-alt {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.04);
+    opacity: 0.75;
+  }
+  to {
+    transform: translate3d(-5%, -2%, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Staggered depth pop for card grids. */
+.motionStaggerDepth > * {
+  opacity: 0;
+  transform: perspective(var(--depth-perspective)) translateZ(-100px) translateY(18px)
+    rotateX(8deg);
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+}
+
+.motionStaggerDepth.is-visible > * {
+  animation: motion-depth-card var(--motion-duration-slower) var(--motion-ease-emphasized) both;
+}
+
+.motionStaggerDepth.is-visible > *:nth-child(1) {
+  animation-delay: calc(var(--motion-stagger-step) * 0);
+}
+.motionStaggerDepth.is-visible > *:nth-child(2) {
+  animation-delay: calc(var(--motion-stagger-step) * 1);
+}
+.motionStaggerDepth.is-visible > *:nth-child(3) {
+  animation-delay: calc(var(--motion-stagger-step) * 2);
+}
+.motionStaggerDepth.is-visible > *:nth-child(4) {
+  animation-delay: calc(var(--motion-stagger-step) * 3);
+}
+.motionStaggerDepth.is-visible > *:nth-child(5) {
+  animation-delay: calc(var(--motion-stagger-step) * 4);
+}
+.motionStaggerDepth.is-visible > *:nth-child(6) {
+  animation-delay: calc(var(--motion-stagger-step) * 5);
+}
+.motionStaggerDepth.is-visible > *:nth-child(7) {
+  animation-delay: calc(var(--motion-stagger-step) * 6);
+}
+.motionStaggerDepth.is-visible > *:nth-child(8) {
+  animation-delay: calc(var(--motion-stagger-step) * 7);
+}
+.motionStaggerDepth.is-visible > *:nth-child(9) {
+  animation-delay: calc(var(--motion-stagger-step) * 8);
+}
+
+@keyframes motion-depth-card {
+  to {
+    opacity: 1;
+    transform: perspective(var(--depth-perspective)) translateZ(0) translateY(0) rotateX(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tilt3d,
   .tilt3dLayer,
@@ -189,14 +291,18 @@
   .motionLift3d:hover,
   .motionDepthIn,
   .motionDepthInStart,
-  .motionDepthInEnd {
+  .motionDepthInEnd,
+  .motionOrbitIn,
+  .motionStaggerDepth > * {
     transform: none !important;
     transition: none !important;
     animation: none !important;
     opacity: 1 !important;
   }
 
-  .motionFloat3d {
+  .motionFloat3d,
+  .motionGlowDrift,
+  .motionGlowDriftAlt {
     animation: none !important;
   }
 

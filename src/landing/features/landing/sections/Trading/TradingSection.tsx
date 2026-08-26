@@ -29,7 +29,7 @@ export function TradingSection() {
     >
       <div className={styles.layout}>
         <SectionTitle
-          className={`${styles.copy} motionSlideUp`}
+          className={`${styles.copy} motionDepthIn`}
           align="start"
           titleAs="h2"
           eyebrow={t.trading.eyebrow}
@@ -37,7 +37,7 @@ export function TradingSection() {
           description={t.trading.description}
         />
 
-        <div className={`${styles.cards} motionFadeIn`}>
+        <div className={`${styles.cards} motionOrbitIn`}>
           <Card
             as="article"
             variant="flat"

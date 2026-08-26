@@ -27,7 +27,7 @@ export function SecuritySection() {
       aria-labelledby="security-heading"
     >
       <SectionTitle
-        className={`${styles.heading} motionSlideUp`}
+        className={`${styles.heading} motionDepthIn`}
         align="center"
         titleAs="h2"
         eyebrow={t.security.eyebrow}
@@ -35,7 +35,7 @@ export function SecuritySection() {
       />
 
       {hasCards ? (
-        <ul className={`${styles.grid} motionFadeIn motionStaggerChildren`}>
+        <ul className={`${styles.grid} motionStaggerDepth`}>
           {SECURITY_CARDS.map((card) => {
             const copy = t.security.cards[card.id as keyof typeof t.security.cards];
             return (
@@ -44,7 +44,7 @@ export function SecuritySection() {
                   as="article"
                   variant="flat"
                   padding="none"
-                  className={styles.card}
+                  className={`${styles.card} motionLift3d`}
                   data-figma-node={card.figmaNodeId}
                   aria-label={copy.title}
                 >

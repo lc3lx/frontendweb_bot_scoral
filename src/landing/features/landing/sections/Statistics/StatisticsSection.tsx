@@ -40,7 +40,7 @@ export function StatisticsSection() {
       aria-labelledby="statistics-heading"
     >
       <SectionTitle
-        className={`${styles.heading} motionSlideUp`}
+        className={`${styles.heading} motionDepthIn`}
         align="center"
         titleAs="h2"
         eyebrow={t.statistics.eyebrow}
@@ -49,7 +49,7 @@ export function StatisticsSection() {
 
       {hasMetrics ? (
         <ul
-          className={`${styles.metrics} motionFadeIn motionStaggerChildren`}
+          className={`${styles.metrics} motionStaggerDepth`}
           data-figma-node={FIGMA_LANDING_NODES.statisticsMetrics}
         >
           {STATISTICS_METRICS.map((metric) => {
@@ -75,7 +75,7 @@ export function StatisticsSection() {
         </ul>
       ) : null}
 
-      <div className={`${styles.panels} motionFadeIn`}>
+      <div className={`${styles.panels} motionOrbitIn`}>
         {hasChart ? (
           <figure className={styles.chart} data-figma-node={STATISTICS_CHART.figmaNodeId}>
             <img

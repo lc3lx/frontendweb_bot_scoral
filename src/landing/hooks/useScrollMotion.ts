@@ -1,11 +1,21 @@
 import { useEffect, useState } from 'react';
 
-const REVEAL_SELECTOR =
-  '.motionFadeIn, .motionSlideUp, .motionSlideDown, .motionScaleIn, .motionStaggerChildren';
+const REVEAL_SELECTOR = [
+  '.motionFadeIn',
+  '.motionSlideUp',
+  '.motionSlideDown',
+  '.motionScaleIn',
+  '.motionStaggerChildren',
+  '.motionDepthIn',
+  '.motionDepthInStart',
+  '.motionDepthInEnd',
+  '.motionOrbitIn',
+  '.motionStaggerDepth',
+].join(', ');
 
 /**
  * Adds `.is-visible` when motion targets enter the viewport.
- * Animations are defined in `styles/tokens/motion.css`.
+ * Animations are defined in `styles/tokens/motion.css` + `motion3d.css`.
  */
 export function useScrollReveal(enabled = true) {
   useEffect(() => {
@@ -29,8 +39,8 @@ export function useScrollReveal(enabled = true) {
       },
       {
         root: null,
-        rootMargin: '0px 0px -10% 0px',
-        threshold: 0.1,
+        rootMargin: '0px 0px -8% 0px',
+        threshold: 0.08,
       },
     );
 

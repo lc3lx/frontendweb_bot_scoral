@@ -144,12 +144,24 @@
   width: 100%;
 }
 
+.phoneStage {
+  width: 100%;
+  max-width: min(100%, 35.1875rem);
+  border-radius: 1.5rem;
+}
+
+.phoneFloat {
+  width: 100%;
+  transform-style: preserve-3d;
+}
+
 .phonesDuo {
   display: block;
-  width: min(100%, 35.1875rem); /* 563px */
+  width: 100%;
   height: auto;
   aspect-ratio: 563 / 749;
   object-fit: contain;
+  filter: drop-shadow(0 28px 48px rgba(0, 0, 0, 0.45));
 }
 
 .phonesStack {
