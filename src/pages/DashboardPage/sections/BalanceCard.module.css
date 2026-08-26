@@ -58,6 +58,7 @@
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.05em;
+  color: var(--color-text-primary);
 }
 
 .growth {
@@ -127,7 +128,7 @@
 }
 
 .neutral {
-  color: #f5f5f5;
+  color: var(--color-text-primary);
 }
 
 @keyframes balanceOrb {

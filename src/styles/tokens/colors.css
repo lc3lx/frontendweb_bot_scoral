@@ -7,11 +7,12 @@
   --color-red-accent: #dd0101;
   --color-red-bright: #ff2a34;
   --color-red-link: #f0454e;
-  --color-text-primary: #f5f5f5;
+  --color-text-primary: #c9c5c6;
   --color-text-secondary: #9a9698;
   --color-text-muted: #8a8688;
   --color-text-label: #a8a4a6;
   --color-text-faint: #5a5658;
+  --color-text-on-accent: #ece8e9;
   --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-focus-ring: rgba(221, 9, 18, 0.45);
   --color-feature-bg: rgba(221, 9, 18, 0.1);
