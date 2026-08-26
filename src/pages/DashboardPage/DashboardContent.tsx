@@ -69,17 +69,6 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
   return (
     <div className={styles.page} data-figma-node={figmaNode}>
       <HomeBackdrop />
-      <header className={styles.hero}>
-        <div>
-          <p className={styles.kicker}>{t.dashboard.hero.kicker}</p>
-          <h1 className={styles.heroTitle}>{t.dashboard.header.title}</h1>
-          <p className={styles.heroSubtitle}>{t.dashboard.hero.subtitle}</p>
-        </div>
-        <span className={styles.liveBadge}>
-          <span className={styles.liveDot} aria-hidden="true" />
-          {t.dashboard.hero.live}
-        </span>
-      </header>
 
       <section className={styles.banner} aria-labelledby="dashboard-onboarding-title">
         <div className={styles.bannerIconWrap}>

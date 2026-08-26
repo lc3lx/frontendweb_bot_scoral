@@ -15,9 +15,15 @@ export function BalanceCard({ data }: BalanceCardProps) {
   return (
     <HomeTilt>
       <section className={styles.card} aria-labelledby="dashboard-balance-label">
-        <p id="dashboard-balance-label" className={styles.label}>
-          {t.dashboard.balance.label}
-        </p>
+        <div className={styles.topRow}>
+          <p id="dashboard-balance-label" className={styles.label}>
+            {t.dashboard.balance.label}
+          </p>
+          <span className={styles.liveBadge}>
+            <span className={styles.liveDot} aria-hidden="true" />
+            {t.dashboard.hero.live}
+          </span>
+        </div>
 
         <div className={styles.valueRow}>
           <p className={styles.value}>{data.value}</p>
