@@ -5,7 +5,7 @@
   gap: 18px;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow: visible;
   isolation: isolate;
   min-height: calc(100dvh - 110px);
   color: var(--color-text-primary);

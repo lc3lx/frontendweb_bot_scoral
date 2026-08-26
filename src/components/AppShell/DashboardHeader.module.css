@@ -1,4 +1,7 @@
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 6;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,8 +9,9 @@
   height: 85px;
   padding-block: 0;
   padding-inline: 29px;
-  background: rgba(2, 1, 1, 0.85);
+  background: rgba(2, 1, 1, 0.92);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
 }
 
 .title {

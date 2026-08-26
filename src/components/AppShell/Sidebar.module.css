@@ -1,12 +1,18 @@
 .sidebar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  align-self: flex-start;
   gap: 20px;
   width: 226px;
+  height: 100vh;
+  height: 100dvh;
   padding: 22px 15px;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #0b0708;
   border-inline-end: 1px solid rgba(255, 255, 255, 0.06);
 }
