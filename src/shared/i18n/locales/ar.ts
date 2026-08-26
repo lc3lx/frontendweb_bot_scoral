@@ -79,7 +79,7 @@ export const ar: EnDictionary = {
   'api.notEligible': 'تم رفض هذا الحساب من قبل المسؤول.',
   'api.forbidden': 'ليس لديك صلاحية لتنفيذ هذا الإجراء.',
   'api.marketUnavailable': 'بيانات السوق غير متاحة مؤقتاً.',
-  'api.insufficientBalance': 'رصيد الحساب التجريبي غير كافٍ لهذه الصفقة.',
+  'api.insufficientBalance': 'الرصيد غير كافٍ لهذه الصفقة.',
   'api.rateLimited': 'طلبات تداول كثيرة جداً. انتظر ثم حاول مجدداً.',
   'api.invalidTrade': 'طلب الصفقة غير صالح.',
   'api.strategyDisabled': 'هذه الاستراتيجية غير متاحة بعد.',

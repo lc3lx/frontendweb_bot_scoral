@@ -278,6 +278,8 @@ export const en: Messages = {
 
       demo: 'Demo',
 
+      live: 'Live',
+
     },
 
     accountMenu: {
@@ -293,6 +295,8 @@ export const en: Messages = {
       active: 'ACTIVE',
 
       openAccount: 'Open Account',
+
+      switchAccount: 'Switch Demo / Live account',
 
     },
 

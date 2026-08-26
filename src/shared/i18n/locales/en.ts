@@ -80,7 +80,7 @@ export const en = {
   'api.notEligible': 'This account was rejected by an administrator.',
   'api.forbidden': 'You do not have permission to perform this action.',
   'api.marketUnavailable': 'Market data is temporarily unavailable.',
-  'api.insufficientBalance': 'Insufficient Demo balance for this trade.',
+  'api.insufficientBalance': 'Insufficient balance for this trade.',
   'api.rateLimited': 'Too many trade requests. Please wait and try again.',
   'api.invalidTrade': 'Trade request is invalid.',
   'api.strategyDisabled': 'This strategy is not available yet.',

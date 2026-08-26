@@ -36,10 +36,10 @@
 .profile {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   height: 44px;
   padding-block: 4px;
-  padding-inline: 4px 12px;
+  padding-inline: 4px 6px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 999px;
   background: #121011;
@@ -47,6 +47,18 @@
 
 .profileOpen {
   border-color: rgba(221, 1, 1, 0.2);
+}
+
+.profileMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
 }
 
 .avatar {
@@ -90,10 +102,67 @@
   color: #dd0101;
 }
 
+.chevronButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chevronButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.chevronButton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 .chevron {
   width: 16px;
   height: 16px;
+  transition: transform 180ms ease;
+}
+
+.chevronOpen {
   transform: rotate(180deg);
+}
+
+.chevronBusy {
+  animation: chevronPulse 0.9s ease infinite;
+}
+
+.switchError {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-end: 0;
+  z-index: 21;
+  margin: 0;
+  max-width: 260px;
+  padding: 8px 10px;
+  border: 1px solid rgba(221, 9, 18, 0.35);
+  border-radius: 10px;
+  background: #170809;
+  color: #ffb4b8;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+@keyframes chevronPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
 
 .notifButton {

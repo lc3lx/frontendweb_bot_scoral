@@ -1,15 +1,30 @@
 import { dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
+import type { AccountMode } from '@hooks/useSessionProfile';
 
 import styles from './ProfileDropdown.module.css';
 
 type ProfileDropdownProps = {
   name: string;
   email: string;
-  balance: string;
+  accountType: AccountMode;
+  demoBalance: string;
+  realBalance: string;
+  switching?: boolean;
+  error?: string | null;
+  onSelectAccount: (next: AccountMode) => void;
 };
 
-export function ProfileDropdown({ name, email, balance }: ProfileDropdownProps) {
+export function ProfileDropdown({
+  name,
+  email,
+  accountType,
+  demoBalance,
+  realBalance,
+  switching = false,
+  error = null,
+  onSelectAccount,
+}: ProfileDropdownProps) {
   const { t } = useI18n();
   const copy = t.dashboard.accountMenu;
 
@@ -25,8 +40,21 @@ export function ProfileDropdown({ name, email, balance }: ProfileDropdownProps) 
 
       <div className={styles.divider} aria-hidden="true" />
 
+      {error ? (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      ) : null}
+
       <div className={styles.accountList}>
-        <button type="button" className={styles.accountItem} role="menuitem">
+        <button
+          type="button"
+          className={`${styles.accountItem}${accountType === 'Real' ? ` ${styles.accountItemActive}` : ''}`}
+          role="menuitemradio"
+          aria-checked={accountType === 'Real'}
+          disabled={switching}
+          onClick={() => onSelectAccount('Real')}
+        >
           <span className={styles.accountIconWrap}>
             <img
               className={styles.accountIcon}
@@ -39,11 +67,19 @@ export function ProfileDropdown({ name, email, balance }: ProfileDropdownProps) 
           </span>
           <span className={styles.accountCopy}>
             <span className={styles.accountLabel}>{copy.realAccount}</span>
-            <span className={styles.accountBalance}>{balance}</span>
+            <span className={styles.accountBalance}>{realBalance}</span>
           </span>
+          {accountType === 'Real' ? <span className={styles.activeBadge}>{copy.active}</span> : null}
         </button>
 
-        <button type="button" className={`${styles.accountItem} ${styles.accountItemDemo}`} role="menuitem">
+        <button
+          type="button"
+          className={`${styles.accountItem}${accountType === 'Demo' ? ` ${styles.accountItemActive}` : ''}`}
+          role="menuitemradio"
+          aria-checked={accountType === 'Demo'}
+          disabled={switching}
+          onClick={() => onSelectAccount('Demo')}
+        >
           <span className={styles.accountIconWrap}>
             <img
               className={styles.accountIcon}
@@ -56,34 +92,9 @@ export function ProfileDropdown({ name, email, balance }: ProfileDropdownProps) 
           </span>
           <span className={styles.accountCopy}>
             <span className={styles.accountLabel}>{copy.demoAccount}</span>
-            <span className={styles.accountBalance}>{balance}</span>
+            <span className={styles.accountBalance}>{demoBalance}</span>
           </span>
-          <span className={styles.activeBadge}>{copy.active}</span>
-        </button>
-
-        <button type="button" className={styles.accountItem} role="menuitem">
-          <span className={styles.openIconWrap}>
-            <img
-              className={styles.openIcon}
-              src={dashboardAssets.iconAccountOpen}
-              alt=""
-              width={18}
-              height={18}
-              aria-hidden="true"
-            />
-          </span>
-          <span className={styles.accountCopy}>
-            <span className={styles.openLabel}>{copy.openAccount}</span>
-          </span>
-          <img
-            className={styles.openChevron}
-            src={dashboardAssets.iconChevronRightSm}
-            alt=""
-            width={8}
-            height={14}
-            data-flip-rtl="true"
-            aria-hidden="true"
-          />
+          {accountType === 'Demo' ? <span className={styles.activeBadge}>{copy.active}</span> : null}
         </button>
       </div>
     </div>

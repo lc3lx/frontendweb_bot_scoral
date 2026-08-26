@@ -197,6 +197,12 @@ export const binollaApi = {
   balance(signal?: AbortSignal): Promise<BinollaBalanceDto> {
     return apiRequest<BinollaBalanceDto>('/api/binolla/balance', { signal });
   },
+  changeAccountType(accountType: 'Demo' | 'Real'): Promise<BinollaStatusDto> {
+    return apiRequest<BinollaStatusDto>('/api/binolla/account-type', {
+      method: 'POST',
+      body: { accountType },
+    });
+  },
   /** Silent re-login using credentials saved on the server after email/password login. */
   reconnect(): Promise<BinollaConnectResponse> {
     return apiRequest<BinollaConnectResponse>('/api/binolla/reconnect', {

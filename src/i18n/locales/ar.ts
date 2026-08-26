@@ -275,6 +275,8 @@ export const ar: Messages = {
 
       demo: 'تجريبي',
 
+      live: 'لايف',
+
     },
 
     accountMenu: {
@@ -290,6 +292,8 @@ export const ar: Messages = {
       active: 'نشط',
 
       openAccount: 'فتح حساب',
+
+      switchAccount: 'تبديل بين Demo و Live',
 
     },
 

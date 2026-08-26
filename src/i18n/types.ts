@@ -316,6 +316,8 @@ export type Messages = {
 
       demo: string;
 
+      live: string;
+
     };
 
     accountMenu: {
@@ -331,6 +333,8 @@ export type Messages = {
       active: string;
 
       openAccount: string;
+
+      switchAccount: string;
 
     };
 
