@@ -4,6 +4,7 @@ import { dashboardAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ApiClientError } from '@shared/api';
 import { tradeService } from '@services/trades';
+import { liveRefresh } from '@shared/live/liveRefresh';
 import type { TradeRecord } from '@services/trades';
 
 import {
@@ -29,7 +30,6 @@ type ActiveTradeClock = {
   endsAt: number;
 };
 
-const LIVE_TRADE_POLL_MS = 4_000;
 
 function TradingBackdrop() {
   return (
@@ -45,6 +45,8 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
   const [data, setData] = useState<TradingMockData | null>(null);
   const [pairs, setPairs] = useState<TradingPairOption[]>([]);
   const [expiry, setExpiry] = useState(() => formatMmSs(candleExpiryRemaining(PERIOD_SEC)));
+  /** Last published countdown text — see the tick effect for why this guard exists. */
+  const lastExpiryRef = useRef(expiry);
   const [placing, setPlacing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackTone, setFeedbackTone] = useState<'ok' | 'err' | null>(null);
@@ -124,40 +126,77 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       })();
     }, LIVE_TICK_MS);
 
-    const tradeTimer = window.setInterval(() => {
+    // Trade state comes from the shared heartbeat instead of a private 4s timer: it
+    // polls fast only while something is open, sleeps in a hidden tab, and calls back the
+    // moment a trade opens or settles — which is what removes the manual refresh.
+    const unsubscribeLive = liveRefresh.subscribe((changes) => {
       void syncLiveTrade();
-    }, LIVE_TRADE_POLL_MS);
+      if (changes.includes('trade-settled')) {
+        // Balance and history moved with it.
+        void (async () => {
+          try {
+            const next = await tradingService.fetchData();
+            if (active) setData(next);
+          } catch {
+            /* ignore */
+          }
+        })();
+      }
+    });
 
     const unsubscribe = tradeService.subscribe(() => {
       void syncLiveTrade();
+      liveRefresh.refreshNow();
     });
 
     return () => {
       active = false;
       window.clearInterval(refreshTimer);
       window.clearInterval(tickTimer);
-      window.clearInterval(tradeTimer);
+      unsubscribeLive();
       unsubscribe();
     };
   }, [loadPairs, syncLiveTrade]);
 
   useEffect(() => {
+    // The countdown is checked 4x a second so a expiry is caught promptly, but the
+    // displayed mm:ss only changes once a second. Writing state on every check
+    // re-rendered this whole page — chart included — four times a second, which was the
+    // bulk of the interface feeling heavy. Only publish an actual change.
     const tick = () => {
-      if (activeTrade) {
-        const left = Math.max(0, Math.ceil((activeTrade.endsAt - Date.now()) / 1000));
-        setExpiry(formatMmSs(left));
-        if (left <= 0) {
-          setActiveTrade(null);
-          setLiveTrade(null);
-          setLocalEntryPrice(undefined);
-        }
-        return;
+      const next = activeTrade
+        ? formatMmSs(Math.max(0, Math.ceil((activeTrade.endsAt - Date.now()) / 1000)))
+        : formatMmSs(candleExpiryRemaining(PERIOD_SEC));
+
+      if (next !== lastExpiryRef.current) {
+        lastExpiryRef.current = next;
+        setExpiry(next);
       }
-      setExpiry(formatMmSs(candleExpiryRemaining(PERIOD_SEC)));
+
+      if (activeTrade && activeTrade.endsAt - Date.now() <= 0) {
+        setActiveTrade(null);
+        setLiveTrade(null);
+        setLocalEntryPrice(undefined);
+      }
     };
+
     tick();
-    const id = window.setInterval(tick, 250);
-    return () => window.clearInterval(id);
+    let id = window.setInterval(tick, 250);
+
+    // A hidden tab does not need a countdown at all.
+    const onVisibility = () => {
+      window.clearInterval(id);
+      if (!document.hidden) {
+        tick();
+        id = window.setInterval(tick, 250);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [activeTrade]);
 
   const entryMarker = useMemo<ChartEntryMarker | null>(() => {

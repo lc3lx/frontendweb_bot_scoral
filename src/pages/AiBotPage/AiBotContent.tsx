@@ -16,6 +16,7 @@ import { aiBotService } from './data/aiBotService';
 import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import { ApiClientError } from '@shared/api';
 import { formatPairLabel } from '@shared/market/pairDisplay';
+import { liveRefresh } from '@shared/live/liveRefresh';
 import styles from './AiBotPage.module.css';
 
 type AiBotContentProps = {
@@ -172,10 +173,27 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   }, [load]);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      void load();
-    }, SIGNAL_POLL_MS);
-    return () => window.clearInterval(id);
+    let id = window.setInterval(() => void load(), SIGNAL_POLL_MS);
+
+    // A hidden tab polls nothing; showing it again catches up at once.
+    const onVisibility = () => {
+      window.clearInterval(id);
+      if (!document.hidden) {
+        void load();
+        id = window.setInterval(() => void load(), SIGNAL_POLL_MS);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    // The bot opening or settling a trade changes this page immediately — waiting out
+    // the poll interval is what made the customer refresh by hand.
+    const unsubscribeLive = liveRefresh.subscribe(() => void load());
+
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibility);
+      unsubscribeLive();
+    };
   }, [load]);
 
   useEffect(() => {
