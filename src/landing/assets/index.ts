@@ -15,6 +15,7 @@ export type AssetFormat = 'svg' | 'png' | 'webp' | 'jpg';
 export interface AssetSourceSet {
   src: string;
   width: number;
+  mime?: 'image/webp' | 'image/png' | 'image/jpeg';
 }
 
 export interface RegisteredAsset {

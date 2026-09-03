@@ -4,6 +4,15 @@
   isolation: isolate;
 }
 
+/*
+ * NOT using `content-visibility: auto` here. It was measured and rejected: skipping
+ * offscreen sections cut style recalc, but every section entering the viewport then had
+ * to lay out for real against a guessed `contain-intrinsic-size`, which turned a 0.5ms
+ * layout budget into a 94ms one with a single 74ms stall. Sections here differ too much
+ * in height for one intrinsic-size guess to work, and a wrong guess also shifts the
+ * scroll position. Wins came from scroll hooks, animation pausing, and image delivery.
+ */
+
 .inner {
   position: relative;
   z-index: 1;

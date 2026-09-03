@@ -7,6 +7,7 @@ import { currencyFlagUrl } from '@shared/market/pairDisplay';
 
 import type { TradingPairOption } from '../data/trading.mock';
 import modalStyles from '../../AiBotPage/modals/modals.module.css';
+import { MIN_PAIR_PAYOUT_PERCENT } from '@shared/market/pairPayout';
 
 type TradingPairSelectModalProps = {
   isOpen: boolean;
@@ -91,22 +92,32 @@ export function TradingPairSelectModal({
         <div className={modalStyles.pairGrid}>
           {filteredPairs.map((pair) => {
             const selected = pair.symbol === selectedSymbol;
+            const disabled = !pair.tradable;
             return (
               <button
                 key={pair.symbol}
                 type="button"
-                className={`${modalStyles.pairCard}${selected ? ` ${modalStyles.pairCardSelected}` : ''}`}
-                disabled={!pair.available}
+                className={`${modalStyles.pairCard}${selected ? ` ${modalStyles.pairCardSelected}` : ''}${disabled ? ` ${modalStyles.pairCardDisabled}` : ''}`}
+                disabled={disabled}
                 onClick={() => {
+                  if (disabled) return;
                   onSelect(pair.symbol);
                   onClose();
                 }}
                 aria-pressed={selected}
+                aria-disabled={disabled}
               >
                 <PairFlagIcon base={pair.base} quote={pair.quote} />
                 <span className={modalStyles.pairCopy}>
                   <p className={modalStyles.pairSymbol}>{pair.label}</p>
                   <p className={modalStyles.pairMeta}>{pair.type}</p>
+                  {disabled && pair.payout != null && pair.payout > 0 ? (
+                    <p className={modalStyles.pairPayoutLow}>
+                      {t.aiBot.modals.tradingPair.lowPayout
+                        .replace('{percent}', String(pair.payout))
+                        .replace('{min}', String(MIN_PAIR_PAYOUT_PERCENT))}
+                    </p>
+                  ) : null}
                 </span>
                 {selected ? (
                   <img

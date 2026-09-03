@@ -9,6 +9,7 @@ import { MARKET_FETCH_MS, timedSignal } from '@shared/api/timedSignal';
 import { getAccountStatusCached } from '@shared/api/botSessionCache';
 import { pickPreferredMarketAsset, filterFxCurrencyAssets, isPreferredMarketSymbol } from '@shared/market/preferAsset';
 import { formatPairLabel, parseFxPair, pairTypeFromSymbol } from '@shared/market/pairDisplay';
+import { isTradablePairPayout } from '@shared/market/pairPayout';
 import { t } from '@shared/i18n';
 import { tradingMockData, type TradingCandle, type TradingMockData, type TradingPairOption } from './trading.mock';
 import { tradeService } from '@services/trades';
@@ -371,6 +372,8 @@ export const tradingService = {
           available: asset.available !== false,
           base: parsed?.base ?? '',
           quote: parsed?.quote ?? '',
+          payout: asset.payout,
+          tradable: asset.available !== false && isTradablePairPayout(asset.payout),
         };
       })
       .sort((a, b) => {

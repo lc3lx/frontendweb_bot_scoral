@@ -23,6 +23,7 @@ import {
   pairTypeFromSymbol,
   parseFxPair,
 } from '@shared/market/pairDisplay';
+import { isTradablePairPayout } from '@shared/market/pairPayout';
 import { t } from '@shared/i18n';
 import {
   AI_BOT_MOCK,
@@ -291,6 +292,8 @@ export const aiBotService = {
           base: parsed?.base ?? '',
           quote: parsed?.quote ?? '',
           available: asset.available,
+          payout: asset.payout,
+          tradable: asset.available && isTradablePairPayout(asset.payout),
         };
       })
       .sort((a, b) => {

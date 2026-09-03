@@ -960,6 +960,8 @@ export const en: Messages = {
 
         noResults: 'No pairs match your search.',
 
+        lowPayout: '{percent}% payout — bot waits for {min}% or higher',
+
       },
 
       technicalIndicator: {

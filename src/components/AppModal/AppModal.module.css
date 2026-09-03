@@ -11,7 +11,14 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
+/*
+ * Modals render through a portal, so they do NOT sit inside `.app` and never pick up its
+ * white text override — they inherit `:root`, where --color-text-primary is red on
+ * purpose for the shell's branded text. Setting the colour here means modal content
+ * defaults to readable white instead of red whenever a rule forgets to say otherwise.
+ */
 .panel {
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   width: 100%;

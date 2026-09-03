@@ -48,6 +48,19 @@ export function useTilt3d<T extends HTMLElement>({
       el.style.setProperty('--glare-y', `${gy.toFixed(1)}%`);
     };
 
+    const onPointerEnter = () => {
+      el.classList.add('is-tilt-active');
+    };
+
+    const onPointerLeave = () => {
+      el.classList.remove('is-tilt-active');
+      if (frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      write(0, 0, 0, 50, 50);
+    };
+
     const onPointerMove = (event: PointerEvent) => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
@@ -66,20 +79,15 @@ export function useTilt3d<T extends HTMLElement>({
       });
     };
 
-    const onPointerLeave = () => {
-      if (frame) {
-        cancelAnimationFrame(frame);
-        frame = 0;
-      }
-      write(0, 0, 0, 50, 50);
-    };
-
+    el.addEventListener('pointerenter', onPointerEnter);
     el.addEventListener('pointermove', onPointerMove);
     el.addEventListener('pointerleave', onPointerLeave);
     el.addEventListener('pointercancel', onPointerLeave);
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
+      el.classList.remove('is-tilt-active');
+      el.removeEventListener('pointerenter', onPointerEnter);
       el.removeEventListener('pointermove', onPointerMove);
       el.removeEventListener('pointerleave', onPointerLeave);
       el.removeEventListener('pointercancel', onPointerLeave);

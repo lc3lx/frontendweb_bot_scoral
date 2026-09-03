@@ -65,6 +65,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const pairsSeededRef = useRef(false);
   const stakeModeSeededRef = useRef(false);
   const rotateIndexRef = useRef(0);
+  const tradablePairIdsRef = useRef<string[]>([]);
   const feedbackTimerRef = useRef<number | null>(null);
 
   const showFeedback = useCallback((message: string) => {
@@ -137,8 +138,18 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     syncFromBotRuntime,
   ]);
 
+  useEffect(() => {
+    void aiBotService.listTradingPairs().then((pairs) => {
+      const tradable = new Set(pairs.filter((pair) => pair.tradable).map((pair) => pair.id));
+      tradablePairIdsRef.current = configuration.tradingPairIds.filter((id) => tradable.has(id));
+    });
+  }, [configuration.tradingPairIds]);
+
   const rotateSignal = useCallback(async () => {
-    const pairs = configuration.tradingPairIds.filter(Boolean);
+    const pairs =
+      tradablePairIdsRef.current.length > 0
+        ? tradablePairIdsRef.current
+        : configuration.tradingPairIds.filter(Boolean);
     if (pairs.length === 0) return;
 
     const index = rotateIndexRef.current % pairs.length;

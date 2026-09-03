@@ -7,13 +7,16 @@ import eyebrowShieldUrl from '@landing/assets/icons/hero-eyebrow-shield.svg';
 import arrowRightUrl from '@landing/assets/icons/arrow-right.svg';
 import { registerAsset } from '@landing/assets';
 import { TELEGRAM_BOT_HREF } from '../constants/links';
+import { heroPhoneImages } from './heroImageSources';
 
 registerAsset({
   id: 'hero-phones-duo',
   kind: 'image',
   src: phonesDuoUrl,
+  srcSet: heroPhoneImages.phonesDuo.webpSources,
+  sizes: heroPhoneImages.phonesDuo.sizes,
   alt: 'Scar Alpha AI mobile app preview on two phones',
-  format: 'png',
+  format: 'webp',
   figmaNodeId: '388:1507',
   width: 563,
   height: 749,
@@ -24,8 +27,10 @@ registerAsset({
   id: 'hero-phone-splash',
   kind: 'image',
   src: phoneSplashUrl,
+  srcSet: heroPhoneImages.phoneSplash.webpSources,
+  sizes: heroPhoneImages.phoneSplash.sizes,
   alt: 'Scar Alpha AI splash screen on iPhone',
-  format: 'png',
+  format: 'webp',
   figmaNodeId: '388:1508',
   width: 249,
   height: 591,
@@ -35,8 +40,10 @@ registerAsset({
   id: 'hero-phone-dashboard',
   kind: 'image',
   src: phoneDashboardUrl,
+  srcSet: heroPhoneImages.phoneDashboard.webpSources,
+  sizes: heroPhoneImages.phoneDashboard.sizes,
   alt: 'Scar Alpha AI dashboard on iPhone',
-  format: 'png',
+  format: 'webp',
   figmaNodeId: '388:1516',
   width: 249,
   height: 591,
@@ -97,9 +104,9 @@ export const HERO_COPY = {
 } as const;
 
 export const heroAssets = {
-  phonesDuo: phonesDuoUrl,
-  phoneSplash: phoneSplashUrl,
-  phoneDashboard: phoneDashboardUrl,
+  phonesDuo: heroPhoneImages.phonesDuo,
+  phoneSplash: heroPhoneImages.phoneSplash,
+  phoneDashboard: heroPhoneImages.phoneDashboard,
   glowLeft: glowLeftUrl,
   glowRight: glowRightUrl,
   eyebrowShield: eyebrowShieldUrl,

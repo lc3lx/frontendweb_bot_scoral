@@ -8,7 +8,7 @@ import { BREAKPOINTS } from '@landing/constants/breakpoints';
 import { FIGMA_LANDING_NODES } from '@landing/constants/figma';
 import { useMinWidth } from '@landing/hooks/useBreakpoint';
 import { useI18n } from '@landing/i18n';
-import { LazyImage, preloadHeroAsset } from '@landing/performance';
+import { LazyImage, preloadHeroAsset, buildSrcSet } from '@landing/performance';
 import { cn } from '@landing/utils/cn';
 import { heroAssets } from '../../data';
 import { LANDING_SECTION_IDS } from '../../constants/sectionIds';
@@ -24,9 +24,13 @@ export function HeroSection() {
   const isDesktopPhones = useMinWidth(BREAKPOINTS.tablet + 1); // >768 duo layout
 
   useEffect(() => {
-    if (isDesktopPhones) {
-      preloadHeroAsset(heroAssets.phonesDuo);
-    }
+    if (!isDesktopPhones) return;
+    const { webpSources, sizes } = heroAssets.phonesDuo;
+    preloadHeroAsset(
+      webpSources[webpSources.length - 1]?.src ?? heroAssets.phonesDuo.src,
+      buildSrcSet(webpSources),
+      sizes,
+    );
   }, [isDesktopPhones]);
 
   return (
@@ -135,27 +139,33 @@ export function HeroSection() {
               {isDesktopPhones ? (
                 <LazyImage
                   className={styles.phonesDuo}
-                  src={heroAssets.phonesDuo}
+                  src={heroAssets.phonesDuo.src}
+                  webpSources={heroAssets.phonesDuo.webpSources}
+                  sizes={heroAssets.phonesDuo.sizes}
                   alt={t.hero.phonesDuoAlt}
-                  width={563}
-                  height={749}
+                  width={heroAssets.phonesDuo.width}
+                  height={heroAssets.phonesDuo.height}
                   priority
                 />
               ) : (
                 <div className={styles.phonesStack}>
                   <LazyImage
                     className={styles.phone}
-                    src={heroAssets.phoneSplash}
+                    src={heroAssets.phoneSplash.src}
+                    webpSources={heroAssets.phoneSplash.webpSources}
+                    sizes={heroAssets.phoneSplash.sizes}
                     alt={t.hero.phoneSplashAlt}
-                    width={249}
-                    height={591}
+                    width={heroAssets.phoneSplash.width}
+                    height={heroAssets.phoneSplash.height}
                   />
                   <LazyImage
                     className={cn(styles.phone, 'motionFloat3dDelayed')}
-                    src={heroAssets.phoneDashboard}
+                    src={heroAssets.phoneDashboard.src}
+                    webpSources={heroAssets.phoneDashboard.webpSources}
+                    sizes={heroAssets.phoneDashboard.sizes}
                     alt={t.hero.phoneDashboardAlt}
-                    width={249}
-                    height={591}
+                    width={heroAssets.phoneDashboard.width}
+                    height={heroAssets.phoneDashboard.height}
                   />
                 </div>
               )}

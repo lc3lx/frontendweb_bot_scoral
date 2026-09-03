@@ -208,6 +208,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 21px;
+  color: #ffffff;
 }
 
 .strategyCardDescription {
@@ -298,6 +299,17 @@
 .pairCardSelected {
   border-color: rgba(221, 9, 18, 0.4);
   background: rgba(221, 9, 18, 0.06);
+}
+
+.pairCardDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pairPayoutLow {
+  margin-top: 2px;
+  font-size: 10px;
+  color: rgba(255, 180, 120, 0.92);
 }
 
 .pairBadge {

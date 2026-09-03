@@ -957,6 +957,8 @@ export const ar: Messages = {
 
         noResults: 'لا توجد أزواج مطابقة للبحث.',
 
+        lowPayout: 'نسبة الربح {percent}% — البوت ينتظر {min}% أو أعلى',
+
       },
 
       technicalIndicator: {

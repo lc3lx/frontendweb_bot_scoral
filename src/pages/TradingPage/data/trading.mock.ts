@@ -39,6 +39,8 @@ export type TradingPairOption = {
   available: boolean;
   base: string;
   quote: string;
+  payout: number | null;
+  tradable: boolean;
 };
 
 export const tradingMockData: TradingMockData = {

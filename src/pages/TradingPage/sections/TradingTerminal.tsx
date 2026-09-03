@@ -61,6 +61,8 @@ export function TradingTerminal({
         available: true,
         base: parsed?.base ?? '',
         quote: parsed?.quote ?? '',
+        payout: null,
+        tradable: true,
       },
     ];
   }, [pairs, data.assetSymbol, data.pair, data.pairType]);

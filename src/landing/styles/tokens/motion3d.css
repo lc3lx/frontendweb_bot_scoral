@@ -43,6 +43,10 @@
    * feels attached to the cursor. The return to rest reads as a settle.
    */
   transition: transform var(--motion-duration-slow) var(--motion-ease-spring);
+}
+
+/* Promote only while the pointer is over the surface — not for the page lifetime. */
+.tilt3d.is-tilt-active {
   will-change: transform;
 }
 
@@ -213,24 +217,30 @@
   will-change: transform, opacity;
 }
 
+/*
+ * Translate and opacity only — deliberately NO scale. These run forever on large glow
+ * images, and an animated scale makes the compositor re-rasterize the layer at each new
+ * size instead of just moving it. That raster churn was measurable during scrolling;
+ * on a soft blurred glow the scale was not visible anyway.
+ */
 @keyframes motion-glow-drift {
   from {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
     opacity: 0.85;
   }
   to {
-    transform: translate3d(4%, 3%, 0) scale(1.06);
+    transform: translate3d(4%, 3%, 0);
     opacity: 1;
   }
 }
 
 @keyframes motion-glow-drift-alt {
   from {
-    transform: translate3d(0, 0, 0) scale(1.04);
+    transform: translate3d(0, 0, 0);
     opacity: 0.75;
   }
   to {
-    transform: translate3d(-5%, -2%, 0) scale(1);
+    transform: translate3d(-5%, -2%, 0);
     opacity: 1;
   }
 }
@@ -364,4 +374,33 @@
 .motionOrbitIn.is-visible,
 .motionStaggerDepth.is-visible > * {
   will-change: auto;
+}
+
+/*
+ * While scrolling, pause infinite ambient loops. One `data-scrolling` attribute on
+ * `<html>` (from `useScrollIdle`) — unlike toggling classes on many nodes, this does
+ * not trigger a document-wide style recalc.
+ */
+html[data-scrolling] .motionGlowDrift,
+html[data-scrolling] .motionGlowDriftAlt,
+html[data-scrolling] .motionFloat3d,
+html[data-scrolling] .motionFloat3dDelayed {
+  animation-play-state: paused !important;
+}
+
+html[data-scrolling] .motionGlowDrift,
+html[data-scrolling] .motionGlowDriftAlt {
+  will-change: auto;
+}
+
+/*
+ * Phones have the tightest frame budget and the smallest glows. The ambient loops buy
+ * almost nothing there and cost raster work on every frame, so they hold still.
+ */
+@media (max-width: 768px) {
+  .motionGlowDrift,
+  .motionGlowDriftAlt,
+  .motionFloat3d {
+    animation: none;
+  }
 }

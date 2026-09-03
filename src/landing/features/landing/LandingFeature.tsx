@@ -3,6 +3,7 @@ import { PageShell } from '@landing/components/layouts';
 import { ScrollToTop } from '@landing/components/atoms/ScrollToTop';
 import { FIGMA_LANDING_NODES } from '@landing/constants/figma';
 import { useScrollReveal } from '@landing/hooks/useScrollMotion';
+import { useScrollIdle } from '@landing/hooks/useScrollIdle';
 import { useI18n } from '@landing/i18n';
 import { DocumentHead } from '@landing/seo';
 import { cn } from '@landing/utils/cn';
@@ -28,6 +29,7 @@ export function LandingFeature({ className }: LandingFeatureProps) {
   const [splashDone, setSplashDone] = useState(false);
   const onSplashFinished = useCallback(() => setSplashDone(true), []);
   useScrollReveal(splashDone);
+  useScrollIdle();
   const { t, locale, dir } = useI18n();
 
   return (

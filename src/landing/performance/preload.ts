@@ -26,9 +26,15 @@ export function preloadImage(
   document.head.appendChild(link);
 }
 
-export function preloadHeroAsset(src: string, srcSet?: string, sizes?: string): void {
+export function preloadHeroAsset(
+  src: string,
+  srcSet?: string,
+  sizes?: string,
+  type = 'image/webp',
+): void {
   preloadImage(src, {
     as: 'image',
+    type,
     imageSrcSet: srcSet,
     imageSizes: sizes,
   });

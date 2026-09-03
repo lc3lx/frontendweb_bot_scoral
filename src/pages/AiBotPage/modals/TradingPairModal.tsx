@@ -8,6 +8,7 @@ import { currencyFlagUrl } from '@shared/market/pairDisplay';
 import { aiBotService } from '../data/aiBotService';
 import styles from './modals.module.css';
 import { pairMatchesMarketType, type MarketTypeId } from './aiBotModals.data';
+import { MIN_PAIR_PAYOUT_PERCENT } from '@shared/market/pairPayout';
 
 type TradingPairOption = Awaited<ReturnType<typeof aiBotService.listTradingPairs>>[number];
 
@@ -108,7 +109,7 @@ export function TradingPairModal({
               onClearAll();
               return;
             }
-            onSelectAll(filteredPairs.map((pair) => pair.id));
+            onSelectAll(filteredPairs.filter((pair) => pair.tradable).map((pair) => pair.id));
           }}
           disabled={filteredPairs.length === 0}
         >
@@ -129,18 +130,32 @@ export function TradingPairModal({
         <div className={styles.pairGrid}>
           {filteredPairs.map((pair) => {
             const selected = selectedIds.includes(pair.id);
+            const disabled = !pair.tradable;
             return (
               <button
                 key={pair.id}
                 type="button"
-                className={`${styles.pairCard}${selected ? ` ${styles.pairCardSelected}` : ''}`}
-                onClick={() => onToggle(pair.id)}
+                className={`${styles.pairCard}${selected ? ` ${styles.pairCardSelected}` : ''}${disabled ? ` ${styles.pairCardDisabled}` : ''}`}
+                onClick={() => {
+                  if (disabled) return;
+                  onToggle(pair.id);
+                }}
+                disabled={disabled}
                 aria-pressed={selected}
+                aria-disabled={disabled}
               >
                 <PairFlagIcon base={pair.base} quote={pair.quote} />
                 <span className={styles.pairCopy}>
                   <p className={styles.pairSymbol}>{pair.label}</p>
                   <p className={styles.pairMeta}>{pair.type}</p>
+                  {disabled && pair.payout != null && pair.payout > 0 ? (
+                    <p className={styles.pairPayoutLow}>
+                      {t.aiBot.modals.tradingPair.lowPayout.replace(
+                        '{percent}',
+                        String(pair.payout),
+                      ).replace('{min}', String(MIN_PAIR_PAYOUT_PERCENT))}
+                    </p>
+                  ) : null}
                 </span>
                 {selected ? (
                   <img className={styles.pairCheck} src={aiBotAssets.iconCheck} alt="" aria-hidden="true" />

@@ -154,8 +154,25 @@
 }
 
 .phoneFloat {
+  position: relative;
   width: 100%;
   transform-style: preserve-3d;
+}
+
+/*
+ * Soft ground shadow — avoids `filter: drop-shadow` on the bitmap, which repaints the
+ * full hero image on every float/tilt frame.
+ */
+.phoneFloat::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-inline: 8%;
+  bottom: -6%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.42) 0%, transparent 72%);
+  pointer-events: none;
 }
 
 .phonesDuo {
@@ -164,7 +181,6 @@
   height: auto;
   aspect-ratio: 563 / 749;
   object-fit: contain;
-  filter: drop-shadow(0 28px 48px rgba(0, 0, 0, 0.45));
 }
 
 .phonesStack {

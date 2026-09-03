@@ -996,6 +996,8 @@ export type Messages = {
 
         noResults: string;
 
+        lowPayout: string;
+
       };
 
       technicalIndicator: {
