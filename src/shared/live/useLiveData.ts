@@ -48,6 +48,9 @@ export function useLiveData(
     run(true);
 
     const unsubscribe = liveRefresh.subscribe((changes) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'281dcf'},body:JSON.stringify({sessionId:'281dcf',runId:'pre-fix',hypothesisId:'C',location:'useLiveData.ts:subscribe',message:'liveRefresh event',data:{changes:[...changes],minIntervalMs},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       const isUrgent = changes.some((change) => urgent.includes(change));
       run(isUrgent);
     });

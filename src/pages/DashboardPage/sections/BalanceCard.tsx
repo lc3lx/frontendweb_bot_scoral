@@ -16,6 +16,10 @@ export function BalanceCard({ data }: BalanceCardProps) {
   const accountLabel =
     profile.accountType === 'Real' ? t.dashboard.user.live : t.dashboard.user.demo;
 
+  // #region agent log
+  fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'281dcf'},body:JSON.stringify({sessionId:'281dcf',runId:'pre-fix',hypothesisId:'A,B',location:'BalanceCard.tsx:render',message:'balance card render sources',data:{profileAccountType:profile.accountType,profileBalance:profile.balance,cardBalanceValue:data.value,todayProfit:data.todayProfit,todayLoss:data.todayLoss,netToday:data.netToday},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+
   return (
     <HomeTilt>
       <section className={styles.card} aria-labelledby="dashboard-balance-label">

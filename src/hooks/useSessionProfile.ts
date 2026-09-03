@@ -99,11 +99,18 @@ export function useSessionProfile(): SessionProfile {
     const snapshot = profileRef.current;
     if (snapshot.accountType === next || snapshot.switching) return;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'281dcf'},body:JSON.stringify({sessionId:'281dcf',runId:'pre-fix',hypothesisId:'A,E',location:'useSessionProfile.ts:switchAccount:start',message:'account switch requested',data:{from:snapshot.accountType,to:next,headerBalance:snapshot.balance,demoBalance:snapshot.demoBalance,realBalance:snapshot.realBalance},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
     setProfile((current) => ({ ...current, switching: true, error: null }));
 
     try {
       await binollaApi.changeAccountType(next);
       const balance = await binollaApi.balance().catch(() => null);
+      // #region agent log
+      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'281dcf'},body:JSON.stringify({sessionId:'281dcf',runId:'pre-fix',hypothesisId:'E',location:'useSessionProfile.ts:switchAccount:afterApi',message:'account switch api result',data:{requested:next,apiAccountType:balance?.accountType ?? null,currentBalance:balance?.currentBalance ?? null,demoBalance:balance?.demoBalance ?? null,realBalance:balance?.realBalance ?? null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setProfile((current) => ({
         ...current,
         accountType: normalizeAccountType(balance?.accountType ?? next),

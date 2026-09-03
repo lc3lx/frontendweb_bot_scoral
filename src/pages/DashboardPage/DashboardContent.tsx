@@ -37,6 +37,9 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
   const load = useCallback(async () => {
     try {
       const next = await dashboardService.fetchData();
+      // #region agent log
+      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'281dcf'},body:JSON.stringify({sessionId:'281dcf',runId:'pre-fix',hypothesisId:'B,C,D',location:'DashboardContent.tsx:load',message:'dashboard data loaded',data:{balance:next.balance.value,todayProfit:next.balance.todayProfit,todayLoss:next.balance.todayLoss,netToday:next.balance.netToday,tradesShown:next.trades.length,totalTrades:next.stats.totalTrades.value},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setData(next);
       setError(null);
     } catch (err) {
