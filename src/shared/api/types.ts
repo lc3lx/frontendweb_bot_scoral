@@ -231,6 +231,7 @@ export type TradeDto = {
   createdAt: string;
   updatedAt: string;
   strategyId?: string | null;
+  accountType?: string | null;
 };
 
 export type TradeListResponse = {
