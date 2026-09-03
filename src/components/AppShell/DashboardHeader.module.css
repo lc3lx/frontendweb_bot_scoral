@@ -10,9 +10,10 @@
   height: 85px;
   padding-block: 0;
   padding-inline: 29px;
-  background: rgba(2, 1, 1, 0.92);
+  background: rgba(2, 1, 1, 0.97);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
+  /* No backdrop-filter: this element repeats/sticks over scrolling content, and a
+     backdrop blur there is re-computed every frame. Opaque fill instead. */
 }
 
 .start {

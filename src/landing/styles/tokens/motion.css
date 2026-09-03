@@ -205,3 +205,12 @@
     transform: none;
   }
 }
+
+/* Same reasoning as motion3d.css: drop the layer hint once the reveal has finished. */
+.motionFadeIn.is-visible,
+.motionSlideUp.is-visible,
+.motionSlideDown.is-visible,
+.motionScaleIn.is-visible,
+.motionStaggerChildren.is-visible > * {
+  will-change: auto;
+}

@@ -11,8 +11,9 @@
   padding: 0 0.875rem;
   border: 1px solid var(--color-border-subtle);
   border-radius: 999px;
-  background: rgba(2, 1, 1, 0.72);
-  backdrop-filter: blur(8px);
+  background: rgba(14, 10, 10, 0.94);
+  /* No backdrop-filter: this element repeats/sticks over scrolling content, and a
+     backdrop blur there is re-computed every frame. Opaque fill instead. */
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);

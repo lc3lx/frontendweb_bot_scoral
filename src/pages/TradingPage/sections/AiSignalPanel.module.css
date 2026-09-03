@@ -107,8 +107,9 @@
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  background: rgba(2, 1, 1, 0.35);
-  backdrop-filter: blur(8px);
+  background: rgba(18, 13, 13, 0.72);
+  /* No backdrop-filter: this element repeats/sticks over scrolling content, and a
+     backdrop blur there is re-computed every frame. Opaque fill instead. */
   transition:
     transform 200ms ease,
     border-color 200ms ease;

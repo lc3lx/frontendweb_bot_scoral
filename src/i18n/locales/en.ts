@@ -868,6 +868,10 @@ export const en: Messages = {
 
         globalIndicatorsDesc: 'Standard forex and crypto pairs with global feeds.',
 
+        allMarkets: 'Both Markets',
+
+        allMarketsDesc: 'Global pairs and Binolla OTC together — the widest choice.',
+
         binollaMarket: 'Binolla Market',
 
         binollaMarketDesc: 'OTC pairs and Binolla-native market signals.',

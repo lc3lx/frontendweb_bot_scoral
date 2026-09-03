@@ -865,6 +865,10 @@ export const ar: Messages = {
 
         globalIndicatorsDesc: 'أزواج فوركس وكريبتو ببيانات عالمية.',
 
+        allMarkets: 'كلا السوقين',
+
+        allMarketsDesc: 'الأزواج العالمية وأزواج بنولا معاً — أوسع خيار.',
+
         binollaMarket: 'سوق Binolla',
 
         binollaMarketDesc: 'أزواج OTC وإشارات سوق Binolla.',

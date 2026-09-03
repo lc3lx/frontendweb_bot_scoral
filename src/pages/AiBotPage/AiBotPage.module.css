@@ -277,8 +277,9 @@
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  background: rgba(2, 1, 1, 0.35);
-  backdrop-filter: blur(8px);
+  background: rgba(18, 13, 13, 0.72);
+  /* No backdrop-filter: this element repeats/sticks over scrolling content, and a
+     backdrop blur there is re-computed every frame. Opaque fill instead. */
   transition:
     transform 200ms ease,
     border-color 200ms ease;
@@ -358,8 +359,7 @@
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  background: rgba(2, 1, 1, 0.35);
-  backdrop-filter: blur(8px);
+  background: rgba(18, 13, 13, 0.72);
   transition:
     transform 200ms ease,
     border-color 200ms ease;
@@ -420,8 +420,7 @@
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  background: rgba(2, 1, 1, 0.35);
-  backdrop-filter: blur(8px);
+  background: rgba(18, 13, 13, 0.72);
   cursor: pointer;
   color: inherit;
   font: inherit;
@@ -641,8 +640,7 @@
   padding-block: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
-  background: rgba(2, 1, 1, 0.35);
-  backdrop-filter: blur(8px);
+  background: rgba(18, 13, 13, 0.72);
   color: #c9c7c8;
   font-family: inherit;
   font-size: 12px;

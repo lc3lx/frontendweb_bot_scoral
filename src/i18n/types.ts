@@ -905,6 +905,8 @@ export type Messages = {
         globalIndicators: string;
 
         globalIndicatorsDesc: string;
+        allMarkets: string;
+        allMarketsDesc: string;
 
         binollaMarket: string;
 

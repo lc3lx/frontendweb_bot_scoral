@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '@landing/i18n';
 import { cn } from '@landing/utils/cn';
-import { playPageTransitionSound } from '@shared/audio/pageTransitionSound';
 import { scarAlphaLogo } from '../../data';
 import styles from './LogoSplash.module.css';
 
@@ -27,7 +26,6 @@ export function LogoSplash({ onFinished }: LogoSplashProps) {
     const previousOverflow = html.style.overflow;
     html.style.overflow = 'hidden';
 
-    playPageTransitionSound();
 
     const exitTimer = window.setTimeout(() => setPhase('exit'), hold);
     const doneTimer = window.setTimeout(() => {

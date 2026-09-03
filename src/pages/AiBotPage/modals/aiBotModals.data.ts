@@ -2,7 +2,7 @@ import { aiBotAssets } from '@assets';
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'highPlus';
 
-export type MarketTypeId = 'global-indicators' | 'binolla-market';
+export type MarketTypeId = 'global-indicators' | 'binolla-market' | 'all-markets';
 
 /** Backend strategy catalog id (e.g. rsi, ema, smart). */
 export type StrategyGridId = string;
@@ -18,8 +18,8 @@ export type BotRiskLevelId = 'low' | 'medium' | 'high';
 export type MarketTypeOption = {
   id: MarketTypeId;
   icon: string;
-  titleKey: 'globalIndicators' | 'binollaMarket';
-  descriptionKey: 'globalIndicatorsDesc' | 'binollaMarketDesc';
+  titleKey: 'globalIndicators' | 'binollaMarket' | 'allMarkets';
+  descriptionKey: 'globalIndicatorsDesc' | 'binollaMarketDesc' | 'allMarketsDesc';
 };
 
 export type StrategyPresentationKey =
@@ -109,6 +109,13 @@ export const MARKET_TYPE_OPTIONS: MarketTypeOption[] = [
     icon: aiBotAssets.iconBinollaMarket,
     titleKey: 'binollaMarket',
     descriptionKey: 'binollaMarketDesc',
+  },
+  {
+    // Both feeds at once — the widest set of pairs the bot can choose from.
+    id: 'all-markets',
+    icon: aiBotAssets.iconGlobalMarket,
+    titleKey: 'allMarkets',
+    descriptionKey: 'allMarketsDesc',
   },
 ];
 
@@ -329,6 +336,18 @@ export const BOT_RISK_LEVELS: BotRiskLevelId[] = ['low', 'medium', 'high'];
 
 export function getDefaultMarketTypeId(): MarketTypeId {
   return 'global-indicators';
+}
+
+/**
+ * Whether a pair belongs to the selected market scope.
+ *
+ * Binolla's synthetic books carry an `_otc` suffix; everything else is an exchange-hours
+ * pair. `all-markets` accepts both, which is the point of it existing.
+ */
+export function pairMatchesMarketType(symbol: string, marketTypeId: MarketTypeId): boolean {
+  if (marketTypeId === 'all-markets') return true;
+  const isOtc = /_otc$/i.test(symbol.trim());
+  return marketTypeId === 'binolla-market' ? isOtc : !isOtc;
 }
 
 export function getDefaultStrategyGridId(): StrategyGridId {

@@ -15,6 +15,7 @@ import {
   MARKET_TYPE_OPTIONS,
   getDefaultBrandedStrategyId,
   getDefaultMarketTypeId,
+  pairMatchesMarketType,
   getDefaultStrategyGridId,
   getDefaultTradingPairIds,
   type BotRiskLevelId,
@@ -179,6 +180,19 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
 
   const setMarketType = useCallback((id: MarketTypeId) => {
     setMarketTypeId(id);
+
+    // Drop pairs the new scope no longer offers. Leaving them selected would have the
+    // bot trading OTC books while the page says "Global" — the label and the behaviour
+    // have to agree. Widening to both markets keeps everything already chosen.
+    setTradingPairIdsState((current) => {
+      const kept = current.filter((symbol) => pairMatchesMarketType(symbol, id));
+      if (kept.length > 0) return kept;
+      // Nothing survived: fall back to the defaults that fit the new scope.
+      const fallback = getDefaultTradingPairIds().filter((symbol) =>
+        pairMatchesMarketType(symbol, id),
+      );
+      return fallback.length > 0 ? fallback : [];
+    });
   }, []);
 
   const setTradingPairIds = useCallback((ids: string[]) => {

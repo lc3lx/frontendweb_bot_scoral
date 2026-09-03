@@ -121,7 +121,9 @@
 .riskHighPlus {
   border: 1px solid rgba(221, 9, 18, 0.25);
   background: rgba(221, 9, 18, 0.1);
-  color: #dd0912;
+  /* White, not red: red text on a red tint over a near-black page is unreadable.
+     The dot and border still carry the level. */
+  color: #ffffff;
 }
 
 .riskHighPlus .riskDot {

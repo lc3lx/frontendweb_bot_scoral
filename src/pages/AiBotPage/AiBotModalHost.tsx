@@ -46,6 +46,7 @@ export function AiBotModalHost() {
 
       <TradingPairModal
         isOpen={activeModal === 'tradingPair'}
+        marketTypeId={configuration.marketTypeId}
         selectedIds={configuration.tradingPairIds}
         onClose={closeModal}
         onToggle={toggleTradingPair}

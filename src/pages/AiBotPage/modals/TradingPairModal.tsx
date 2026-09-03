@@ -7,11 +7,14 @@ import { currencyFlagUrl } from '@shared/market/pairDisplay';
 
 import { aiBotService } from '../data/aiBotService';
 import styles from './modals.module.css';
+import { pairMatchesMarketType, type MarketTypeId } from './aiBotModals.data';
 
 type TradingPairOption = Awaited<ReturnType<typeof aiBotService.listTradingPairs>>[number];
 
 type TradingPairModalProps = {
   isOpen: boolean;
+  /** Market scope chosen on the bot page — decides which pairs are offered here. */
+  marketTypeId: MarketTypeId;
   selectedIds: string[];
   onClose: () => void;
   onToggle: (id: string) => void;
@@ -34,6 +37,7 @@ function PairFlagIcon({ base, quote }: { base: string; quote: string }) {
 
 export function TradingPairModal({
   isOpen,
+  marketTypeId,
   selectedIds,
   onClose,
   onToggle,
@@ -56,15 +60,19 @@ export function TradingPairModal({
   }, [isOpen]);
 
   const filteredPairs = useMemo(() => {
+    // Market scope first: the chosen market decides which pairs exist here at all,
+    // and the search box then narrows what is left.
+    const inScope = pairs.filter((pair) => pairMatchesMarketType(pair.id, marketTypeId));
+
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return pairs;
-    return pairs.filter(
+    if (!normalized) return inScope;
+    return inScope.filter(
       (pair) =>
         pair.label.toLowerCase().includes(normalized) ||
         pair.id.toLowerCase().includes(normalized) ||
         pair.type.toLowerCase().includes(normalized),
     );
-  }, [pairs, query]);
+  }, [marketTypeId, pairs, query]);
 
   const filteredSelectedCount = filteredPairs.filter((pair) => selectedIds.includes(pair.id)).length;
   const allFilteredSelected =

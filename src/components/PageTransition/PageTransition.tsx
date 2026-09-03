@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 
 import { scarAlphaLogo } from '@assets';
 import { useI18n } from '@i18n';
-import { playPageTransitionSound } from '@shared/audio/pageTransitionSound';
 
 import styles from './PageTransition.module.css';
 
@@ -36,7 +35,6 @@ export function PageTransition() {
 
     setExiting(false);
     setVisible(true);
-    playPageTransitionSound();
 
     const exitTimer = window.setTimeout(() => setExiting(true), hold);
     const hideTimer = window.setTimeout(() => {

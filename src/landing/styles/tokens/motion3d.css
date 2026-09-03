@@ -351,3 +351,17 @@
     display: none;
   }
 }
+
+/*
+ * Release the compositor hint once a reveal has played. `will-change` promotes an element
+ * to its own GPU layer, and leaving it set on every revealed element pins dozens of
+ * layers for the life of the page — which shows up as stutter while scrolling long
+ * sections, exactly where these reveals live.
+ */
+.motionDepthIn.is-visible,
+.motionDepthInStart.is-visible,
+.motionDepthInEnd.is-visible,
+.motionOrbitIn.is-visible,
+.motionStaggerDepth.is-visible > * {
+  will-change: auto;
+}
