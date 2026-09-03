@@ -7,7 +7,6 @@ import { HomeTilt } from '@pages/DashboardPage/HomeTilt';
 import { useAiBotModals } from './AiBotModalContext';
 import { AiBotSignalPanel } from './AiBotSignalPanel';
 import {
-  SIGNAL_POLL_MS,
   TRADE_AMOUNTS,
   type AiBotMockData,
   type EngineControlId,
@@ -15,7 +14,7 @@ import {
 import { aiBotService } from './data/aiBotService';
 import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import { ApiClientError } from '@shared/api';
-import { liveRefresh } from '@shared/live/liveRefresh';
+import { useLiveData } from '@shared/live/useLiveData';
 import styles from './AiBotPage.module.css';
 
 type AiBotContentProps = {
@@ -134,62 +133,8 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     syncFromBotRuntime,
   ]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  useEffect(() => {
-    let id = 0;
-    let scrolling = false;
-    let scrollIdle: number | null = null;
-    let pendingLoad = false;
-
-    const runLoad = () => {
-      if (scrolling) {
-        pendingLoad = true;
-        return;
-      }
-      pendingLoad = false;
-      void load();
-    };
-
-    const schedule = () => {
-      window.clearInterval(id);
-      id = window.setInterval(runLoad, SIGNAL_POLL_MS);
-    };
-
-    schedule();
-
-    const onVisibility = () => {
-      window.clearInterval(id);
-      if (!document.hidden) {
-        runLoad();
-        schedule();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-
-    const onScroll = () => {
-      scrolling = true;
-      if (scrollIdle) window.clearTimeout(scrollIdle);
-      scrollIdle = window.setTimeout(() => {
-        scrolling = false;
-        scrollIdle = null;
-        if (pendingLoad) runLoad();
-      }, 140);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
-
-    const unsubscribeLive = liveRefresh.subscribe(runLoad);
-
-    return () => {
-      window.clearInterval(id);
-      if (scrollIdle) window.clearTimeout(scrollIdle);
-      document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('scroll', onScroll, true);
-      unsubscribeLive();
-    };
-  }, [load]);
+  // Balance / bot state / performance stay live — no manual browser refresh.
+  useLiveData(load, { minIntervalMs: 5_000 });
 
   useEffect(() => {
     syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION, profitTarget, lossLimit);

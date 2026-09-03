@@ -131,8 +131,12 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
     // moment a trade opens or settles — which is what removes the manual refresh.
     const unsubscribeLive = liveRefresh.subscribe((changes) => {
       void syncLiveTrade();
-      if (changes.includes('trade-settled')) {
-        // Balance and history moved with it.
+      // Heartbeat keeps balance/price panel current; settlement refreshes history.
+      if (
+        changes.includes('trade-settled') ||
+        changes.includes('heartbeat') ||
+        changes.includes('trades-changed')
+      ) {
         void (async () => {
           try {
             const next = await tradingService.fetchData();

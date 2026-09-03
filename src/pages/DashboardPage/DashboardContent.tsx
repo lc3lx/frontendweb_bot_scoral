@@ -1,9 +1,10 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 
 import { dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
+import { useLiveData } from '@shared/live/useLiveData';
 
 import { dashboardService } from './data/dashboardService';
 import type { DashboardMockData } from './data/dashboard.mock';
@@ -33,22 +34,17 @@ export function DashboardContent({ figmaNode, scrollTarget = false }: DashboardC
   const [data, setData] = useState<DashboardMockData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        const next = await dashboardService.fetchData();
-        if (active) setData(next);
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : t.dashboard.header.title);
-        }
-      }
-    })();
-    return () => {
-      active = false;
-    };
+  const load = useCallback(async () => {
+    try {
+      const next = await dashboardService.fetchData();
+      setData(next);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.dashboard.header.title);
+    }
   }, [t.dashboard.header.title]);
+
+  useLiveData(load, { minIntervalMs: 8_000 });
 
   if (!data) {
     return (

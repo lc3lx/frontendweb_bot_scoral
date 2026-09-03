@@ -11,8 +11,9 @@ import { tradesApi } from '@shared/api';
  * This replaces all of that with a single poller that:
  *  - runs fast only while something is actually moving (a trade open, the bot running),
  *  - stops completely when the tab is hidden, and catches up the moment it is shown,
- *  - fires subscribers ONLY when the server state actually changed, so a quiet minute
- *    costs zero renders.
+ *  - fires trade-change events immediately when open trades move,
+ *  - also fires a periodic `heartbeat` so balance / bot / lists stay fresh without a
+ *    manual browser refresh.
  *
  * Subscribers get told *what* changed, so a page can refetch just the part it shows.
  */
@@ -22,7 +23,9 @@ export type LiveChange =
   | 'trade-opened'
   | 'trade-settled'
   /** Open-trade count or any of their statuses shifted. */
-  | 'trades-changed';
+  | 'trades-changed'
+  /** Periodic nudge so pages keep balance / bot / lists current. */
+  | 'heartbeat';
 
 export type LiveListener = (changes: readonly LiveChange[]) => void;
 
@@ -30,7 +33,13 @@ export type LiveListener = (changes: readonly LiveChange[]) => void;
 const ACTIVE_INTERVAL_MS = 2_000;
 
 /** Nothing open: still current, but nowhere near the old 3-4s churn. */
-const IDLE_INTERVAL_MS = 15_000;
+const IDLE_INTERVAL_MS = 10_000;
+
+/**
+ * How often subscribers get a heartbeat even when no trade status changed.
+ * Keeps Home / Trades / Bot balance from going stale until the user refreshes.
+ */
+const HEARTBEAT_MS = 8_000;
 
 /** A tab that has been hidden this long refetches immediately when shown again. */
 const STALE_ON_SHOW_MS = 3_000;
@@ -45,6 +54,7 @@ const listeners = new Set<LiveListener>();
 let timer: number | null = null;
 let inFlight = false;
 let lastPollAt = 0;
+let lastHeartbeatAt = 0;
 let snapshot: Snapshot | null = null;
 let currentIntervalMs = IDLE_INTERVAL_MS;
 
@@ -110,13 +120,19 @@ async function poll(): Promise<void> {
     }
 
     const next: Snapshot = { statuses, openCount };
-    const changes = diff(snapshot, next);
+    const changes: LiveChange[] = [...diff(snapshot, next)];
     snapshot = next;
     lastPollAt = Date.now();
 
     // An open trade is about to settle; a quiet account is not worth polling hard.
     setInterval_(openCount > 0 ? ACTIVE_INTERVAL_MS : IDLE_INTERVAL_MS);
-    emit(changes);
+
+    const now = Date.now();
+    if (changes.length > 0 || now - lastHeartbeatAt >= HEARTBEAT_MS || lastHeartbeatAt === 0) {
+      lastHeartbeatAt = now;
+      if (!changes.includes('heartbeat')) changes.push('heartbeat');
+      emit(changes);
+    }
   } catch {
     // Offline or a failed request: back off rather than hammering.
     setInterval_(IDLE_INTERVAL_MS);
@@ -189,6 +205,7 @@ export const liveRefresh = {
     listeners.clear();
     snapshot = null;
     lastPollAt = 0;
+    lastHeartbeatAt = 0;
     currentIntervalMs = IDLE_INTERVAL_MS;
   },
 };

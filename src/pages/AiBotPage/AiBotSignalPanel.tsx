@@ -49,15 +49,24 @@ function AiBotSignalPanelComponent({
 
   const rotateIndexRef = useRef(0);
   const tradablePairIdsRef = useRef<string[]>([]);
-  const scrollingRef = useRef(false);
-  const pendingRef = useRef<LiveSignal | null>(null);
   const softSwapTimerRef = useRef<number | null>(null);
-  const scrollIdleTimerRef = useRef<number | null>(null);
   const pairsRef = useRef(tradingPairIds);
   pairsRef.current = tradingPairIds;
 
   const applyLive = useCallback((next: LiveSignal, animate: boolean) => {
-    setLive(next);
+    setLive((prev) => {
+      if (
+        prev.signal === next.signal &&
+        prev.signalSide === next.signalSide &&
+        prev.strength === next.strength &&
+        prev.updated === next.updated &&
+        prev.freshSeconds === next.freshSeconds &&
+        prev.market === next.market
+      ) {
+        return prev;
+      }
+      return next;
+    });
     if (!animate) return;
     setSoftSwap(true);
     if (softSwapTimerRef.current) window.clearTimeout(softSwapTimerRef.current);
@@ -67,18 +76,6 @@ function AiBotSignalPanelComponent({
     }, 280);
   }, []);
 
-  const commitOrDefer = useCallback(
-    (next: LiveSignal) => {
-      if (scrollingRef.current) {
-        pendingRef.current = next;
-        return;
-      }
-      pendingRef.current = null;
-      applyLive(next, true);
-    },
-    [applyLive],
-  );
-
   useEffect(() => {
     void aiBotService.listTradingPairs().then((pairs) => {
       const tradable = new Set(pairs.filter((pair) => pair.tradable).map((pair) => pair.id));
@@ -86,31 +83,15 @@ function AiBotSignalPanelComponent({
     });
   }, [tradingPairIds]);
 
-  // Defer React commits while the user is scrolling so the page does not hitch.
   useEffect(() => {
-    const onScroll = () => {
-      scrollingRef.current = true;
-      if (scrollIdleTimerRef.current) window.clearTimeout(scrollIdleTimerRef.current);
-      scrollIdleTimerRef.current = window.setTimeout(() => {
-        scrollingRef.current = false;
-        scrollIdleTimerRef.current = null;
-        if (pendingRef.current) {
-          const next = pendingRef.current;
-          pendingRef.current = null;
-          applyLive(next, false);
-        }
-      }, 140);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
     return () => {
-      window.removeEventListener('scroll', onScroll, true);
-      if (scrollIdleTimerRef.current) window.clearTimeout(scrollIdleTimerRef.current);
       if (softSwapTimerRef.current) window.clearTimeout(softSwapTimerRef.current);
     };
-  }, [applyLive]);
+  }, []);
 
   const rotateSignal = useCallback(async () => {
+    if (typeof document !== 'undefined' && document.hidden) return;
+
     const pairs =
       tradablePairIdsRef.current.length > 0
         ? tradablePairIdsRef.current
@@ -124,22 +105,34 @@ function AiBotSignalPanelComponent({
     const snapshot: AiBotSignalSnapshot | null = await aiBotService.fetchSignalSnapshot(asset);
     if (!snapshot) return;
 
-    commitOrDefer({
-      signal: snapshot.signal,
-      signalSide: snapshot.signalSide,
-      strength: snapshot.strength,
-      updated: snapshot.updated,
-      freshSeconds: snapshot.freshSeconds,
-      market: snapshot.marketLabel,
-    });
-  }, [commitOrDefer]);
+    applyLive(
+      {
+        signal: snapshot.signal,
+        signalSide: snapshot.signalSide,
+        strength: snapshot.strength,
+        updated: snapshot.updated,
+        freshSeconds: snapshot.freshSeconds,
+        market: snapshot.marketLabel,
+      },
+      true,
+    );
+  }, [applyLive]);
 
   useEffect(() => {
     void rotateSignal();
     const id = window.setInterval(() => {
       void rotateSignal();
     }, SIGNAL_ROTATE_MS);
-    return () => window.clearInterval(id);
+
+    const onVisibility = () => {
+      if (!document.hidden) void rotateSignal();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [rotateSignal]);
 
   const stateLabel =

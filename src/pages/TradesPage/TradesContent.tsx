@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { dashboardAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { useLiveData } from '@shared/live/useLiveData';
 
 import { tradesPageService } from './data/tradesService';
 import type { TradeCardData, TradeFilterId } from './data/trades.mock';
@@ -28,23 +29,23 @@ export function TradesContent({ figmaNode }: TradesContentProps) {
   const [trades, setTrades] = useState<TradeCardData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        const items = await tradesPageService.list(activeFilter);
-        if (active) setTrades(items);
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : t.trades.empty);
-          setTrades([]);
-        }
-      }
-    })();
-    return () => {
-      active = false;
-    };
+  const load = useCallback(async () => {
+    try {
+      const items = await tradesPageService.list(activeFilter);
+      setTrades(items);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.trades.empty);
+      setTrades([]);
+    }
   }, [activeFilter, t.trades.empty]);
+
+  useLiveData(load, { minIntervalMs: 5_000 });
+
+  // Filter change must reload immediately even inside the throttle window.
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const filterLabels: Record<TradeFilterId, string> = {
     all: t.trades.filters.all,

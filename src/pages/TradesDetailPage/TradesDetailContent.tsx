@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { signupAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
 import { CandlestickChart } from '@pages/TradingPage/sections/CandlestickChart';
+import { useLiveData } from '@shared/live/useLiveData';
 
 import { fetchTradeDetail } from './data/tradeDetailService';
 import type { TradeDetailData } from './data/tradeDetail.mock';
@@ -44,16 +45,23 @@ export function TradesDetailContent({ tradeId, isLiveView, figmaNode }: TradesDe
   const navigate = useNavigate();
   const [detail, setDetail] = useState<TradeDetailData | null | undefined>(undefined);
 
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      const next = await fetchTradeDetail(tradeId);
-      if (active) setDetail(next);
-    })();
-    return () => {
-      active = false;
-    };
+  const load = useCallback(async () => {
+    const next = await fetchTradeDetail(tradeId);
+    setDetail(next);
   }, [tradeId]);
+
+  const isRunning =
+    detail?.trade.outcome === 'running' ||
+    isLiveView;
+
+  useLiveData(load, {
+    minIntervalMs: isRunning ? 3_000 : 10_000,
+    enabled: Boolean(tradeId),
+  });
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   if (detail === undefined) {
     return (
