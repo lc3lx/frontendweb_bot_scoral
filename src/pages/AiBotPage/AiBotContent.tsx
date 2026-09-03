@@ -5,9 +5,9 @@ import { useI18n } from '@i18n';
 import { HomeTilt } from '@pages/DashboardPage/HomeTilt';
 
 import { useAiBotModals } from './AiBotModalContext';
+import { AiBotSignalPanel } from './AiBotSignalPanel';
 import {
   SIGNAL_POLL_MS,
-  SIGNAL_ROTATE_MS,
   TRADE_AMOUNTS,
   type AiBotMockData,
   type EngineControlId,
@@ -15,7 +15,6 @@ import {
 import { aiBotService } from './data/aiBotService';
 import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import { ApiClientError } from '@shared/api';
-import { formatPairLabel } from '@shared/market/pairDisplay';
 import { liveRefresh } from '@shared/live/liveRefresh';
 import styles from './AiBotPage.module.css';
 
@@ -60,12 +59,9 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const [busy, setBusy] = useState(false);
   const [controlError, setControlError] = useState<string | null>(null);
   const [controlFeedback, setControlFeedback] = useState<string | null>(null);
-  const [signalPulse, setSignalPulse] = useState(0);
   const targetsSeededRef = useRef(false);
   const pairsSeededRef = useRef(false);
   const stakeModeSeededRef = useRef(false);
-  const rotateIndexRef = useRef(0);
-  const tradablePairIdsRef = useRef<string[]>([]);
   const feedbackTimerRef = useRef<number | null>(null);
 
   const showFeedback = useCallback((message: string) => {
@@ -86,11 +82,11 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     ]);
     setData((prev) => {
       if (!prev) return next;
+      // Signal panel owns live signal fields — avoid rewriting them from the poll.
       return {
         ...next,
         status: {
           ...next.status,
-          // Keep rotating signal fields until the rotator overwrites them.
           signal: prev.status.signal,
           signalSide: prev.status.signalSide,
           strength: prev.status.strength,
@@ -139,81 +135,61 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
   ]);
 
   useEffect(() => {
-    void aiBotService.listTradingPairs().then((pairs) => {
-      const tradable = new Set(pairs.filter((pair) => pair.tradable).map((pair) => pair.id));
-      tradablePairIdsRef.current = configuration.tradingPairIds.filter((id) => tradable.has(id));
-    });
-  }, [configuration.tradingPairIds]);
-
-  const rotateSignal = useCallback(async () => {
-    const pairs =
-      tradablePairIdsRef.current.length > 0
-        ? tradablePairIdsRef.current
-        : configuration.tradingPairIds.filter(Boolean);
-    if (pairs.length === 0) return;
-
-    const index = rotateIndexRef.current % pairs.length;
-    const asset = pairs[index]!;
-    rotateIndexRef.current = (index + 1) % pairs.length;
-
-    const snapshot = await aiBotService.fetchSignalSnapshot(asset);
-    if (!snapshot) return;
-
-    setData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        status: {
-          ...prev.status,
-          signal: snapshot.signal,
-          signalSide: snapshot.signalSide,
-          strength: snapshot.strength,
-          updated: snapshot.updated,
-          freshSeconds: snapshot.freshSeconds,
-          market: snapshot.marketLabel,
-          indicator: configuration.indicator || prev.status.indicator,
-          strategy: configuration.strategy || prev.status.strategy,
-        },
-      };
-    });
-    setSignalPulse((value) => value + 1);
-  }, [configuration.indicator, configuration.strategy, configuration.tradingPairIds]);
-
-  useEffect(() => {
     void load();
   }, [load]);
 
   useEffect(() => {
-    let id = window.setInterval(() => void load(), SIGNAL_POLL_MS);
+    let id = 0;
+    let scrolling = false;
+    let scrollIdle: number | null = null;
+    let pendingLoad = false;
 
-    // A hidden tab polls nothing; showing it again catches up at once.
+    const runLoad = () => {
+      if (scrolling) {
+        pendingLoad = true;
+        return;
+      }
+      pendingLoad = false;
+      void load();
+    };
+
+    const schedule = () => {
+      window.clearInterval(id);
+      id = window.setInterval(runLoad, SIGNAL_POLL_MS);
+    };
+
+    schedule();
+
     const onVisibility = () => {
       window.clearInterval(id);
       if (!document.hidden) {
-        void load();
-        id = window.setInterval(() => void load(), SIGNAL_POLL_MS);
+        runLoad();
+        schedule();
       }
     };
     document.addEventListener('visibilitychange', onVisibility);
 
-    // The bot opening or settling a trade changes this page immediately — waiting out
-    // the poll interval is what made the customer refresh by hand.
-    const unsubscribeLive = liveRefresh.subscribe(() => void load());
+    const onScroll = () => {
+      scrolling = true;
+      if (scrollIdle) window.clearTimeout(scrollIdle);
+      scrollIdle = window.setTimeout(() => {
+        scrolling = false;
+        scrollIdle = null;
+        if (pendingLoad) runLoad();
+      }, 140);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+
+    const unsubscribeLive = liveRefresh.subscribe(runLoad);
 
     return () => {
       window.clearInterval(id);
+      if (scrollIdle) window.clearTimeout(scrollIdle);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('scroll', onScroll, true);
       unsubscribeLive();
     };
   }, [load]);
-
-  useEffect(() => {
-    void rotateSignal();
-    const id = window.setInterval(() => {
-      void rotateSignal();
-    }, SIGNAL_ROTATE_MS);
-    return () => window.clearInterval(id);
-  }, [rotateSignal]);
 
   useEffect(() => {
     syncBotSettingsFromPage(tradeAmount, DEFAULT_DURATION, profitTarget, lossLimit);
@@ -261,7 +237,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       pairsSeededRef.current = false;
       stakeModeSeededRef.current = true;
       await load();
-      void rotateSignal();
       const doneMessage =
         controlId === 'start'
           ? t.aiBot.controls.started
@@ -351,50 +326,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     return '';
   }
 
-  const stateLabel =
-    data.status.botState === 'running'
-      ? t.aiBot.status.running
-      : data.status.botState === 'paused'
-        ? t.aiBot.status.paused
-        : t.aiBot.status.stopped;
-
-  const stopReasonLabel =
-    data.stopReason === 'DAILY_PROFIT_TARGET_REACHED'
-      ? t.aiBot.status.profitTargetReached
-      : data.stopReason === 'DAILY_LOSS_LIMIT_REACHED'
-        ? t.aiBot.status.lossLimitReached
-        : null;
-
-  const stateChipClass =
-    data.status.botState === 'running'
-      ? styles.stateChipRunning
-      : data.status.botState === 'paused'
-        ? styles.stateChipPaused
-        : styles.stateChipStopped;
-
-  const signalRows = [
-    {
-      label: t.aiBot.status.signal,
-      value: data.status.signal,
-      tone:
-        data.status.signalSide === 'up'
-          ? styles.signalUp
-          : data.status.signalSide === 'down'
-            ? styles.signalDown
-            : '',
-      ltr: true,
-    },
-    { label: t.aiBot.status.strength, value: data.status.strength, ltr: true },
-    { label: t.aiBot.status.indicator, value: configuration.indicator || data.status.indicator },
-    { label: t.aiBot.status.strategy, value: configuration.strategy || data.status.strategy },
-    {
-      label: t.aiBot.status.market,
-      value: data.status.market || formatPairLabel(configuration.tradingPairIds[0] ?? '') || configuration.tradingPair,
-      ltr: true,
-    },
-    { label: t.aiBot.status.updated, value: data.status.updated, ltr: true },
-  ];
-
   const amountNumeric = sanitizeAmountInput(tradeAmount);
 
   return (
@@ -405,63 +336,16 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         {/* Top: live signals | total balance */}
         <div className={styles.topRow}>
           <div className={styles.cardWrap}>
-            <HomeTilt maxTiltDeg={6} liftPx={12}>
-              <section
-                className={`${styles.homeCard} ${styles.signalCard}`}
-                aria-label={t.aiBot.status.aria}
-                data-signal-pulse={signalPulse}
-              >
-                <div className={styles.statusHead}>
-                  <div className={styles.botIconWrap}>
-                    <img
-                      className={styles.botIcon}
-                      src={aiBotAssets.iconBotLarge}
-                      alt=""
-                      width={28}
-                      height={28}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className={styles.statusCopy}>
-                    <p className={styles.statusName}>{data.status.name}</p>
-                    <div className={styles.statusMeta}>
-                      <span className={`${styles.stateChip} ${stateChipClass}`}>
-                        <span className={styles.stateDot} aria-hidden="true" />
-                        {stateLabel}
-                      </span>
-                      <span className={styles.freshChip}>
-                        {t.aiBot.status.fresh.replace('{seconds}', String(data.status.freshSeconds))}
-                      </span>
-                      {configuration.tradingPairIds.length > 1 ? (
-                        <span className={styles.rotateChip}>
-                          {t.aiBot.status.scanningPairs.replace(
-                            '{count}',
-                            String(configuration.tradingPairIds.length),
-                          )}
-                        </span>
-                      ) : null}
-                    </div>
-                    {stopReasonLabel && data.status.botState === 'stopped' ? (
-                      <p className={styles.stopReason}>{stopReasonLabel}</p>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div key={signalPulse} className={`${styles.signalGrid} ${styles.signalGridPulse}`}>
-                  {signalRows.map((row) => (
-                    <div key={row.label} className={styles.signalCell}>
-                      <p className={styles.signalLabel}>{row.label}</p>
-                      <p
-                        className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
-                          row.ltr ? ` ${styles.ltrValue}` : ''
-                        }`}
-                      >
-                        {row.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </section>
+            <HomeTilt maxTiltDeg={4} liftPx={8}>
+              <AiBotSignalPanel
+                botName={data.status.name}
+                botState={data.status.botState}
+                stopReason={data.stopReason}
+                indicator={configuration.indicator || data.status.indicator}
+                strategy={configuration.strategy || data.status.strategy}
+                tradingPairIds={configuration.tradingPairIds}
+                tradingPairLabel={configuration.tradingPair}
+              />
             </HomeTilt>
           </div>
 

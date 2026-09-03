@@ -136,6 +136,8 @@
 .signalCard {
   height: 100%;
   padding: 20px;
+  /* Isolate paints so live signal text updates do not dirty the scrolling layer. */
+  contain: layout paint style;
 }
 
 .statusHead {
@@ -259,17 +261,15 @@
 }
 
 .signalGridPulse {
-  animation: signalSwap 420ms ease;
+  animation: signalSwap 280ms ease;
 }
 
 @keyframes signalSwap {
   from {
-    opacity: 0.35;
-    transform: translateY(4px);
+    opacity: 0.72;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
