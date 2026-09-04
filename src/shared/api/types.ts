@@ -145,6 +145,8 @@ export type BotRuntimeResponse = {
   stakeMode?: string | null;
   /** Base stake before progression. */
   baseAmount?: number | null;
+  /** UI market scope. */
+  marketTypeId?: string | null;
 };
 
 export type StrategySignalResponse = {

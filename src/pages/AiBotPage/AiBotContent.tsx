@@ -48,7 +48,7 @@ function formatAmountDisplay(value: string): string {
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
-  const { configuration, botSettings, openModal, syncBotSettingsFromPage, setBrandedStrategy, setTradingPairIds, syncFromBotRuntime } =
+  const { configuration, botSettings, openModal, syncBotSettingsFromPage, syncFromBotRuntime } =
     useAiBotModals();
 
   const [activeControl, setActiveControl] = useState<EngineControlId>('stop');
@@ -105,10 +105,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       }
       targetsSeededRef.current = true;
     }
-    if (!stakeModeSeededRef.current && isBrandedStrategyId(bot?.stakeMode)) {
-      setBrandedStrategy(bot.stakeMode);
-      stakeModeSeededRef.current = true;
-    }
     if (!pairsSeededRef.current && bot) {
       // #region agent log
       fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
@@ -116,7 +112,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
         body: JSON.stringify({
           sessionId: '281dcf',
-          runId: 'pre-fix',
+          runId: 'post-fix',
           hypothesisId: 'B',
           location: 'AiBotContent.tsx:load',
           message: 'bot_runtime_hydrate',
@@ -124,23 +120,14 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
             state: bot.state,
             strategyId: bot.strategyId ?? null,
             stakeMode: bot.stakeMode ?? null,
+            marketTypeId: bot.marketTypeId ?? null,
             assetCount: bot.assets?.length ?? (bot.asset ? 1 : 0),
             amount: bot.amount,
-            marketTypeInResponse: Object.prototype.hasOwnProperty.call(bot, 'marketTypeId'),
-            looksLikeDefaults:
-              (!bot.assets || bot.assets.length === 0) &&
-              (bot.strategyId == null || bot.strategyId === 'rsi') &&
-              (bot.stakeMode == null || bot.stakeMode === 'red-signal-pro'),
           },
           timestamp: Date.now(),
         }),
       }).catch(() => {});
       // #endregion
-      if (bot.assets?.length) {
-        setTradingPairIds(bot.assets);
-      } else if (bot.asset) {
-        setTradingPairIds([bot.asset]);
-      }
       syncFromBotRuntime(bot);
       pairsSeededRef.current = true;
       if (isBrandedStrategyId(bot.stakeMode)) {
@@ -154,8 +141,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     configuration.indicator,
     configuration.strategy,
     configuration.tradingPairIds,
-    setBrandedStrategy,
-    setTradingPairIds,
     syncFromBotRuntime,
   ]);
 
@@ -203,6 +188,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
         lossLimit: aiBotService.parseTargetAbs(lossLimit, 30),
         stakeMode: configuration.brandedStrategyId,
         strategyId: configuration.strategyGridId,
+        marketTypeId: configuration.marketTypeId,
         settings: botSettings,
       });
       pairsSeededRef.current = false;

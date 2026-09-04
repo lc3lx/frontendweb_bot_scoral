@@ -297,6 +297,8 @@ type BotPreferences = {
   strategyId?: string;
   /** Stake progression mode (technical indicator). */
   stakeMode?: string;
+  /** UI market scope. */
+  marketTypeId?: string;
 };
 
 export const marketApi = {

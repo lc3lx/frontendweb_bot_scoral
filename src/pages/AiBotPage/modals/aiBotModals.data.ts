@@ -335,7 +335,7 @@ export const BOT_SETTINGS_TOGGLES: BotSettingsToggleId[] = [
 export const BOT_RISK_LEVELS: BotRiskLevelId[] = ['low', 'medium', 'high'];
 
 export function getDefaultMarketTypeId(): MarketTypeId {
-  return 'global-indicators';
+  return 'all-markets';
 }
 
 /**

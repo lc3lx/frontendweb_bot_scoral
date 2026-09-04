@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -18,6 +19,7 @@ import {
   pairMatchesMarketType,
   getDefaultStrategyGridId,
   getDefaultTradingPairIds,
+  isBrandedStrategyId,
   type BotRiskLevelId,
   type BotSettingsToggleId,
   type BrandedStrategyId,
@@ -47,6 +49,14 @@ export type AiBotConfiguration = {
   tradingPair: string;
   strategy: string;
   indicator: string;
+};
+
+type PersistOverrides = {
+  marketTypeId?: MarketTypeId;
+  tradingPairIds?: string[];
+  strategyGridId?: StrategyGridId;
+  brandedStrategyId?: BrandedStrategyId;
+  settings?: BotSettingsState;
 };
 
 type AiBotModalContextValue = {
@@ -79,6 +89,12 @@ type AiBotModalContextValue = {
 
 const AiBotModalContext = createContext<AiBotModalContextValue | null>(null);
 
+const MARKET_TYPE_IDS = new Set<MarketTypeId>(MARKET_TYPE_OPTIONS.map((item) => item.id));
+
+function isMarketTypeId(value: string | null | undefined): value is MarketTypeId {
+  return Boolean(value && MARKET_TYPE_IDS.has(value as MarketTypeId));
+}
+
 function parseRiskLevel(value: string | null | undefined): BotSettingsState['riskLevel'] {
   if (value === 'risk-low') return 'low';
   if (value === 'risk-high') return 'high';
@@ -101,6 +117,15 @@ function buildDefaultBotSettings(): BotSettingsState {
   };
 }
 
+function filterPairsForMarket(ids: string[], marketTypeId: MarketTypeId): string[] {
+  const kept = ids.filter((symbol) => pairMatchesMarketType(symbol, marketTypeId));
+  if (kept.length > 0) return kept;
+  const fallback = getDefaultTradingPairIds().filter((symbol) =>
+    pairMatchesMarketType(symbol, marketTypeId),
+  );
+  return fallback.length > 0 ? fallback : [];
+}
+
 type AiBotModalProviderProps = {
   children: ReactNode;
 };
@@ -118,6 +143,29 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
   const [botSettings, setBotSettingsState] = useState<BotSettingsState>(buildDefaultBotSettings());
   const [strategies, setStrategies] = useState<StrategyGridOption[]>([]);
   const [strategiesLoading, setStrategiesLoading] = useState(true);
+
+  const marketTypeIdRef = useRef(marketTypeId);
+  const tradingPairIdsRef = useRef(tradingPairIds);
+  const strategyGridIdRef = useRef(strategyGridId);
+  const brandedStrategyIdRef = useRef(brandedStrategyId);
+  const botSettingsRef = useRef(botSettings);
+  const hydrateDoneRef = useRef(false);
+
+  useEffect(() => {
+    marketTypeIdRef.current = marketTypeId;
+  }, [marketTypeId]);
+  useEffect(() => {
+    tradingPairIdsRef.current = tradingPairIds;
+  }, [tradingPairIds]);
+  useEffect(() => {
+    strategyGridIdRef.current = strategyGridId;
+  }, [strategyGridId]);
+  useEffect(() => {
+    brandedStrategyIdRef.current = brandedStrategyId;
+  }, [brandedStrategyId]);
+  useEffect(() => {
+    botSettingsRef.current = botSettings;
+  }, [botSettings]);
 
   useEffect(() => {
     let active = true;
@@ -159,6 +207,47 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     };
   }, [brandedStrategyId, marketTypeId, strategies, strategyGridId, t.aiBot.modals, tradingPairIds]);
 
+  const persistConfig = useCallback(async (overrides: PersistOverrides = {}) => {
+    const nextMarket = overrides.marketTypeId ?? marketTypeIdRef.current;
+    const nextPairs = overrides.tradingPairIds ?? tradingPairIdsRef.current;
+    const nextStrategy = overrides.strategyGridId ?? strategyGridIdRef.current;
+    const nextBranded = overrides.brandedStrategyId ?? brandedStrategyIdRef.current;
+    const nextSettings = overrides.settings ?? botSettingsRef.current;
+
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+      body: JSON.stringify({
+        sessionId: '281dcf',
+        runId: 'post-fix',
+        hypothesisId: 'A',
+        location: 'AiBotModalContext.tsx:persistConfig',
+        message: 'bot_settings_persist',
+        data: {
+          marketTypeId: nextMarket,
+          strategyGridId: nextStrategy,
+          brandedStrategyId: nextBranded,
+          pairCount: nextPairs.length,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
+    await aiBotService.applyControl('apply', {
+      pairs: nextPairs.length ? nextPairs : undefined,
+      amount: aiBotService.parseAmount(nextSettings.tradeAmount),
+      durationSeconds: 60,
+      profitTarget: aiBotService.parseTargetAbs(nextSettings.profitTarget, 50),
+      lossLimit: aiBotService.parseTargetAbs(nextSettings.lossLimit, 30),
+      stakeMode: nextBranded,
+      strategyId: nextStrategy,
+      marketTypeId: nextMarket,
+      settings: nextSettings,
+    });
+  }, []);
+
   const openModal = useCallback((modal: AiBotModalId) => {
     setActiveModal(modal);
   }, []);
@@ -178,237 +267,136 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     setActiveModal('technicalIndicator');
   }, []);
 
-  const setMarketType = useCallback((id: MarketTypeId) => {
-    setMarketTypeId(id);
+  const setMarketType = useCallback(
+    (id: MarketTypeId) => {
+      const nextPairs = filterPairsForMarket(tradingPairIdsRef.current, id);
+      setMarketTypeId(id);
+      setTradingPairIdsState(nextPairs);
+      marketTypeIdRef.current = id;
+      tradingPairIdsRef.current = nextPairs;
+      void persistConfig({ marketTypeId: id, tradingPairIds: nextPairs }).catch(() => {});
+    },
+    [persistConfig],
+  );
 
-    // Drop pairs the new scope no longer offers. Leaving them selected would have the
-    // bot trading OTC books while the page says "Global" — the label and the behaviour
-    // have to agree. Widening to both markets keeps everything already chosen.
-    setTradingPairIdsState((current) => {
-      const kept = current.filter((symbol) => pairMatchesMarketType(symbol, id));
-      if (kept.length > 0) return kept;
-      // Nothing survived: fall back to the defaults that fit the new scope.
-      const fallback = getDefaultTradingPairIds().filter((symbol) =>
-        pairMatchesMarketType(symbol, id),
-      );
-      return fallback.length > 0 ? fallback : [];
-    });
-    // #region agent log
-    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-      body: JSON.stringify({
-        sessionId: '281dcf',
-        runId: 'pre-fix',
-        hypothesisId: 'A',
-        location: 'AiBotModalContext.tsx:setMarketType',
-        message: 'market_type_local_only',
-        data: { marketTypeId: id, willCallApply: false },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-  }, []);
+  const setTradingPairIds = useCallback(
+    (ids: string[]) => {
+      const next = ids.length > 0 ? ids : tradingPairIdsRef.current;
+      setTradingPairIdsState(next);
+      tradingPairIdsRef.current = next;
+      void persistConfig({ tradingPairIds: next }).catch(() => {});
+    },
+    [persistConfig],
+  );
 
-  const setTradingPairIds = useCallback((ids: string[]) => {
-    setTradingPairIdsState(ids);
-  }, []);
+  const toggleTradingPair = useCallback(
+    (id: string) => {
+      const current = tradingPairIdsRef.current;
+      const next = current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id];
+      const resolved = next.length > 0 ? next : current;
+      setTradingPairIdsState(resolved);
+      tradingPairIdsRef.current = resolved;
+      void persistConfig({ tradingPairIds: resolved }).catch(() => {});
+    },
+    [persistConfig],
+  );
 
-  const toggleTradingPair = useCallback((id: string) => {
-    setTradingPairIdsState((current) => {
-      if (current.includes(id)) {
-        const next = current.filter((item) => item !== id);
-        return next.length > 0 ? next : current;
-      }
-      return [...current, id];
-    });
-    // #region agent log
-    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-      body: JSON.stringify({
-        sessionId: '281dcf',
-        runId: 'pre-fix',
-        hypothesisId: 'A',
-        location: 'AiBotModalContext.tsx:toggleTradingPair',
-        message: 'pair_toggle_local_only',
-        data: { pairId: id, willCallApply: false },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-  }, []);
-
-  const setStrategyGrid = useCallback((id: StrategyGridId) => {
-    setStrategyGridId(id);
-    // #region agent log
-    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-      body: JSON.stringify({
-        sessionId: '281dcf',
-        runId: 'pre-fix',
-        hypothesisId: 'A',
-        location: 'AiBotModalContext.tsx:setStrategyGrid',
-        message: 'strategy_grid_local_only',
-        data: { strategyGridId: id, willCallApply: false },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-  }, []);
+  const setStrategyGrid = useCallback(
+    (id: StrategyGridId) => {
+      setStrategyGridId(id);
+      strategyGridIdRef.current = id;
+      void persistConfig({ strategyGridId: id }).catch(() => {});
+    },
+    [persistConfig],
+  );
 
   const setBrandedStrategy = useCallback((id: BrandedStrategyId) => {
     setBrandedStrategyId(id);
+    brandedStrategyIdRef.current = id;
   }, []);
 
   const selectBrandedStrategy = useCallback(
     (id: BrandedStrategyId) => {
       setBrandedStrategyId(id);
+      brandedStrategyIdRef.current = id;
       setActiveModal(null);
       setDetailStrategyId(null);
-      // #region agent log
-      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-        body: JSON.stringify({
-          sessionId: '281dcf',
-          runId: 'pre-fix',
-          hypothesisId: 'C',
-          location: 'AiBotModalContext.tsx:selectBrandedStrategy',
-          message: 'branded_strategy_apply_start',
-          data: {
-            brandedStrategyId: id,
-            strategyGridId,
-            pairCount: tradingPairIds.length,
-            willCallApply: true,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-      void aiBotService
-        .applyControl('apply', {
-          pairs: tradingPairIds.length ? tradingPairIds : undefined,
-          amount: aiBotService.parseAmount(botSettings.tradeAmount),
-          durationSeconds: 60,
-          profitTarget: aiBotService.parseTargetAbs(botSettings.profitTarget, 50),
-          lossLimit: aiBotService.parseTargetAbs(botSettings.lossLimit, 30),
-          stakeMode: id,
-          strategyId: strategyGridId,
-          settings: botSettings,
-        })
-        .then(() => {
-          // #region agent log
-          fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-            body: JSON.stringify({
-              sessionId: '281dcf',
-              runId: 'pre-fix',
-              hypothesisId: 'C',
-              location: 'AiBotModalContext.tsx:selectBrandedStrategy',
-              message: 'branded_strategy_apply_ok',
-              data: { brandedStrategyId: id },
-              timestamp: Date.now(),
-            }),
-          }).catch(() => {});
-          // #endregion
-        })
-        .catch((err: unknown) => {
-          // #region agent log
-          fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-            body: JSON.stringify({
-              sessionId: '281dcf',
-              runId: 'pre-fix',
-              hypothesisId: 'C',
-              location: 'AiBotModalContext.tsx:selectBrandedStrategy',
-              message: 'branded_strategy_apply_fail',
-              data: {
-                brandedStrategyId: id,
-                error: err instanceof Error ? err.message : 'unknown',
-              },
-              timestamp: Date.now(),
-            }),
-          }).catch(() => {});
-          // #endregion
-          /* keep local selection even if persist fails */
-        });
+      void persistConfig({ brandedStrategyId: id }).catch(() => {});
     },
-    [botSettings, strategyGridId, tradingPairIds],
+    [persistConfig],
   );
 
   const setBotSettings = useCallback((settings: BotSettingsState) => {
     setBotSettingsState(settings);
+    botSettingsRef.current = settings;
   }, []);
 
   const syncBotSettingsFromPage = useCallback(
     (tradeAmount: string, duration: string, profitTarget: string, lossLimit: string) => {
-      setBotSettingsState((current) => ({
-        ...current,
-        tradeAmount,
-        duration,
-        profitTarget,
-        lossLimit,
-      }));
+      setBotSettingsState((current) => {
+        const next = {
+          ...current,
+          tradeAmount,
+          duration,
+          profitTarget,
+          lossLimit,
+        };
+        botSettingsRef.current = next;
+        return next;
+      });
     },
     [],
   );
 
   const syncFromBotRuntime = useCallback((bot: BotRuntimeResponse) => {
-    setBotSettingsState((current) => ({
-      ...current,
-      toggles: {
-        'auto-profit': bot.autoStopAtProfit,
-        'auto-loss': bot.autoStopAtLoss,
-        'signal-confirm': bot.signalConfirmationEnabled,
-        notifications: bot.notificationsEnabled,
-      },
-      riskLevel: parseRiskLevel(bot.riskLevel),
-      profitTarget: String(bot.dailyProfitTarget),
-      lossLimit: String(bot.dailyLossLimit),
-      tradeAmount: bot.amount > 0 ? `$${bot.amount}` : current.tradeAmount,
-    }));
+    setBotSettingsState((current) => {
+      const next = {
+        ...current,
+        toggles: {
+          'auto-profit': bot.autoStopAtProfit,
+          'auto-loss': bot.autoStopAtLoss,
+          'signal-confirm': bot.signalConfirmationEnabled,
+          notifications: bot.notificationsEnabled,
+        },
+        riskLevel: parseRiskLevel(bot.riskLevel),
+        profitTarget: String(bot.dailyProfitTarget),
+        lossLimit: String(bot.dailyLossLimit),
+        tradeAmount: bot.amount > 0 ? `$${bot.amount}` : current.tradeAmount,
+      };
+      botSettingsRef.current = next;
+      return next;
+    });
+
     const strategy = bot.strategyId?.trim().toLowerCase();
     if (strategy) {
       setStrategyGridId(strategy);
+      strategyGridIdRef.current = strategy;
     }
+
+    if (isBrandedStrategyId(bot.stakeMode)) {
+      setBrandedStrategyId(bot.stakeMode);
+      brandedStrategyIdRef.current = bot.stakeMode;
+    }
+
+    if (isMarketTypeId(bot.marketTypeId)) {
+      setMarketTypeId(bot.marketTypeId);
+      marketTypeIdRef.current = bot.marketTypeId;
+    }
+
+    const assets = bot.assets?.length ? bot.assets : bot.asset ? [bot.asset] : null;
+    if (assets?.length) {
+      setTradingPairIdsState(assets);
+      tradingPairIdsRef.current = assets;
+    }
+
+    hydrateDoneRef.current = true;
   }, []);
 
   const persistBotSettings = useCallback(async () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-      body: JSON.stringify({
-        sessionId: '281dcf',
-        runId: 'pre-fix',
-        hypothesisId: 'C',
-        location: 'AiBotModalContext.tsx:persistBotSettings',
-        message: 'bot_settings_persist_start',
-        data: {
-          brandedStrategyId,
-          strategyGridId,
-          pairCount: tradingPairIds.length,
-          riskLevel: botSettings.riskLevel,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-    await aiBotService.applyControl('apply', {
-      pairs: tradingPairIds.length ? tradingPairIds : undefined,
-      amount: aiBotService.parseAmount(botSettings.tradeAmount),
-      durationSeconds: 60,
-      profitTarget: aiBotService.parseTargetAbs(botSettings.profitTarget, 50),
-      lossLimit: aiBotService.parseTargetAbs(botSettings.lossLimit, 30),
-      stakeMode: brandedStrategyId,
-      strategyId: strategyGridId,
-      settings: botSettings,
-    });
-  }, [botSettings, brandedStrategyId, strategyGridId, tradingPairIds]);
+    await persistConfig();
+  }, [persistConfig]);
 
   const value = useMemo(
     () => ({

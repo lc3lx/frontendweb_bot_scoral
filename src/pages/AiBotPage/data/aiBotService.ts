@@ -215,6 +215,7 @@ export const aiBotService = {
       lossLimit?: number;
       stakeMode?: BrandedStrategyId;
       strategyId?: string;
+      marketTypeId?: string;
       settings?: BotSettingsState;
     },
   ): Promise<void> {
@@ -224,6 +225,7 @@ export const aiBotService = {
     const profitTarget = config?.profitTarget ?? 50;
     const lossLimit = config?.lossLimit ?? 30;
     const stakeMode = config?.stakeMode ?? 'red-signal-pro';
+    const marketTypeId = config?.marketTypeId ?? 'all-markets';
     const preferences = {
       ...toBotPreferences(config?.settings ?? {
         toggles: {
@@ -239,6 +241,7 @@ export const aiBotService = {
         lossLimit: '30',
       }, config?.strategyId),
       stakeMode,
+      marketTypeId,
     };
 
     if (control === 'start') {
