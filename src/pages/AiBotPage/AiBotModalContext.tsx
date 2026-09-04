@@ -193,6 +193,21 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       );
       return fallback.length > 0 ? fallback : [];
     });
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+      body: JSON.stringify({
+        sessionId: '281dcf',
+        runId: 'pre-fix',
+        hypothesisId: 'A',
+        location: 'AiBotModalContext.tsx:setMarketType',
+        message: 'market_type_local_only',
+        data: { marketTypeId: id, willCallApply: false },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
   }, []);
 
   const setTradingPairIds = useCallback((ids: string[]) => {
@@ -207,10 +222,40 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       }
       return [...current, id];
     });
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+      body: JSON.stringify({
+        sessionId: '281dcf',
+        runId: 'pre-fix',
+        hypothesisId: 'A',
+        location: 'AiBotModalContext.tsx:toggleTradingPair',
+        message: 'pair_toggle_local_only',
+        data: { pairId: id, willCallApply: false },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
   }, []);
 
   const setStrategyGrid = useCallback((id: StrategyGridId) => {
     setStrategyGridId(id);
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+      body: JSON.stringify({
+        sessionId: '281dcf',
+        runId: 'pre-fix',
+        hypothesisId: 'A',
+        location: 'AiBotModalContext.tsx:setStrategyGrid',
+        message: 'strategy_grid_local_only',
+        data: { strategyGridId: id, willCallApply: false },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
   }, []);
 
   const setBrandedStrategy = useCallback((id: BrandedStrategyId) => {
@@ -222,6 +267,26 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       setBrandedStrategyId(id);
       setActiveModal(null);
       setDetailStrategyId(null);
+      // #region agent log
+      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+        body: JSON.stringify({
+          sessionId: '281dcf',
+          runId: 'pre-fix',
+          hypothesisId: 'C',
+          location: 'AiBotModalContext.tsx:selectBrandedStrategy',
+          message: 'branded_strategy_apply_start',
+          data: {
+            brandedStrategyId: id,
+            strategyGridId,
+            pairCount: tradingPairIds.length,
+            willCallApply: true,
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       void aiBotService
         .applyControl('apply', {
           pairs: tradingPairIds.length ? tradingPairIds : undefined,
@@ -233,7 +298,42 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
           strategyId: strategyGridId,
           settings: botSettings,
         })
-        .catch(() => {
+        .then(() => {
+          // #region agent log
+          fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+            body: JSON.stringify({
+              sessionId: '281dcf',
+              runId: 'pre-fix',
+              hypothesisId: 'C',
+              location: 'AiBotModalContext.tsx:selectBrandedStrategy',
+              message: 'branded_strategy_apply_ok',
+              data: { brandedStrategyId: id },
+              timestamp: Date.now(),
+            }),
+          }).catch(() => {});
+          // #endregion
+        })
+        .catch((err: unknown) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+            body: JSON.stringify({
+              sessionId: '281dcf',
+              runId: 'pre-fix',
+              hypothesisId: 'C',
+              location: 'AiBotModalContext.tsx:selectBrandedStrategy',
+              message: 'branded_strategy_apply_fail',
+              data: {
+                brandedStrategyId: id,
+                error: err instanceof Error ? err.message : 'unknown',
+              },
+              timestamp: Date.now(),
+            }),
+          }).catch(() => {});
+          // #endregion
           /* keep local selection even if persist fails */
         });
     },
@@ -278,6 +378,26 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
   }, []);
 
   const persistBotSettings = useCallback(async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+      body: JSON.stringify({
+        sessionId: '281dcf',
+        runId: 'pre-fix',
+        hypothesisId: 'C',
+        location: 'AiBotModalContext.tsx:persistBotSettings',
+        message: 'bot_settings_persist_start',
+        data: {
+          brandedStrategyId,
+          strategyGridId,
+          pairCount: tradingPairIds.length,
+          riskLevel: botSettings.riskLevel,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
     await aiBotService.applyControl('apply', {
       pairs: tradingPairIds.length ? tradingPairIds : undefined,
       amount: aiBotService.parseAmount(botSettings.tradeAmount),

@@ -110,6 +110,32 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       stakeModeSeededRef.current = true;
     }
     if (!pairsSeededRef.current && bot) {
+      // #region agent log
+      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
+        body: JSON.stringify({
+          sessionId: '281dcf',
+          runId: 'pre-fix',
+          hypothesisId: 'B',
+          location: 'AiBotContent.tsx:load',
+          message: 'bot_runtime_hydrate',
+          data: {
+            state: bot.state,
+            strategyId: bot.strategyId ?? null,
+            stakeMode: bot.stakeMode ?? null,
+            assetCount: bot.assets?.length ?? (bot.asset ? 1 : 0),
+            amount: bot.amount,
+            marketTypeInResponse: Object.prototype.hasOwnProperty.call(bot, 'marketTypeId'),
+            looksLikeDefaults:
+              (!bot.assets || bot.assets.length === 0) &&
+              (bot.strategyId == null || bot.strategyId === 'rsi') &&
+              (bot.stakeMode == null || bot.stakeMode === 'red-signal-pro'),
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       if (bot.assets?.length) {
         setTradingPairIds(bot.assets);
       } else if (bot.asset) {
