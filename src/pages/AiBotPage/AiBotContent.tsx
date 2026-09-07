@@ -203,15 +203,10 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     }
   }
 
+  // Returned bare: the notice portals itself over the whole viewport, so wrapping it in
+  // the page shell would only render markup nobody can see.
   if (maintenance) {
-    return (
-      <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
-        <AiBotBackdrop />
-        <div className={styles.content}>
-          <MaintenanceNotice message={maintenance.message} />
-        </div>
-      </div>
-    );
+    return <MaintenanceNotice message={maintenance.message} />;
   }
 
   if (!data) {

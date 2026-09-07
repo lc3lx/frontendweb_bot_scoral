@@ -1,20 +1,55 @@
-.wrap {
+/*
+ * Covers the entire viewport, including the app shell's sidebar and header. Opaque on
+ * purpose: this is a takeover, not an overlay, so nothing underneath should show through.
+ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Fixed + dvh so a mobile browser's collapsing toolbar cannot expose the page behind. */
+  min-height: 100dvh;
+  padding: clamp(16px, 4vw, 32px);
+  background: #050203;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.brandBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: min(100%, 42rem);
+  padding: 14px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.brandLogo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+}
+
+.center {
+  display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 18px;
-  /* Fills the space the bot controls would occupy, without pushing the shell around. */
-  min-height: min(60vh, 520px);
-  padding: clamp(24px, 6vw, 56px) 20px;
+  padding: 32px 0;
   text-align: center;
 }
 
 .iconRing {
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
+  width: 78px;
+  height: 78px;
   border: 1px solid rgba(221, 9, 18, 0.28);
   border-radius: 999px;
   background: rgba(221, 9, 18, 0.07);
@@ -28,19 +63,19 @@
 
 .title {
   margin: 0;
-  font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.75rem);
+  font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2rem);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
   color: #ffffff;
 }
 
 .body {
-  max-width: 42ch;
+  max-width: 44ch;
   margin: 0;
-  font-size: var(--font-size-md, 0.9375rem);
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.62);
-  /* Admin notes can contain newlines; keep them. */
+  font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+  /* Admin notes may contain line breaks; keep them. */
   white-space: pre-line;
 }
 
@@ -48,7 +83,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px;
+  margin-top: 10px;
+  padding: 10px 20px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);

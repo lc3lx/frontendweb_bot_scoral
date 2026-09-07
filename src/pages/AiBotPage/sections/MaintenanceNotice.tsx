@@ -1,3 +1,7 @@
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+
+import { scarAlphaLogo } from '@assets';
 import { t } from '@shared/i18n';
 import styles from './MaintenanceNotice.module.css';
 
@@ -7,32 +11,57 @@ type MaintenanceNoticeProps = {
 };
 
 /**
- * Shown in place of the bot controls while an admin has stopped every bot.
+ * Full-screen takeover shown while an admin has stopped every bot.
  *
- * Deliberately scoped to this page only: the rest of the app stays usable, so a user can
- * still review their history and account while trading is held down. Showing a whole-site
- * outage screen for what is a trading pause would be misleading.
+ * <p>Rendered through a portal onto <code>document.body</code> rather than inside the
+ * page. The bot page lives inside the app shell, so drawing it in place left the sidebar
+ * and header visible around it; and the shell's own stacking contexts (transforms,
+ * `isolation: isolate`) mean a plain high z-index is not reliably enough to cover them.
+ * A portal sidesteps both.</p>
+ *
+ * <p>Page scrolling is locked while it is up, so nothing can be revealed underneath.</p>
  */
 export function MaintenanceNotice({ message }: MaintenanceNoticeProps) {
-  return (
-    <section className={styles.wrap} role="status" aria-live="polite">
-      <span className={styles.iconRing} aria-hidden="true">
-        <svg viewBox="0 0 24 24" className={styles.icon} fill="none" stroke="currentColor" strokeWidth="1.6">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
-      <h2 className={styles.title}>{t('bot.maintenance.title')}</h2>
+  if (typeof document === 'undefined') return null;
 
-      <p className={styles.body}>
-        {message?.trim() ? message : t('bot.maintenance.body')}
-      </p>
+  return createPortal(
+    <div className={styles.overlay} role="status" aria-live="polite">
+      <div className={styles.brandBar}>
+        <img className={styles.brandLogo} src={scarAlphaLogo} alt="" aria-hidden="true" />
+      </div>
 
-      <span className={styles.badge}>
-        <span className={styles.dot} aria-hidden="true" />
-        {t('bot.maintenance.badge')}
-      </span>
-    </section>
+      <div className={styles.center}>
+        <span className={styles.iconRing} aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            className={styles.icon}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+
+        <h1 className={styles.title}>{t('bot.maintenance.title')}</h1>
+
+        <p className={styles.body}>{message?.trim() ? message : t('bot.maintenance.body')}</p>
+
+        <span className={styles.badge}>
+          <span className={styles.dot} aria-hidden="true" />
+          {t('bot.maintenance.badge')}
+        </span>
+      </div>
+    </div>,
+    document.body,
   );
 }
