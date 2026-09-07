@@ -82,6 +82,7 @@ export const ar: EnDictionary = {
   'api.insufficientBalance': 'الرصيد غير كافٍ لهذه الصفقة.',
   'api.rateLimited': 'طلبات تداول كثيرة جداً. انتظر ثم حاول مجدداً.',
   'api.invalidTrade': 'طلب الصفقة غير صالح.',
+  'api.demoAccountLocked': 'الحساب التجريبي مقفل. تواصل مع الإدارة لتفعيله.',
   'api.strategyDisabled': 'هذه الاستراتيجية غير متاحة بعد.',
   'api.strategyNotFound': 'لم يتم العثور على الاستراتيجية.',
   'api.realTradingDisabled': 'التداول الحقيقي معطّل.',

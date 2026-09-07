@@ -99,7 +99,7 @@ export const authApi = {
       body: {
         email: body.email,
         password: body.password,
-        accountType: body.accountType ?? 'Demo',
+        accountType: body.accountType ?? 'Real',
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -111,7 +111,7 @@ export const authApi = {
       body: {
         email: body.email,
         password: body.password,
-        accountType: body.accountType ?? 'Demo',
+        accountType: body.accountType ?? 'Real',
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -166,7 +166,7 @@ export const binollaApi = {
   connect(body: BinollaConnectRequest): Promise<BinollaConnectResponse> {
     return apiRequest<BinollaConnectResponse>('/api/binolla/connect', {
       method: 'POST',
-      body: { ssid: body.ssid, accountType: body.accountType ?? 'Demo' },
+      body: { ssid: body.ssid, accountType: body.accountType ?? 'Real' },
     });
   },
   login(body: BinollaCredentialRequest): Promise<BinollaConnectResponse> {
@@ -175,7 +175,7 @@ export const binollaApi = {
       body: {
         email: body.email,
         password: body.password,
-        accountType: body.accountType ?? 'Demo',
+        accountType: body.accountType ?? 'Real',
       },
       signal: timedSignal(BINOLLA_LOGIN_MS),
     });
@@ -186,7 +186,7 @@ export const binollaApi = {
       body: {
         email: body.email,
         password: body.password,
-        accountType: body.accountType ?? 'Demo',
+        accountType: body.accountType ?? 'Real',
       },
       signal: timedSignal(BINOLLA_LOGIN_MS),
     });

@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { accountApi } from '@shared/api';
 import { routeAfterWebAuth, routeForWebAccess } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
+import { isSessionExpiredError } from '@shared/auth/sessionErrors';
 import { ROUTES } from '@router/routes';
 
 export function AuthLayout() {
@@ -59,8 +60,10 @@ export function AuthLayout() {
           navigate(routeForWebAccess(status.botAccess), { replace: true });
           return;
         }
-      } catch {
-        tokenStore.clear();
+      } catch (error) {
+        // Only a real 401 means the session died. Clearing on every failure is what made
+        // a refresh during a slow or briefly failing backend log the user out.
+        if (isSessionExpiredError(error)) tokenStore.clear();
       }
 
       if (active) setReady(true);

@@ -42,7 +42,7 @@ export const accountService = {
     });
     const ssid = input.binollaSsid?.trim();
     if (ssid) {
-      await binollaApi.connect({ ssid, accountType: 'Demo' });
+      await binollaApi.connect({ ssid, accountType: 'Real' });
     }
   },
 

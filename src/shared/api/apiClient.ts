@@ -56,6 +56,8 @@ function mapMessage(code: string, fallback: string): string {
       return t('api.rateLimited');
     case 'INVALID_TRADE':
       return t('api.invalidTrade');
+    case 'DEMO_ACCOUNT_LOCKED':
+      return t('api.demoAccountLocked');
     case 'STRATEGY_DISABLED':
       return t('api.strategyDisabled');
     case 'STRATEGY_NOT_FOUND':

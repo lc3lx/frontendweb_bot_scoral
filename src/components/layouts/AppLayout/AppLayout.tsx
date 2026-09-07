@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { accountApi } from '@shared/api';
 import { isPendingApproval } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
+import { isSessionExpiredError } from '@shared/auth/sessionErrors';
 import { ROUTES } from '@router/routes';
 
 export function AppLayout() {
@@ -36,10 +37,14 @@ export function AppLayout() {
           navigate(ROUTES.login, { replace: true });
           return;
         }
-      } catch {
-        tokenStore.clear();
-        navigate(ROUTES.login, { replace: true });
-        return;
+      } catch (error) {
+        // Same rule as AuthLayout: bounce to login only when the server actually
+        // rejected the token. A transient failure leaves the user where they are.
+        if (isSessionExpiredError(error)) {
+          tokenStore.clear();
+          navigate(ROUTES.login, { replace: true });
+          return;
+        }
       }
 
       if (active) setReady(true);

@@ -21,7 +21,7 @@ export function useSignupForm() {
       await authService.signup(values);
       const ssid = values.binollaAccount?.trim();
       if (ssid) {
-        await binollaApi.connect({ ssid, accountType: 'Demo' });
+        await binollaApi.connect({ ssid, accountType: 'Real' });
       }
       const status = await accountApi.status();
       await meApi.get().catch(() => null);

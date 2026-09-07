@@ -41,7 +41,10 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
     const result = await authApi.binollaLogin({
       email: credentials.email.trim(),
       password: credentials.password,
-      accountType: 'Demo',
+      // Live: signing in must not request the demo balance, which is locked unless an
+      // admin unlocked it for this account. Asking for it here failed every login with
+      // DEMO_ACCOUNT_LOCKED. Switching to demo afterwards is a separate, gated action.
+      accountType: 'Real',
     });
     return storeBinollaSession(result);
   } catch (error) {
@@ -54,7 +57,7 @@ export async function signupWithBinolla(credentials: LoginCredentials): Promise<
     const result = await authApi.binollaSignup({
       email: credentials.email.trim(),
       password: credentials.password,
-      accountType: 'Demo',
+      accountType: 'Real',
     });
     return storeBinollaSession(result);
   } catch (error) {

@@ -31,7 +31,9 @@ function formatBalance(value: number | null | undefined): string {
 
 function normalizeAccountType(value: string | null | undefined): AccountMode {
   const normalized = value?.trim().toLowerCase();
-  return normalized === 'real' || normalized === 'live' ? 'Real' : 'Demo';
+  // Only an explicit "demo" means demo. Anything unknown or missing is Live, which is
+  // the default account — falling back to 'Demo' would label a live balance as demo.
+  return normalized === 'demo' ? 'Demo' : 'Real';
 }
 
 const idleProfile = {
@@ -40,7 +42,8 @@ const idleProfile = {
   balance: '—',
   demoBalance: '—',
   realBalance: '—',
-  accountType: 'Demo' as AccountMode,
+  // Live is the default account; demo is admin-granted.
+  accountType: 'Real' as AccountMode,
   loading: true,
   switching: false,
   error: null as string | null,
