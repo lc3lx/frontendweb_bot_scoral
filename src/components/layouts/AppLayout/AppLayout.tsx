@@ -5,11 +5,14 @@ import { isPendingApproval } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { isSessionExpiredError } from '@shared/auth/sessionErrors';
 import { ROUTES } from '@router/routes';
+import { MaintenanceNotice } from '@components/MaintenanceNotice';
+import { useBotMaintenance } from '@shared/maintenance/useBotMaintenance';
 
 export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
+  const maintenance = useBotMaintenance();
 
   useEffect(() => {
     let active = true;
@@ -56,5 +59,11 @@ export function AppLayout() {
   }, [location.pathname, navigate]);
 
   if (!ready) return null;
+
+  // Whole-app takeover, not just the bot page: while an admin has trading stopped there
+  // is nothing here a user can act on, and letting them browse balances and history that
+  // are frozen mid-session is more confusing than saying so plainly.
+  if (maintenance) return <MaintenanceNotice message={maintenance.message} />;
+
   return <Outlet />;
 }
