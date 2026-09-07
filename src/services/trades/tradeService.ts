@@ -18,6 +18,7 @@ import type { TradeDirection } from '@components/types';
 import { ApiClientError, createIdempotencyKey, marketApi, tradesApi } from '@shared/api';
 import type { TradeDto } from '@shared/api';
 import { t } from '@shared/i18n';
+import { CACHE_KEYS, fetchCached, invalidateCached } from '@shared/api/dataCache';
 
 type TradeChangeListener = () => void;
 
@@ -276,46 +277,17 @@ export const tradeService = {
     const pageSize = params.pageSize ?? DEFAULT_PAGE_SIZE;
 
     try {
-      const response = await tradesApi.list({
-        page,
-        pageSize,
-        status: backendStatusForFilter(filter),
-      });
+      // Through the shared cache: one transient failure used to leave this page empty
+      // until the user refreshed by hand, several times. The cache retries, and if the
+      // retry also fails it returns the last good list rather than nothing.
+      const cached = await fetchCached(
+        CACHE_KEYS.tradesList(filter, page),
+        () => tradesApi.list({ page, pageSize, status: backendStatusForFilter(filter) }),
+        { freshMs: 1_500 },
+      );
+      const response = cached.value;
 
       let items = response.items.map(mapTrade);
-      // #region agent log
-      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': '1892a4',
-        },
-        body: JSON.stringify({
-          sessionId: '1892a4',
-          runId: 'trade-settle',
-          hypothesisId: 'H3',
-          location: 'tradeService.ts:listTrades',
-          message: 'history list',
-          data: {
-            filter,
-            page,
-            pageSize,
-            total: response.total,
-            itemCount: response.items.length,
-            mappedCount: items.length,
-            hasMore: response.page * response.pageSize < response.total,
-            sample: response.items.slice(0, 5).map((t) => ({
-              id: t.id?.slice?.(0, 8),
-              status: t.status,
-              pnl: t.pnl,
-              mapped: mapStatus(t.status, t.pnl, t.createdAt, t.durationSeconds),
-              durationSeconds: t.durationSeconds,
-            })),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       if (filter === 'today') {
         items = items.filter((trade) => trade.isToday);
       } else if (filter === 'all' || filter === 'live' || filter === 'profit' || filter === 'loss') {
@@ -399,6 +371,8 @@ export const tradeService = {
       createIdempotencyKey(),
     );
 
+    // A placed trade changes every list; serving a cached one would hide it.
+    invalidateCached();
     notifyListeners();
     return dto.id;
   },
@@ -408,6 +382,8 @@ export const tradeService = {
   },
 
   reset(): void {
+    // A placed trade changes every list; serving a cached one would hide it.
+    invalidateCached();
     notifyListeners();
   },
 };

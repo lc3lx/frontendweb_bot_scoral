@@ -214,26 +214,6 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     const nextBranded = overrides.brandedStrategyId ?? brandedStrategyIdRef.current;
     const nextSettings = overrides.settings ?? botSettingsRef.current;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-      body: JSON.stringify({
-        sessionId: '281dcf',
-        runId: 'post-fix',
-        hypothesisId: 'A',
-        location: 'AiBotModalContext.tsx:persistConfig',
-        message: 'bot_settings_persist',
-        data: {
-          marketTypeId: nextMarket,
-          strategyGridId: nextStrategy,
-          brandedStrategyId: nextBranded,
-          pairCount: nextPairs.length,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
 
     await aiBotService.applyControl('apply', {
       pairs: nextPairs.length ? nextPairs : undefined,

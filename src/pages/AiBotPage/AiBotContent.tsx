@@ -106,28 +106,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       targetsSeededRef.current = true;
     }
     if (!pairsSeededRef.current && bot) {
-      // #region agent log
-      fetch('http://127.0.0.1:7892/ingest/aea6d51e-f3e9-4c7e-b6b4-db55c4306e97', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '281dcf' },
-        body: JSON.stringify({
-          sessionId: '281dcf',
-          runId: 'post-fix',
-          hypothesisId: 'B',
-          location: 'AiBotContent.tsx:load',
-          message: 'bot_runtime_hydrate',
-          data: {
-            state: bot.state,
-            strategyId: bot.strategyId ?? null,
-            stakeMode: bot.stakeMode ?? null,
-            marketTypeId: bot.marketTypeId ?? null,
-            assetCount: bot.assets?.length ?? (bot.asset ? 1 : 0),
-            amount: bot.amount,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       syncFromBotRuntime(bot);
       pairsSeededRef.current = true;
       if (isBrandedStrategyId(bot.stakeMode)) {

@@ -110,7 +110,19 @@ export type AiBotSignalSnapshot = {
 
 export const aiBotService = {
   async fetchData(preferredAsset?: string | null): Promise<AiBotMockData> {
+    // Blank the numbers the API is responsible for. Cloning the mock wholesale meant a
+    // failed balance or trades call left invented performance figures on the page,
+    // indistinguishable from real ones.
     const data = structuredClone(AI_BOT_MOCK);
+    data.performance = {
+      totalBalance: '—',
+      todayPlus: '—',
+      todayMinus: '—',
+      net: '—',
+      active: '—',
+      winRate: '—',
+      trades: '—',
+    };
 
     try {
       const [balance, trades, bot, strategies] = await Promise.all([

@@ -191,7 +191,11 @@ function buildAxis(candles: TradingCandle[], price: number): Pick<TradingMockDat
 
 export const tradingService = {
   async fetchData(): Promise<TradingMockData> {
+    // Same reasoning as Home and the bot page: the mock supplies the SHAPE, never
+    // stand-in values that could be mistaken for live figures. Chart candles are
+    // replaced wholesale further down when real ones arrive.
     const data = structuredClone(tradingMockData);
+    data.balance = '—';
 
     try {
       const [status, balance] = await Promise.all([
