@@ -16,6 +16,7 @@ import { isBrandedStrategyId } from './modals/aiBotModals.data';
 import { ApiClientError } from '@shared/api';
 import { useLiveData } from '@shared/live/useLiveData';
 import styles from './AiBotPage.module.css';
+import { MaintenanceNotice } from './sections/MaintenanceNotice';
 
 type AiBotContentProps = {
   figmaNode: string;
@@ -48,6 +49,8 @@ function formatAmountDisplay(value: string): string {
 export function AiBotContent({ figmaNode }: AiBotContentProps) {
   const { t } = useI18n();
   const [data, setData] = useState<AiBotMockData | null>(null);
+  /** Set while an admin has the whole fleet stopped — replaces the controls. */
+  const [maintenance, setMaintenance] = useState<{ message: string | null } | null>(null);
   const { configuration, botSettings, openModal, syncBotSettingsFromPage, syncFromBotRuntime } =
     useAiBotModals();
 
@@ -105,6 +108,10 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       }
       targetsSeededRef.current = true;
     }
+    // The global stop rides along on the bot status the page already polls, so the
+    // notice appears (and clears) without any extra request.
+    setMaintenance(bot?.maintenance?.active ? { message: bot.maintenance.message ?? null } : null);
+
     if (!pairsSeededRef.current && bot) {
       syncFromBotRuntime(bot);
       pairsSeededRef.current = true;
@@ -194,6 +201,17 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
     } finally {
       setBusy(false);
     }
+  }
+
+  if (maintenance) {
+    return (
+      <div className={styles.page} data-figma-node={figmaNode} data-ai-bot-page="">
+        <AiBotBackdrop />
+        <div className={styles.content}>
+          <MaintenanceNotice message={maintenance.message} />
+        </div>
+      </div>
+    );
   }
 
   if (!data) {

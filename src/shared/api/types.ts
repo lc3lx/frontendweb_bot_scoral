@@ -141,6 +141,11 @@ export type BotRuntimeResponse = {
   stopReason?: string | null;
   /** Which strategy the bot runs: 'rsi' or 'ema'. */
   strategyId?: string | null;
+  /**
+   * Present only while an admin has stopped every bot. The bot page shows the
+   * maintenance notice instead of its controls whenever this is set.
+   */
+  maintenance?: { active: boolean; message: string | null; since: string | null } | null;
   /** Stake progression mode (technical indicator). */
   stakeMode?: string | null;
   /** Base stake before progression. */

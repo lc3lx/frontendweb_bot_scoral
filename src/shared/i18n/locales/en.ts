@@ -83,6 +83,10 @@ export const en = {
   'api.insufficientBalance': 'Insufficient balance for this trade.',
   'api.rateLimited': 'Too many trade requests. Please wait and try again.',
   'api.invalidTrade': 'Trade request is invalid.',
+  'bot.maintenance.title': "We'll be right back",
+  'bot.maintenance.body':
+    "We're upgrading our systems to serve you better.\nThis won't take long — thank you for your patience.",
+  'bot.maintenance.badge': 'Maintenance in progress',
   'api.demoAccountLocked': 'The demo account is locked. Ask an administrator to enable it.',
   'api.strategyDisabled': 'This strategy is not available yet.',
   'api.strategyNotFound': 'Strategy was not found.',
