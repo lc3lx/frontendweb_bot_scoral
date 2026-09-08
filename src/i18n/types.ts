@@ -1384,7 +1384,17 @@ export type Messages = {
 
       empty: string;
 
-      columns: { user: string; referredAt: string; deposit: string; activeDays: string; status: string };
+      columns: {
+        user: string;
+        referredAt: string;
+        deposit: string;
+        activeDays: string;
+        status: string;
+        trades: string;
+        volume: string;
+        earned: string;
+        rate: string;
+      };
 
       status: { qualified: string; pending: string };
 

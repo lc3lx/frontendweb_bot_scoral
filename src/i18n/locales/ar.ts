@@ -1488,6 +1488,10 @@ export const ar: Messages = {
         activeDays: 'أيام النشاط',
 
         status: 'الحالة',
+        trades: 'الصفقات',
+        volume: 'حجم التداول',
+        earned: 'ربحك منه',
+        rate: 'النسبة',
 
       },
 

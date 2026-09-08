@@ -565,6 +565,16 @@ export type ReferralMemberDto = {
   windowEndsAt: string;
   qualified: boolean;
   qualifiedAt: string | null;
+  /** True once this person actually started trading. */
+  isActive: boolean;
+  /** Settled bot trades recorded for this person. */
+  tradeCount: number;
+  /** Total stake across the trades that paid you. */
+  tradedVolume: number;
+  /** What you have earned from this person so far. */
+  commissionEarned: number;
+  /** The rate currently applied, as a percent of stake. */
+  ratePercent: number;
 };
 
 export type ReferralMembersResponse = {

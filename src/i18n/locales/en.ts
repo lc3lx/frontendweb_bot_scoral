@@ -1491,6 +1491,10 @@ export const en: Messages = {
         activeDays: 'Active days',
 
         status: 'Status',
+        trades: 'Trades',
+        volume: 'Volume',
+        earned: 'You Earned',
+        rate: 'Rate',
 
       },
 

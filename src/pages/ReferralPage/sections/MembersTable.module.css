@@ -62,3 +62,10 @@
   background: rgba(245, 196, 98, 0.14);
   color: #f5c462;
 }
+
+/* The number the referrer actually cares about on each row. */
+.earned {
+  font-weight: 600;
+  color: #4ade9a;
+  white-space: nowrap;
+}
