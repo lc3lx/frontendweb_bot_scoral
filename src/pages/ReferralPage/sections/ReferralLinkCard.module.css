@@ -1,0 +1,102 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(221, 9, 18, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-on-accent);
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.codeLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.codeValue {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(221, 9, 18, 0.14);
+  border: 1px solid rgba(221, 9, 18, 0.3);
+  color: #ff2a34;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+
+.linkRow {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-subtle);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.linkValue {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: start;
+  unicode-bidi: plaintext;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.copyButton,
+.shareButton {
+  flex: 1 1 160px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.copyButton {
+  background: rgba(221, 9, 18, 0.14);
+  border: 1px solid rgba(221, 9, 18, 0.3);
+  color: var(--color-text-on-accent);
+}
+
+.shareButton {
+  background: #dd0101;
+  color: var(--color-text-on-accent);
+  text-decoration: none;
+}
+
+.copyButton:hover,
+.shareButton:hover {
+  opacity: 0.9;
+}
+
+.copyButton:active,
+.shareButton:active {
+  transform: scale(0.98);
+}

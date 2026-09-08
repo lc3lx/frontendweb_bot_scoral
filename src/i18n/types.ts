@@ -308,6 +308,8 @@ export type Messages = {
 
       account: string;
 
+      referral: string;
+
       logout: string;
 
     };
@@ -1289,6 +1291,166 @@ export type Messages = {
         indicatorUpdated: { title: string; description: string; timeAgo: string };
 
       };
+
+    };
+
+  };
+
+  referral: {
+
+    seo: { title: string; description: string };
+
+    header: { title: string; subtitle: string };
+
+    linkCard: {
+
+      title: string;
+
+      codeLabel: string;
+
+      copyLink: string;
+
+      copied: string;
+
+      shareTelegram: string;
+
+    };
+
+    stats: {
+
+      qualified: string;
+
+      pending: string;
+
+      currentTier: string;
+
+      currentRate: string;
+
+      totalEarned: string;
+
+      available: string;
+
+      nextTierProgress: string;
+
+      maxTierReached: string;
+
+    };
+
+    tiers: {
+
+      title: string;
+
+      level: string;
+
+      peopleRequired: string;
+
+      gift: string;
+
+      reached: string;
+
+      current: string;
+
+      locked: string;
+
+    };
+
+    iphone: {
+
+      title: string;
+
+      description: string;
+
+      progress: string;
+
+      eligible: string;
+
+    };
+
+    requirements: {
+
+      title: string;
+
+      deposit: string;
+
+      days: string;
+
+      trading: string;
+
+    };
+
+    members: {
+
+      title: string;
+
+      empty: string;
+
+      columns: { user: string; referredAt: string; deposit: string; activeDays: string; status: string };
+
+      status: { qualified: string; pending: string };
+
+    };
+
+    earnings: {
+
+      commissionsTitle: string;
+
+      rewardsTitle: string;
+
+      empty: string;
+
+      emptyRewards: string;
+
+      columns: {
+
+        date: string;
+
+        user: string;
+
+        amount: string;
+
+        rate: string;
+
+        tier: string;
+
+        kind: string;
+
+        status: string;
+
+      };
+
+      rewardKind: { tierGift: string; iphone: string };
+
+      rewardStatus: { granted: string; paid: string; cancelled: string };
+
+    };
+
+    payout: {
+
+      title: string;
+
+      availableLabel: string;
+
+      minNote: string;
+
+      request: string;
+
+      amountLabel: string;
+
+      methodLabel: string;
+
+      destinationLabel: string;
+
+      submit: string;
+
+      cancel: string;
+
+      history: string;
+
+      empty: string;
+
+      status: { pending: string; approved: string; rejected: string; paid: string };
+
+      success: string;
 
     };
 

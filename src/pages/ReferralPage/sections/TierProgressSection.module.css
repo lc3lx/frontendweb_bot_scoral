@@ -1,0 +1,146 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.tiersCard,
+.iphoneCard {
+  padding: 20px;
+  border: 1px solid rgba(221, 9, 18, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-on-accent);
+}
+
+.ladder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tierRow {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-subtle);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.tierRowReached {
+  border-color: rgba(74, 222, 154, 0.25);
+}
+
+.tierRowCurrent {
+  border-color: rgba(221, 9, 18, 0.45);
+  background: rgba(221, 9, 18, 0.08);
+}
+
+.tierLevel {
+  font-weight: 800;
+  color: var(--color-text-on-accent);
+}
+
+.tierPeople {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.tierRate {
+  font-weight: 700;
+  color: #4ade9a;
+}
+
+.tierGift {
+  text-align: end;
+  color: var(--color-text-label);
+  white-space: nowrap;
+}
+
+.tierBadge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-muted);
+}
+
+.tierBadgeCurrent {
+  background: #dd0101;
+  color: var(--color-text-on-accent);
+}
+
+.nextTierNote {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.iphoneDescription {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.progressTrack {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-bg-input);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #dd0912, #ff2a34);
+  transition: width 320ms ease;
+}
+
+.iphoneProgressLabel {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.iphoneEligible {
+  margin: 14px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(74, 222, 154, 0.12);
+  border: 1px solid rgba(74, 222, 154, 0.3);
+  color: #4ade9a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .tierRow {
+    grid-template-columns: auto 1fr;
+    row-gap: 4px;
+  }
+
+  .tierGift {
+    text-align: start;
+  }
+}

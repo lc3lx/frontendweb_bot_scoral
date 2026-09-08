@@ -23,6 +23,7 @@ import iconNavTradingUrl from './dashboard/icon-nav-trading.svg';
 import iconNavTradesUrl from './dashboard/icon-nav-trades.svg';
 import iconNavAiBotUrl from './dashboard/icon-nav-ai-bot.svg';
 import iconNavAccountUrl from './dashboard/icon-nav-account.svg';
+import iconNavReferralUrl from './dashboard/icon-nav-referral.svg';
 import iconNavLogoutUrl from './dashboard/icon-nav-logout.svg';
 import iconBellUrl from './dashboard/icon-bell.svg';
 import iconChevronDownUrl from './dashboard/icon-chevron-down.svg';
@@ -158,6 +159,8 @@ export const dashboardAssets = {
   iconNavAiBot: iconNavAiBotUrl,
 
   iconNavAccount: iconNavAccountUrl,
+
+  iconNavReferral: iconNavReferralUrl,
 
   iconNavLogout: iconNavLogoutUrl,
 

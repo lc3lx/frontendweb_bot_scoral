@@ -7,9 +7,9 @@ import { tokenStore } from '@shared/auth/tokenStore';
 
 import styles from './Sidebar.module.css';
 
-export type DashboardNavId = 'home' | 'trading' | 'trades' | 'aiBot' | 'account';
+export type DashboardNavId = 'home' | 'trading' | 'trades' | 'aiBot' | 'referral' | 'account';
 
-type NavLabelKey = 'home' | 'trading' | 'trades' | 'aiBot' | 'account';
+type NavLabelKey = 'home' | 'trading' | 'trades' | 'aiBot' | 'referral' | 'account';
 
 type NavItemConfig = {
   id: DashboardNavId;
@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItemConfig[] = [
   { id: 'trading', labelKey: 'trading', icon: dashboardAssets.iconNavTrading, to: ROUTES.trading },
   { id: 'trades', labelKey: 'trades', icon: dashboardAssets.iconNavTrades, to: ROUTES.trades },
   { id: 'aiBot', labelKey: 'aiBot', icon: dashboardAssets.iconNavAiBot, to: ROUTES.aiBot },
+  { id: 'referral', labelKey: 'referral', icon: dashboardAssets.iconNavReferral, to: ROUTES.referral },
   { id: 'account', labelKey: 'account', icon: dashboardAssets.iconNavAccount, to: ROUTES.account },
 ];
 

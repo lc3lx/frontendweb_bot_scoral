@@ -9,6 +9,7 @@ import { LandingPage } from '@pages/LandingPage';
 import { LinkBinollaPage } from '@pages/LinkBinollaPage';
 import { LoginPage } from '@pages/LoginPage';
 import { PendingApprovalPage } from '@pages/PendingApprovalPage';
+import { ReferralPage } from '@pages/ReferralPage';
 import { SignupPage } from '@pages/SignupPage';
 import { TradesDetailPage } from '@pages/TradesDetailPage';
 import { TradesPage } from '@pages/TradesPage';
@@ -36,6 +37,7 @@ export function AppRouter() {
         <Route path={ROUTES.trades} element={<TradesPage />} />
         <Route path={ROUTES.tradesDetail} element={<TradesDetailPage />} />
         <Route path={ROUTES.aiBot} element={<AiBotPage />} />
+        <Route path={ROUTES.referral} element={<ReferralPage />} />
         <Route path={`${ROUTES.account}/*`} element={<AccountPage />} />
       </Route>
 

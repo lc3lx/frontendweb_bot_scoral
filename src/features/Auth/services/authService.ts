@@ -1,6 +1,7 @@
 import { ApiClientError, authApi } from '@shared/api';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { t } from '@shared/i18n';
+import { getStoredReferralCode } from '@shared/referral/referralCode';
 import type { AuthSession, AuthServiceError, BinollaAuthSession, LoginCredentials, SignupPayload } from '../types';
 
 function toAuthError(error: unknown): AuthServiceError {
@@ -45,6 +46,9 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
       // admin unlocked it for this account. Asking for it here failed every login with
       // DEMO_ACCOUNT_LOCKED. Switching to demo afterwards is a separate, gated action.
       accountType: 'Real',
+      // First-time login is also account creation on the backend — attach the referral
+      // code (if any was captured from ?ref=) so it isn't lost.
+      referralCode: getStoredReferralCode(),
     });
     return storeBinollaSession(result);
   } catch (error) {
@@ -58,6 +62,7 @@ export async function signupWithBinolla(credentials: LoginCredentials): Promise<
       email: credentials.email.trim(),
       password: credentials.password,
       accountType: 'Real',
+      referralCode: getStoredReferralCode(),
     });
     return storeBinollaSession(result);
   } catch (error) {
@@ -85,6 +90,7 @@ export async function signup(payload: SignupPayload): Promise<AuthSession> {
       fullName: payload.fullName.trim(),
       country: payload.country.trim(),
       username: payload.telegramId.trim() || undefined,
+      referralCode: getStoredReferralCode(),
     });
     return storeSession(result);
   } catch (error) {

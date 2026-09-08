@@ -270,6 +270,8 @@ export const en: Messages = {
 
       account: 'Account',
 
+      referral: 'Referral',
+
       logout: 'Logout',
 
     },
@@ -1373,6 +1375,220 @@ export const en: Messages = {
         },
 
       },
+
+    },
+
+  },
+
+  referral: {
+
+    seo: {
+
+      title: 'Referral Program | Scar Alpha',
+
+      description: 'Invite friends and earn commission on their trades, plus one-time gifts and an iPhone reward.',
+
+    },
+
+    header: {
+
+      title: 'Referral Program',
+
+      subtitle: 'Share your link and earn commission on every trade the people you invite make — win or lose.',
+
+    },
+
+    linkCard: {
+
+      title: 'Your Referral Link',
+
+      codeLabel: 'Referral code',
+
+      copyLink: 'Copy link',
+
+      copied: 'Copied!',
+
+      shareTelegram: 'Share on Telegram',
+
+    },
+
+    stats: {
+
+      qualified: 'Qualified referrals',
+
+      pending: 'Pending',
+
+      currentTier: 'Current tier',
+
+      currentRate: 'Commission rate',
+
+      totalEarned: 'Total earned',
+
+      available: 'Available balance',
+
+      nextTierProgress: '{count} more referral(s) to reach the next tier',
+
+      maxTierReached: 'You reached the top tier 🎉',
+
+    },
+
+    tiers: {
+
+      title: 'Commission Tiers',
+
+      level: 'Tier {level}',
+
+      peopleRequired: '{count} people',
+
+      gift: '${amount} one-time gift',
+
+      reached: 'Reached',
+
+      current: 'Your tier',
+
+      locked: 'Not reached yet',
+
+    },
+
+    iphone: {
+
+      title: 'iPhone Reward 📱',
+
+      description: 'Bring 10 qualified referrals and get an iPhone.',
+
+      progress: '{count} / {target} qualified referrals',
+
+      eligible: "Congrats! You're eligible for the iPhone reward",
+
+    },
+
+    requirements: {
+
+      title: 'Requirements for a referral to qualify',
+
+      deposit: 'Deposit at least $350 into a real account',
+
+      days: 'Stay active in the bot for at least 15 days',
+
+      trading: 'Activate the bot and trade through it during that period',
+
+    },
+
+    members: {
+
+      title: 'People You Referred',
+
+      empty: "You haven't referred anyone yet — share your link to get started.",
+
+      columns: {
+
+        user: 'User',
+
+        referredAt: 'Referred on',
+
+        deposit: 'Deposit',
+
+        activeDays: 'Active days',
+
+        status: 'Status',
+
+      },
+
+      status: {
+
+        qualified: 'Qualified',
+
+        pending: 'Pending',
+
+      },
+
+    },
+
+    earnings: {
+
+      commissionsTitle: 'Commission History',
+
+      rewardsTitle: 'Gifts & Rewards',
+
+      empty: 'No commissions recorded yet.',
+
+      emptyRewards: 'No rewards recorded yet.',
+
+      columns: {
+
+        date: 'Date',
+
+        user: 'User',
+
+        amount: 'Amount',
+
+        rate: 'Rate',
+
+        tier: 'Tier',
+
+        kind: 'Kind',
+
+        status: 'Status',
+
+      },
+
+      rewardKind: {
+
+        tierGift: 'Tier gift',
+
+        iphone: 'iPhone reward',
+
+      },
+
+      rewardStatus: {
+
+        granted: 'Granted',
+
+        paid: 'Paid',
+
+        cancelled: 'Cancelled',
+
+      },
+
+    },
+
+    payout: {
+
+      title: 'Withdraw Earnings',
+
+      availableLabel: 'Available to withdraw',
+
+      minNote: 'Minimum withdrawal ${min}',
+
+      request: 'Request payout',
+
+      amountLabel: 'Amount',
+
+      methodLabel: 'Payout method',
+
+      destinationLabel: 'Account / wallet details',
+
+      submit: 'Submit request',
+
+      cancel: 'Cancel',
+
+      history: 'Payout History',
+
+      empty: 'No payout requests yet.',
+
+      status: {
+
+        pending: 'Pending review',
+
+        approved: 'Approved',
+
+        rejected: 'Rejected',
+
+        paid: 'Paid',
+
+      },
+
+      success: 'Your payout request was submitted and is awaiting admin approval.',
 
     },
 

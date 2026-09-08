@@ -44,6 +44,22 @@ import type {
   MarketingDemoUserListResponse,
   PatchAdminUserRequest,
   UpdateProfileRequest,
+  AdminDepositOverrideRequest,
+  AdminPayoutDecisionRequest,
+  AdminReferralDetailResponse,
+  AdminReferralOverviewListResponse,
+  AdminReferralPayoutDto,
+  AdminReferralPayoutsResponse,
+  AdminRewardPaidRequest,
+  ReferralCommissionsResponse,
+  ReferralMembersResponse,
+  ReferralMemberDto,
+  ReferralPayoutDto,
+  ReferralPayoutRequest,
+  ReferralPayoutsResponse,
+  ReferralRewardDto,
+  ReferralRewardsResponse,
+  ReferralSummaryResponse,
 } from './types';
 
 export const authApi = {
@@ -77,6 +93,7 @@ export const authApi = {
         fullName: body.fullName,
         country: body.country,
         username: body.username,
+        referralCode: body.referralCode,
       },
       auth: false,
     });
@@ -100,6 +117,7 @@ export const authApi = {
         email: body.email,
         password: body.password,
         accountType: body.accountType ?? 'Real',
+        referralCode: body.referralCode,
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -112,6 +130,7 @@ export const authApi = {
         email: body.email,
         password: body.password,
         accountType: body.accountType ?? 'Real',
+        referralCode: body.referralCode,
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -524,5 +543,75 @@ export const adminApi = {
     if (params.pageSize) query.set('pageSize', String(params.pageSize));
     const qs = query.toString();
     return apiRequest<AdminTradeListResponse>(`/api/admin/trades${qs ? `?${qs}` : ''}`);
+  },
+  listReferrers(params: { q?: string; page?: number; pageSize?: number } = {}): Promise<AdminReferralOverviewListResponse> {
+    const query = new URLSearchParams();
+    if (params.q) query.set('q', params.q);
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    const qs = query.toString();
+    return apiRequest<AdminReferralOverviewListResponse>(`/api/admin/referrals${qs ? `?${qs}` : ''}`);
+  },
+  getReferrerDetail(referrerUserId: string): Promise<AdminReferralDetailResponse> {
+    return apiRequest<AdminReferralDetailResponse>(`/api/admin/referrals/${encodeURIComponent(referrerUserId)}`);
+  },
+  setReferralDeposit(referredUserId: string, body: AdminDepositOverrideRequest): Promise<ReferralMemberDto> {
+    return apiRequest<ReferralMemberDto>(
+      `/api/admin/referrals/${encodeURIComponent(referredUserId)}/deposit`,
+      { method: 'POST', body },
+    );
+  },
+  listReferralPayouts(params: { status?: string; page?: number; pageSize?: number } = {}): Promise<AdminReferralPayoutsResponse> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    const qs = query.toString();
+    return apiRequest<AdminReferralPayoutsResponse>(`/api/admin/referrals/payouts${qs ? `?${qs}` : ''}`);
+  },
+  decideReferralPayout(payoutId: string, body: AdminPayoutDecisionRequest): Promise<AdminReferralPayoutDto> {
+    return apiRequest<AdminReferralPayoutDto>(
+      `/api/admin/referrals/payouts/${encodeURIComponent(payoutId)}/decide`,
+      { method: 'POST', body },
+    );
+  },
+  markReferralRewardPaid(rewardId: string, body: AdminRewardPaidRequest = {}): Promise<ReferralRewardDto> {
+    return apiRequest<ReferralRewardDto>(
+      `/api/admin/referrals/rewards/${encodeURIComponent(rewardId)}/pay`,
+      { method: 'POST', body },
+    );
+  },
+};
+
+export const referralApi = {
+  summary(): Promise<ReferralSummaryResponse> {
+    return apiRequest<ReferralSummaryResponse>('/api/referral/summary');
+  },
+  members(params: { page?: number; pageSize?: number } = {}): Promise<ReferralMembersResponse> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    const qs = query.toString();
+    return apiRequest<ReferralMembersResponse>(`/api/referral/members${qs ? `?${qs}` : ''}`);
+  },
+  commissions(params: { page?: number; pageSize?: number } = {}): Promise<ReferralCommissionsResponse> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    const qs = query.toString();
+    return apiRequest<ReferralCommissionsResponse>(`/api/referral/commissions${qs ? `?${qs}` : ''}`);
+  },
+  rewards(): Promise<ReferralRewardsResponse> {
+    return apiRequest<ReferralRewardsResponse>('/api/referral/rewards');
+  },
+  payouts(params: { page?: number; pageSize?: number } = {}): Promise<ReferralPayoutsResponse> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    const qs = query.toString();
+    return apiRequest<ReferralPayoutsResponse>(`/api/referral/payouts${qs ? `?${qs}` : ''}`);
+  },
+  requestPayout(body: ReferralPayoutRequest): Promise<ReferralPayoutDto> {
+    return apiRequest<ReferralPayoutDto>('/api/referral/payouts', { method: 'POST', body });
   },
 };

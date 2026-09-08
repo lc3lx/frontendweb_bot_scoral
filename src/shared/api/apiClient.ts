@@ -61,6 +61,12 @@ function mapMessage(code: string, fallback: string): string {
       return t('api.invalidTrade');
     case 'DEMO_ACCOUNT_LOCKED':
       return t('api.demoAccountLocked');
+    case 'PAYOUT_BELOW_MINIMUM':
+      return t('api.payoutBelowMinimum');
+    case 'PAYOUT_INSUFFICIENT_BALANCE':
+      return t('api.payoutInsufficientBalance');
+    case 'PAYOUT_PENDING_EXISTS':
+      return t('api.payoutPendingExists');
     case 'STRATEGY_DISABLED':
       return t('api.strategyDisabled');
     case 'STRATEGY_NOT_FOUND':

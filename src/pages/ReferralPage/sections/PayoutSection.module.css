@@ -1,0 +1,194 @@
+.card {
+  padding: 20px;
+  border: 1px solid rgba(221, 9, 18, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-on-accent);
+}
+
+.available {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.available strong {
+  color: #4ade9a;
+}
+
+.minNote {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.requestButton {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: #dd0101;
+  color: var(--color-text-on-accent);
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.requestButton:hover {
+  opacity: 0.9;
+}
+
+.successNote {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(74, 222, 154, 0.12);
+  border: 1px solid rgba(74, 222, 154, 0.3);
+  color: #4ade9a;
+  font-size: 12px;
+}
+
+.historyTitle {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-label);
+}
+
+.empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table td {
+  padding: 8px 10px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.amount {
+  color: #4ade9a;
+  font-weight: 700;
+}
+
+.status {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.statusPending {
+  background: rgba(245, 196, 98, 0.14);
+  color: #f5c462;
+}
+
+.statusApproved {
+  background: rgba(93, 156, 236, 0.14);
+  color: #5d9cec;
+}
+
+.statusRejected {
+  background: rgba(255, 42, 52, 0.14);
+  color: #ff2a34;
+}
+
+.statusPaid {
+  background: rgba(74, 222, 154, 0.14);
+  color: #4ade9a;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-label);
+}
+
+.field input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-on-accent);
+  font-size: 13px;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--color-focus-ring);
+}
+
+.errorNote {
+  margin: 0;
+  font-size: 12px;
+  color: #ff2a34;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.cancelButton {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitButton {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #dd0101;
+  border: none;
+  color: var(--color-text-on-accent);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -267,6 +267,8 @@ export const ar: Messages = {
 
       account: 'الحساب',
 
+      referral: 'الإحالة',
+
       logout: 'تسجيل الخروج',
 
     },
@@ -1370,6 +1372,220 @@ export const ar: Messages = {
         },
 
       },
+
+    },
+
+  },
+
+  referral: {
+
+    seo: {
+
+      title: 'برنامج الإحالة | Scar Alpha',
+
+      description: 'ادعُ أصدقاءك واربح عمولة على صفقاتهم بالإضافة إلى هدايا وجائزة آيفون.',
+
+    },
+
+    header: {
+
+      title: 'برنامج الإحالة',
+
+      subtitle: 'شارك رابطك، واربح عمولة على كل صفقة يقوم بها من تدعوهم — رابحة أو خاسرة.',
+
+    },
+
+    linkCard: {
+
+      title: 'رابط الإحالة الخاص بك',
+
+      codeLabel: 'كود الإحالة',
+
+      copyLink: 'نسخ الرابط',
+
+      copied: 'تم النسخ!',
+
+      shareTelegram: 'مشاركة عبر تيليجرام',
+
+    },
+
+    stats: {
+
+      qualified: 'إحالات مؤهّلة',
+
+      pending: 'قيد التأهيل',
+
+      currentTier: 'المستوى الحالي',
+
+      currentRate: 'نسبة العمولة',
+
+      totalEarned: 'إجمالي الأرباح',
+
+      available: 'الرصيد المتاح',
+
+      nextTierProgress: 'تحتاج {count} إحالة إضافية للوصول إلى المستوى التالي',
+
+      maxTierReached: 'وصلت إلى أعلى مستوى 🎉',
+
+    },
+
+    tiers: {
+
+      title: 'مستويات العمولة',
+
+      level: 'المستوى {level}',
+
+      peopleRequired: '{count} أشخاص',
+
+      gift: 'هدية {amount}$ لمرة واحدة',
+
+      reached: 'تم الوصول',
+
+      current: 'مستواك الحالي',
+
+      locked: 'لم يتحقق بعد',
+
+    },
+
+    iphone: {
+
+      title: 'مكافأة الآيفون 📱',
+
+      description: 'أحضر 10 أشخاص مؤهّلين واحصل على جائزة آيفون.',
+
+      progress: '{count} / {target} إحالة مؤهّلة',
+
+      eligible: 'مبروك! أنت مؤهّل لجائزة الآيفون',
+
+    },
+
+    requirements: {
+
+      title: 'شروط تأهيل الشخص المُحال',
+
+      deposit: 'إيداع لا يقل عن 350$ في حساب حقيقي',
+
+      days: 'البقاء داخل البوت لمدة 15 يومًا على الأقل',
+
+      trading: 'تفعيل البوت والتداول الفعلي خلال هذه الفترة',
+
+    },
+
+    members: {
+
+      title: 'الأشخاص الذين أحلتهم',
+
+      empty: 'لم تقم بإحالة أي شخص بعد — شارك رابطك لتبدأ.',
+
+      columns: {
+
+        user: 'المستخدم',
+
+        referredAt: 'تاريخ الإحالة',
+
+        deposit: 'الإيداع',
+
+        activeDays: 'أيام النشاط',
+
+        status: 'الحالة',
+
+      },
+
+      status: {
+
+        qualified: 'مؤهّل',
+
+        pending: 'قيد التأهيل',
+
+      },
+
+    },
+
+    earnings: {
+
+      commissionsTitle: 'سجل العمولات',
+
+      rewardsTitle: 'الهدايا والمكافآت',
+
+      empty: 'لا توجد عمولات مسجّلة بعد.',
+
+      emptyRewards: 'لا توجد هدايا مسجّلة بعد.',
+
+      columns: {
+
+        date: 'التاريخ',
+
+        user: 'المستخدم',
+
+        amount: 'المبلغ',
+
+        rate: 'النسبة',
+
+        tier: 'المستوى',
+
+        kind: 'النوع',
+
+        status: 'الحالة',
+
+      },
+
+      rewardKind: {
+
+        tierGift: 'هدية مستوى',
+
+        iphone: 'جائزة آيفون',
+
+      },
+
+      rewardStatus: {
+
+        granted: 'مستحقة',
+
+        paid: 'تم الصرف',
+
+        cancelled: 'ملغاة',
+
+      },
+
+    },
+
+    payout: {
+
+      title: 'طلب سحب الأرباح',
+
+      availableLabel: 'الرصيد المتاح للسحب',
+
+      minNote: 'الحد الأدنى للسحب {min}$',
+
+      request: 'طلب سحب',
+
+      amountLabel: 'المبلغ',
+
+      methodLabel: 'طريقة السحب',
+
+      destinationLabel: 'بيانات الحساب / المحفظة',
+
+      submit: 'إرسال الطلب',
+
+      cancel: 'إلغاء',
+
+      history: 'سجل طلبات السحب',
+
+      empty: 'لا توجد طلبات سحب بعد.',
+
+      status: {
+
+        pending: 'قيد المراجعة',
+
+        approved: 'تمت الموافقة',
+
+        rejected: 'مرفوض',
+
+        paid: 'تم الصرف',
+
+      },
+
+      success: 'تم إرسال طلب السحب بنجاح، بانتظار موافقة الإدارة.',
 
     },
 

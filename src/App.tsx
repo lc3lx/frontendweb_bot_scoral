@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { LanguageSwitcher } from '@components/LanguageSwitcher';
 import { PageTransition } from '@components/PageTransition';
 import { I18nProvider } from '@i18n';
 import { AppRouter } from '@router';
 import { ROUTES } from '@router/routes';
+import { captureReferralCodeFromUrl } from '@shared/referral/referralCode';
 import styles from './App.module.css';
 
 const AUTH_ROUTES = new Set<string>([
@@ -25,8 +27,12 @@ function routeDataAttr(pathname: string): 'landing' | 'auth' | 'app' {
  * Auth screens keep the floating control.
  */
 function AppChrome() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const route = routeDataAttr(pathname);
+
+  useEffect(() => {
+    captureReferralCodeFromUrl(search);
+  }, [search]);
 
   return (
     <>

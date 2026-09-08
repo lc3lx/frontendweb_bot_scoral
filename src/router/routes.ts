@@ -14,6 +14,7 @@ export const ROUTES = {
   trades: '/trades',
   tradesDetail: '/trades/:tradeId',
   aiBot: '/ai-bot',
+  referral: '/referral',
   account: '/account',
   accountEditProfile: '/account/edit-profile',
   accountNotifications: '/account/notifications',

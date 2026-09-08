@@ -1,0 +1,64 @@
+.card {
+  padding: 20px;
+  border: 1px solid rgba(221, 9, 18, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #12090b 0%, #0b0708 55%);
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-on-accent);
+}
+
+.empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table th {
+  text-align: start;
+  padding: 8px 10px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--color-border-subtle);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.status {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.statusQualified {
+  background: rgba(74, 222, 154, 0.14);
+  color: #4ade9a;
+}
+
+.statusPending {
+  background: rgba(245, 196, 98, 0.14);
+  color: #f5c462;
+}
