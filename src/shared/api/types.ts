@@ -63,6 +63,8 @@ export type MeResponse = {
 };
 
 export type AccountStatusResponse = {
+  /** Venue this account is linked to — drives which signup/login links are shown. */
+  broker?: BrokerId;
   binollaConnected: boolean;
   accountType: string;
   adminApproved: boolean;
@@ -82,6 +84,8 @@ export type BinollaConnectRequest = {
 };
 
 export type BinollaCredentialRequest = {
+  /** Which venue to sign in to. Omitted means Binolla. */
+  broker?: BrokerId;
   email: string;
   password: string;
   accountType?: string;
@@ -700,3 +704,9 @@ export type AdminReferralPayoutsResponse = {
   page: number;
   pageSize: number;
 };
+
+/** Trading venues a user can sign in to. */
+export type BrokerId = 'binolla' | 'quotex';
+
+/** Omitted means Binolla — every account created before the choice existed. */
+export const DEFAULT_BROKER: BrokerId = 'binolla';

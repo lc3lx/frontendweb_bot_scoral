@@ -191,6 +191,9 @@ export const en = {
   'binolla.auth.signupDesc':
     'Create a Binolla account with our partner referral. Email/password go to Binolla; Scar Alpha has no separate accounts.',
   'binolla.auth.emailLabel': 'Binolla email',
+  'binolla.auth.brokerLabel': 'Trading platform',
+  'binolla.auth.broker.binolla': 'Binolla',
+  'binolla.auth.broker.quotex': 'Quotex',
   'binolla.auth.passwordLabel': 'Binolla password',
   'binolla.auth.emailPlaceholder': 'you@email.com',
   'binolla.auth.loggingIn': 'Logging into Binolla…',

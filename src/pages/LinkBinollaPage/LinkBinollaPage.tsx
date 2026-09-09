@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { loginAssets } from '@assets';
-import { BINOLLA_REFERRAL_SIGNUP_URL } from '@constants/binolla';
+import { brokerSignupUrl } from '@constants/brokers';
+import { accountApi } from '@shared/api';
+import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 import { useI18n } from '@i18n';
 import { ROUTES } from '@router/routes';
 import { t as tFlat } from '@shared/i18n';
@@ -14,6 +16,16 @@ import styles from './LinkBinollaPage.module.css';
 export function LinkBinollaPage() {
   const { t } = useI18n();
   const [mode, setMode] = useState<BinollaAuthMode>('login');
+  // Which venue this account belongs to, so the signup link keeps its referral id and
+  // points at the broker the user actually signed up with.
+  const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
+
+  useEffect(() => {
+    void accountApi
+      .status()
+      .then((s) => setBroker(s.broker ?? DEFAULT_BROKER))
+      .catch(() => setBroker(DEFAULT_BROKER));
+  }, []);
   const flow = useBinollaPlatformAuth(mode);
   const isLogin = mode === 'login';
 
@@ -113,7 +125,7 @@ export function LinkBinollaPage() {
               <button
                 type="button"
                 className={styles.secondaryButton}
-                onClick={() => window.open(BINOLLA_REFERRAL_SIGNUP_URL, '_blank', 'noopener,noreferrer')}
+                onClick={() => window.open(brokerSignupUrl(broker), '_blank', 'noopener,noreferrer')}
               >
                 {tFlat('binolla.auth.goSignup')}
               </button>

@@ -5,6 +5,7 @@ import { emailRule } from '@features/Auth/validation';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { t } from '@shared/i18n';
+import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 
 const MIN_BINOLLA_PASSWORD = 4;
 
@@ -22,6 +23,9 @@ export function useLoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // Which venue the credentials belong to. Binolla by default: every existing account is
+  // a Binolla account, so the choice must never change what a returning user gets.
+  const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
@@ -48,6 +52,7 @@ export function useLoginForm() {
 
       try {
         const result = await authService.loginWithBinolla({
+          broker,
           email: email.trim(),
           password,
         });
@@ -65,7 +70,7 @@ export function useLoginForm() {
         setError(t('binolla.auth.loginFailed'));
       }
     },
-    [email, navigate, password, validate],
+    [broker, email, navigate, password, validate],
   );
 
   const isSubmitDisabled = useMemo(
@@ -86,7 +91,8 @@ export function useLoginForm() {
     submit,
     isSubmitDisabled,
     serverError: error,
-    values: { email, password },
+    values: { email, password, broker },
+    setBroker,
     setField: (field: 'email' | 'password', value: string) => {
       if (field === 'email') setEmail(value);
       else setPassword(value);

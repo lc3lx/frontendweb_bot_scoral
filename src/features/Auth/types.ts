@@ -1,3 +1,5 @@
+import type { BrokerId } from '@shared/api/types';
+
 export type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export type FieldErrors<T extends string> = Partial<Record<T, string>>;
@@ -15,6 +17,8 @@ export type BinollaAuthSession = AuthSession & {
 export type LoginCredentials = {
   email: string;
   password: string;
+  /** Venue to sign in to. Omitted means Binolla, which is what every existing account is. */
+  broker?: BrokerId;
 };
 
 export type SignupPayload = {

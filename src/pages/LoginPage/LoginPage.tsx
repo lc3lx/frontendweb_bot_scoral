@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { loginAssets } from '@assets';
-import { BINOLLA_REFERRAL_SIGNUP_URL } from '@constants/binolla';
+import { brokerSignupUrl } from '@constants/brokers';
 import { useI18n } from '@i18n';
 import { t as tFlat } from '@shared/i18n';
 import { useLoginForm } from './hooks/useLoginForm';
@@ -126,6 +126,27 @@ export function LoginPage() {
               ) : null}
 
               <div className={styles.field}>
+                <span className={styles.label}>{tFlat('binolla.auth.brokerLabel')}</span>
+                <div className={styles.brokerChoice} role="radiogroup"
+                     aria-label={tFlat('binolla.auth.brokerLabel')}>
+                  {(['binolla', 'quotex'] as const).map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      role="radio"
+                      aria-checked={form.values.broker === id}
+                      className={`${styles.brokerOption}${
+                        form.values.broker === id ? ` ${styles.brokerOptionActive}` : ''
+                      }`}
+                      onClick={() => form.setBroker(id)}
+                    >
+                      {tFlat(`binolla.auth.broker.${id}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className={styles.field}>
                 <label className={styles.label} htmlFor="login-email">
                   {tFlat('binolla.auth.emailLabel')}
                 </label>
@@ -174,7 +195,9 @@ export function LoginPage() {
                 <p className={styles.signupPrompt}>{t.login.form.noAccount}</p>
                 <a
                   className={styles.secondaryButton}
-                  href={BINOLLA_REFERRAL_SIGNUP_URL}
+                  /* Follows the picked broker: sending a Quotex signup to Binolla would
+                     lose the referral attribution as well as confusing the user. */
+                  href={brokerSignupUrl(form.values.broker)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

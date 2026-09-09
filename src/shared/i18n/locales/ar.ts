@@ -187,6 +187,9 @@ export const ar: EnDictionary = {
   'binolla.auth.signupDesc':
     'أنشئ حساب بينولا عبر إحالة الشريك. البريد وكلمة المرور يذهبان لبينولا؛ سكار ألفا بلا حسابات منفصلة.',
   'binolla.auth.emailLabel': 'بريد بينولا',
+  'binolla.auth.brokerLabel': 'منصة التداول',
+  'binolla.auth.broker.binolla': 'بينولا',
+  'binolla.auth.broker.quotex': 'كوتكس',
   'binolla.auth.passwordLabel': 'كلمة مرور بينولا',
   'binolla.auth.emailPlaceholder': 'you@email.com',
   'binolla.auth.loggingIn': 'جارٍ الدخول إلى بينولا…',

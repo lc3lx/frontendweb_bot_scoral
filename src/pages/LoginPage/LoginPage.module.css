@@ -962,4 +962,40 @@
 
 }
 
+/* Broker choice: two equal options, so neither reads as the "real" one. */
+.brokerChoice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
 
+.brokerOption {
+  padding: 12px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.brokerOption:hover {
+  border-color: rgba(221, 9, 18, 0.45);
+  color: #ffffff;
+}
+
+.brokerOptionActive {
+  border-color: rgba(221, 9, 18, 0.7);
+  background: rgba(221, 9, 18, 0.12);
+  color: #ffffff;
+}
+
+.brokerOption:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

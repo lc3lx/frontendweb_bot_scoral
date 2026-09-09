@@ -46,6 +46,7 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
       // admin unlocked it for this account. Asking for it here failed every login with
       // DEMO_ACCOUNT_LOCKED. Switching to demo afterwards is a separate, gated action.
       accountType: 'Real',
+      broker: credentials.broker ?? 'binolla',
       // First-time login is also account creation on the backend — attach the referral
       // code (if any was captured from ?ref=) so it isn't lost.
       referralCode: getStoredReferralCode(),
