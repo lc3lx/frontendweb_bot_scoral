@@ -120,7 +120,11 @@ export const authApi = {
         password: body.password,
         accountType: body.accountType ?? 'Real',
         referralCode: body.referralCode,
-        broker: body.broker ?? 'binolla',
+        // NOT defaulted to a broker. Sending one the caller never chose reads to the
+        // server as a deliberate choice and switches the account's venue; sending
+        // nothing lets it keep the venue the user is actually linked to. Forcing
+        // "binolla" here is how a Quotex user ended up on Binolla.
+        broker: body.broker,
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -134,7 +138,11 @@ export const authApi = {
         password: body.password,
         accountType: body.accountType ?? 'Real',
         referralCode: body.referralCode,
-        broker: body.broker ?? 'binolla',
+        // NOT defaulted to a broker. Sending one the caller never chose reads to the
+        // server as a deliberate choice and switches the account's venue; sending
+        // nothing lets it keep the venue the user is actually linked to. Forcing
+        // "binolla" here is how a Quotex user ended up on Binolla.
+        broker: body.broker,
       },
       auth: false,
       signal: timedSignal(BINOLLA_LOGIN_MS),
@@ -214,6 +222,7 @@ export const binollaApi = {
         email: body.email,
         password: body.password,
         accountType: body.accountType ?? 'Real',
+        broker: body.broker,
       },
       signal: timedSignal(BINOLLA_LOGIN_MS),
     });
@@ -230,7 +239,11 @@ export const binollaApi = {
         email: body.email,
         password: body.password,
         accountType: body.accountType ?? 'Real',
-        broker: body.broker ?? 'binolla',
+        // NOT defaulted to a broker. Sending one the caller never chose reads to the
+        // server as a deliberate choice and switches the account's venue; sending
+        // nothing lets it keep the venue the user is actually linked to. Forcing
+        // "binolla" here is how a Quotex user ended up on Binolla.
+        broker: body.broker,
       },
       // Launching a browser and loading the broker's page through a proxy is slow.
       signal: timedSignal(BINOLLA_LOGIN_MS),

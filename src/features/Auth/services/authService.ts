@@ -46,7 +46,9 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
       // admin unlocked it for this account. Asking for it here failed every login with
       // DEMO_ACCOUNT_LOCKED. Switching to demo afterwards is a separate, gated action.
       accountType: 'Real',
-      broker: credentials.broker ?? 'binolla',
+      // Passed through as chosen. A default here would override the server's own
+      // fallback, which keeps the user on the venue they are actually linked to.
+      broker: credentials.broker,
       // First-time login is also account creation on the backend — attach the referral
       // code (if any was captured from ?ref=) so it isn't lost.
       referralCode: getStoredReferralCode(),
@@ -69,6 +71,10 @@ export async function signupWithBinolla(credentials: LoginCredentials): Promise<
       password: credentials.password,
       accountType: 'Real',
       referralCode: getStoredReferralCode(),
+      // Signing up is the FIRST time a venue is recorded for an account, so dropping
+      // the choice here is the most expensive place to drop it: a user who picked
+      // Quotex got a Binolla account, and every screen afterwards followed that.
+      broker: credentials.broker,
     });
     return storeBinollaSession(result);
   } catch (error) {
