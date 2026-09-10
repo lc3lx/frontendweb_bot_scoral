@@ -1,0 +1,38 @@
+.track {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: 2000;
+  height: 3px;
+  overflow: hidden;
+  /* Pointer-transparent: the bar sits over the header and must never eat a tap. */
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bar {
+  width: 40%;
+  height: 100%;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, rgba(120, 160, 255, 0), #78a0ff, rgba(120, 160, 255, 0));
+  animation: sweep 1.1s ease-in-out infinite;
+}
+
+/* Indeterminate on purpose: the app cannot know how long a broker call will take, and a
+   fake percentage that stalls at 90% is worse than an honest sweep. */
+@keyframes sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    width: 100%;
+    animation: none;
+    opacity: 0.6;
+  }
+}

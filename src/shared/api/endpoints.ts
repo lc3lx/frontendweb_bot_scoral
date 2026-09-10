@@ -199,6 +199,10 @@ export const binollaApi = {
         email: body.email,
         password: body.password,
         accountType: body.accountType ?? 'Real',
+        // Sent even when undefined so the field is explicit at this call site. Omitting
+        // it entirely is what sent Quotex users through Binolla's login twice; the server
+        // now falls back to the user's own link rather than to Binolla.
+        broker: body.broker,
       },
       signal: timedSignal(BINOLLA_LOGIN_MS),
     });

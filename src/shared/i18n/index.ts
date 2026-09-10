@@ -8,6 +8,6 @@ export {
   setLocale,
   subscribeLocale,
 } from './localeStore';
-export { applyBrokerName, getBrokerName, setBrokerName } from './brokerName';
+export { applyBrokerName, getBrokerName, namesASpecificBroker, setBrokerName } from './brokerName';
 export { createTranslator, t } from './translate';
 export type { TranslationKey } from './translate';

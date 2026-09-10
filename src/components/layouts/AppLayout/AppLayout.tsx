@@ -5,6 +5,7 @@ import { isPendingApproval } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { isSessionExpiredError } from '@shared/auth/sessionErrors';
 import { ROUTES } from '@router/routes';
+import { LoadingBar } from '@components/LoadingBar';
 import { MaintenanceNotice } from '@components/MaintenanceNotice';
 import { useBotMaintenance } from '@shared/maintenance/useBotMaintenance';
 
@@ -65,5 +66,12 @@ export function AppLayout() {
   // are frozen mid-session is more confusing than saying so plainly.
   if (maintenance) return <MaintenanceNotice message={maintenance.message} />;
 
-  return <Outlet />;
+  return (
+    <>
+      {/* Mounted once for the whole app: any in-flight request shows it, so a slow page
+          and a slow chart poll read the same to the user — working, not frozen. */}
+      <LoadingBar />
+      <Outlet />
+    </>
+  );
 }

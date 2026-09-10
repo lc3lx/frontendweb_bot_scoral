@@ -1,5 +1,6 @@
 import { t } from '@shared/i18n';
 import { tokenStore } from '@shared/auth/tokenStore';
+import { beginRequest, endRequest } from './requestActivity';
 import type { ApiErrorBody } from './types';
 
 export class ApiClientError extends Error {
@@ -118,7 +119,11 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     headers.Authorization = `Bearer ${token}`;
   }
 
+  // Counted around the network call only, so the shell can show that the app is waiting
+  // on the server. Ended in `finally` — an aborted or failed request that never decremented
+  // would leave the indicator spinning for the rest of the session.
   let response: Response;
+  beginRequest();
   try {
     response = await fetch(`${baseUrl}${path}`, {
       method: options.method ?? (options.body !== undefined ? 'POST' : 'GET'),
@@ -128,6 +133,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     });
   } catch {
     throw new ApiClientError('NETWORK_ERROR', t('api.network'), 0);
+  } finally {
+    endRequest();
   }
 
   if (response.status === 204) {

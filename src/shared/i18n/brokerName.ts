@@ -15,6 +15,19 @@
 /** Names that stand in for "the user's broker" wherever they appear in copy. */
 const BROKER_NAME_PATTERN = /\{broker\}|Binolla|بينولا|بنولا/g;
 
+/**
+ * Keys whose value IS a particular broker's name, not "the user's broker".
+ *
+ * The login page's platform picker is the one place both venues must be named literally —
+ * it is where the user chooses between them. Substituting there rendered both buttons as
+ * the same name and made the other option vanish from the page.
+ */
+const LITERAL_BROKER_KEY = /^binolla\.auth\.broker\./;
+
+export function namesASpecificBroker(key: string): boolean {
+  return LITERAL_BROKER_KEY.test(key);
+}
+
 let currentName = 'Binolla';
 
 /** Set once the user's broker is known. Defaults to Binolla, which every older link uses. */

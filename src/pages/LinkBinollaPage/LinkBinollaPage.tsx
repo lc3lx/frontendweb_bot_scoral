@@ -26,7 +26,7 @@ export function LinkBinollaPage() {
       .then((s) => setBroker(s.broker ?? DEFAULT_BROKER))
       .catch(() => setBroker(DEFAULT_BROKER));
   }, []);
-  const flow = useBinollaPlatformAuth(mode);
+  const flow = useBinollaPlatformAuth(mode, broker);
   const isLogin = mode === 'login';
 
   useEffect(() => {

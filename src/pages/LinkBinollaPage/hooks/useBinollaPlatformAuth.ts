@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@router/routes';
 import { accountApi, ApiClientError, binollaApi } from '@shared/api';
+import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
@@ -9,7 +10,17 @@ import { t } from '@shared/i18n';
 
 export type BinollaAuthMode = 'login' | 'register';
 
-export function useBinollaPlatformAuth(mode: BinollaAuthMode = 'login') {
+/**
+ * Re-links the user's broker account.
+ *
+ * `broker` must be the venue this user is actually on. Sending the request without it
+ * made the server fall back to Binolla, so a Quotex user re-linking here handed their
+ * Quotex credentials to Binolla's login.
+ */
+export function useBinollaPlatformAuth(
+  mode: BinollaAuthMode = 'login',
+  broker: BrokerId = DEFAULT_BROKER,
+) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,8 +48,8 @@ export function useBinollaPlatformAuth(mode: BinollaAuthMode = 'login') {
       await ensureSession();
       const result =
         mode === 'login'
-          ? await binollaApi.login({ email: trimmedEmail, password })
-          : await binollaApi.signup({ email: trimmedEmail, password });
+          ? await binollaApi.login({ email: trimmedEmail, password, broker })
+          : await binollaApi.signup({ email: trimmedEmail, password, broker });
 
       invalidateBotSessionCache();
       setStatus('success');
@@ -56,7 +67,7 @@ export function useBinollaPlatformAuth(mode: BinollaAuthMode = 'login') {
       }
       setError(mode === 'login' ? t('binolla.auth.loginFailed') : t('binolla.auth.signupFailed'));
     }
-  }, [email, ensureSession, mode, navigate, password]);
+  }, [broker, email, ensureSession, mode, navigate, password]);
 
   const refreshStatus = useCallback(async () => {
     setStatus('loading');
