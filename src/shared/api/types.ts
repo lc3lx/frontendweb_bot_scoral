@@ -46,6 +46,7 @@ export type MeBinollaStatus = {
   status: string;
   lastConnectedAt: string | null;
   balance: number | null;
+  broker?: BrokerId;
 };
 
 export type MeResponse = {
@@ -108,6 +109,8 @@ export type BinollaStatusDto = {
   status: string;
   lastConnectedAt: string | null;
   balance: number | null;
+  /** Which venue this account trades on. Absent on responses that predate the choice. */
+  broker?: BrokerId;
 };
 
 export type BinollaBalanceDto = {

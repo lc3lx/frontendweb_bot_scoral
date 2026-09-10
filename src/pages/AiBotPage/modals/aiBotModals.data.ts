@@ -2,7 +2,17 @@ import { aiBotAssets } from '@assets';
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'highPlus';
 
-export type MarketTypeId = 'global-indicators' | 'binolla-market' | 'all-markets';
+/**
+ * Market scope.
+ *
+ * `otc-market` was called `binolla-market` while Binolla was the only venue. Both brokers
+ * run OTC books, so the scope was never really about Binolla — and saved bot settings
+ * still carry the old id, which is why it is accepted below rather than dropped.
+ */
+export type MarketTypeId = 'global-indicators' | 'otc-market' | 'all-markets';
+
+/** The id saved by bots configured before the scope stopped naming a broker. */
+export const LEGACY_OTC_MARKET_ID = 'binolla-market';
 
 /** Backend strategy catalog id (e.g. rsi, ema, smart). */
 export type StrategyGridId = string;
@@ -18,8 +28,8 @@ export type BotRiskLevelId = 'low' | 'medium' | 'high';
 export type MarketTypeOption = {
   id: MarketTypeId;
   icon: string;
-  titleKey: 'globalIndicators' | 'binollaMarket' | 'allMarkets';
-  descriptionKey: 'globalIndicatorsDesc' | 'binollaMarketDesc' | 'allMarketsDesc';
+  titleKey: 'globalIndicators' | 'otcMarket' | 'allMarkets';
+  descriptionKey: 'globalIndicatorsDesc' | 'otcMarketDesc' | 'allMarketsDesc';
 };
 
 export type StrategyPresentationKey =
@@ -105,10 +115,10 @@ export const MARKET_TYPE_OPTIONS: MarketTypeOption[] = [
     descriptionKey: 'globalIndicatorsDesc',
   },
   {
-    id: 'binolla-market',
+    id: 'otc-market',
     icon: aiBotAssets.iconBinollaMarket,
-    titleKey: 'binollaMarket',
-    descriptionKey: 'binollaMarketDesc',
+    titleKey: 'otcMarket',
+    descriptionKey: 'otcMarketDesc',
   },
   {
     // Both feeds at once — the widest set of pairs the bot can choose from.
@@ -339,15 +349,36 @@ export function getDefaultMarketTypeId(): MarketTypeId {
 }
 
 /**
+ * Normalises a saved scope id.
+ *
+ * A bot configured before the rename holds `binolla-market`. Left unmapped it matches no
+ * known option, so the picker would show nothing selected and the pair filter would fall
+ * through to the global branch — quietly switching a Quotex user's OTC bot onto
+ * exchange-hours pairs.
+ */
+export function normalizeMarketTypeId(value: string | null | undefined): MarketTypeId {
+  const id = String(value ?? '').trim();
+  if (id === LEGACY_OTC_MARKET_ID) return 'otc-market';
+  if (id === 'otc-market' || id === 'global-indicators' || id === 'all-markets') {
+    return id;
+  }
+  return getDefaultMarketTypeId();
+}
+
+/**
  * Whether a pair belongs to the selected market scope.
  *
- * Binolla's synthetic books carry an `_otc` suffix; everything else is an exchange-hours
- * pair. `all-markets` accepts both, which is the point of it existing.
+ * Both brokers mark their synthetic books with an `_otc` suffix; everything else is an
+ * exchange-hours pair. `all-markets` accepts both, which is the point of it existing.
  */
-export function pairMatchesMarketType(symbol: string, marketTypeId: MarketTypeId): boolean {
-  if (marketTypeId === 'all-markets') return true;
+export function pairMatchesMarketType(
+  symbol: string,
+  marketTypeId: MarketTypeId | string,
+): boolean {
+  const scope = normalizeMarketTypeId(marketTypeId);
+  if (scope === 'all-markets') return true;
   const isOtc = /_otc$/i.test(symbol.trim());
-  return marketTypeId === 'binolla-market' ? isOtc : !isOtc;
+  return scope === 'otc-market' ? isOtc : !isOtc;
 }
 
 export function getDefaultStrategyGridId(): StrategyGridId {

@@ -872,11 +872,11 @@ export const en: Messages = {
 
         allMarkets: 'Both Markets',
 
-        allMarketsDesc: 'Global pairs and Binolla OTC together — the widest choice.',
+        allMarketsDesc: 'Global pairs and {broker} OTC together — the widest choice.',
 
-        binollaMarket: 'Binolla Market',
+        otcMarket: '{broker} Market',
 
-        binollaMarketDesc: 'OTC pairs and Binolla-native market signals.',
+        otcMarketDesc: 'OTC pairs and {broker}-native market signals.',
 
       },
 

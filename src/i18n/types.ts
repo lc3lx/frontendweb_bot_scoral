@@ -910,9 +910,9 @@ export type Messages = {
         allMarkets: string;
         allMarketsDesc: string;
 
-        binollaMarket: string;
+        otcMarket: string;
 
-        binollaMarketDesc: string;
+        otcMarketDesc: string;
 
       };
 

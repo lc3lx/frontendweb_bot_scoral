@@ -869,11 +869,11 @@ export const ar: Messages = {
 
         allMarkets: 'كلا السوقين',
 
-        allMarketsDesc: 'الأزواج العالمية وأزواج بنولا معاً — أوسع خيار.',
+        allMarketsDesc: 'الأزواج العالمية وأزواج {broker} معاً — أوسع خيار.',
 
-        binollaMarket: 'سوق Binolla',
+        otcMarket: 'سوق {broker}',
 
-        binollaMarketDesc: 'أزواج OTC وإشارات سوق Binolla.',
+        otcMarketDesc: 'أزواج OTC وإشارات سوق {broker}.',
 
       },
 

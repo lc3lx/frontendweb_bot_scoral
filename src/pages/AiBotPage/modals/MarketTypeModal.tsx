@@ -2,8 +2,15 @@ import { AppModal } from '@components/AppModal';
 import { aiBotAssets } from '@assets';
 import { useI18n } from '@i18n';
 
+import { brokerLabel, useBroker } from '@shared/market/useBroker';
+
 import { MARKET_TYPE_OPTIONS, type MarketTypeId } from './aiBotModals.data';
 import styles from './modals.module.css';
+
+/** Fills the {broker} placeholder so one string serves every venue. */
+function withBroker(text: string, broker: string): string {
+  return text.replace(/\{broker\}/g, broker);
+}
 
 type MarketTypeModalProps = {
   isOpen: boolean;
@@ -14,6 +21,9 @@ type MarketTypeModalProps = {
 
 export function MarketTypeModal({ isOpen, selectedId, onClose, onSelect }: MarketTypeModalProps) {
   const { t } = useI18n();
+  // The OTC option belongs to whichever venue the user is on. Naming Binolla to a Quotex
+  // user made the setting read as if it were about someone else's account.
+  const broker = brokerLabel(useBroker());
 
   return (
     <AppModal
@@ -45,9 +55,11 @@ export function MarketTypeModal({ isOpen, selectedId, onClose, onSelect }: Marke
                   <img className={styles.checkIcon} src={aiBotAssets.iconCheck} alt="" aria-hidden="true" />
                 ) : null}
               </div>
-              <p className={styles.optionTitle}>{t.aiBot.modals.marketType[option.titleKey]}</p>
+              <p className={styles.optionTitle}>
+                {withBroker(t.aiBot.modals.marketType[option.titleKey], broker)}
+              </p>
               <p className={styles.optionDescription}>
-                {t.aiBot.modals.marketType[option.descriptionKey]}
+                {withBroker(t.aiBot.modals.marketType[option.descriptionKey], broker)}
               </p>
             </button>
           );

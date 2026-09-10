@@ -13,7 +13,9 @@ import { useI18n } from '@i18n';
 
 import {
   BRANDED_STRATEGY_OPTIONS,
+  LEGACY_OTC_MARKET_ID,
   MARKET_TYPE_OPTIONS,
+  normalizeMarketTypeId,
   getDefaultBrandedStrategyId,
   getDefaultMarketTypeId,
   pairMatchesMarketType,
@@ -93,6 +95,15 @@ const MARKET_TYPE_IDS = new Set<MarketTypeId>(MARKET_TYPE_OPTIONS.map((item) => 
 
 function isMarketTypeId(value: string | null | undefined): value is MarketTypeId {
   return Boolean(value && MARKET_TYPE_IDS.has(value as MarketTypeId));
+}
+
+/** Accepts a saved id, mapping the pre-rename `binolla-market` onto the current one. */
+function readMarketTypeId(value: string | null | undefined): MarketTypeId | null {
+  if (!value) return null;
+  const normalized = normalizeMarketTypeId(value);
+  // Only a value we actually recognise counts as saved; anything else leaves the bot on
+  // its default rather than silently switching the market it trades.
+  return isMarketTypeId(value) || value === LEGACY_OTC_MARKET_ID ? normalized : null;
 }
 
 function parseRiskLevel(value: string | null | undefined): BotSettingsState['riskLevel'] {
@@ -360,9 +371,10 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       brandedStrategyIdRef.current = bot.stakeMode;
     }
 
-    if (isMarketTypeId(bot.marketTypeId)) {
-      setMarketTypeId(bot.marketTypeId);
-      marketTypeIdRef.current = bot.marketTypeId;
+    const savedMarketType = readMarketTypeId(bot.marketTypeId);
+    if (savedMarketType) {
+      setMarketTypeId(savedMarketType);
+      marketTypeIdRef.current = savedMarketType;
     }
 
     const assets = bot.assets?.length ? bot.assets : bot.asset ? [bot.asset] : null;
