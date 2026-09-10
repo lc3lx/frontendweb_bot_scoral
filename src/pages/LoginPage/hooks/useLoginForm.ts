@@ -28,6 +28,9 @@ export function useLoginForm() {
   const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
+  // Set when the broker interrupts with a human check: the account is signed in, but the
+  // broker is only linked once the user answers the challenge themselves.
+  const [guidedLogin, setGuidedLogin] = useState<{ email: string; password: string } | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
 
   const validate = useCallback(() => {
@@ -58,6 +61,15 @@ export function useLoginForm() {
         });
 
         invalidateBotSessionCache();
+
+        if (result.requiresGuidedLogin) {
+          // Hold the password only for as long as the challenge takes — the guided login
+          // needs it to fill the broker's own form — and stay on this page until it ends.
+          setGuidedLogin({ email: email.trim(), password });
+          setStatus('idle');
+          return;
+        }
+
         setStatus('success');
         setPassword('');
         navigate(routeAfterWebAuth(result.access), { replace: true });
@@ -78,9 +90,29 @@ export function useLoginForm() {
     [status],
   );
 
+  /** The user answered the challenge and the broker is linked. */
+  const completeGuidedLogin = useCallback(
+    (access: string) => {
+      setGuidedLogin(null);
+      setPassword('');
+      setStatus('success');
+      invalidateBotSessionCache();
+      navigate(routeAfterWebAuth(access), { replace: true });
+    },
+    [navigate],
+  );
+
+  const cancelGuidedLogin = useCallback(() => {
+    setGuidedLogin(null);
+    setPassword('');
+  }, []);
+
   return {
     mode: 'login' as const,
     isLogin: true as const,
+    guidedLogin,
+    completeGuidedLogin,
+    cancelGuidedLogin,
     email,
     setEmail,
     password,

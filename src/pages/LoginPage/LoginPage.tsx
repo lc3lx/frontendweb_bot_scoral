@@ -4,6 +4,7 @@ import { loginAssets } from '@assets';
 import { brokerSignupUrl } from '@constants/brokers';
 import { useI18n } from '@i18n';
 import { t as tFlat } from '@shared/i18n';
+import { GuidedLoginModal } from '@features/Auth/components/GuidedLoginModal';
 import { useLoginForm } from './hooks/useLoginForm';
 import styles from './LoginPage.module.css';
 
@@ -210,6 +211,21 @@ export function LoginPage() {
           </div>
         </section>
       </div>
+
+      {/* Only mounted while the broker is actually asking for a human check — it holds a
+          browser open on the server for as long as it is on screen. */}
+      {form.guidedLogin ? (
+        <GuidedLoginModal
+          isOpen
+          email={form.guidedLogin.email}
+          password={form.guidedLogin.password}
+          broker={form.values.broker}
+          onClose={form.cancelGuidedLogin}
+          onConnected={(state) =>
+            form.completeGuidedLogin(state.connection?.access ?? 'BinollaNotConnected')
+          }
+        />
+      ) : null}
     </main>
   );
 }

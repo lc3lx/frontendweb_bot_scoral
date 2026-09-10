@@ -10,6 +10,11 @@ export type AuthSession = {
 };
 
 export type BinollaAuthSession = AuthSession & {
+  /**
+   * The broker interrupted with a human check. The account is signed in, but the broker
+   * is not linked until the user answers the challenge in the guided login.
+   */
+  requiresGuidedLogin?: boolean;
   access: string;
   connected: boolean;
 };

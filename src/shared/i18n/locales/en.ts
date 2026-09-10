@@ -204,6 +204,15 @@ export const en = {
   'binolla.auth.enterViaTelegram': 'Already linked? Enter bot via Telegram',
   'binolla.auth.goSignup': 'Create account on Binolla',
   'binolla.auth.enterCredentials': 'Enter your Binolla email and password.',
+  'binolla.guided.title': 'Finish signing in',
+  'binolla.guided.subtitle':
+    'Binolla asked for a human check. The page below is live — answer it here and your account connects automatically.',
+  'binolla.guided.hint':
+    'Click and type directly on the page above, exactly as you would in a browser.',
+  'binolla.guided.loading': 'Opening the login page…',
+  'binolla.guided.done': 'Connected. You can close this window.',
+  'binolla.guided.refresh': 'Refresh view',
+  'binolla.guided.frameAlt': 'Live Binolla login page',
   'binolla.auth.loginFailed': 'Binolla login failed. Check email and password.',
   'binolla.auth.signupFailed': 'Binolla signup failed. Check email and password.',
   'binolla.auth.openFromTelegram': 'Open Scar Alpha from Telegram to enter the bot.',

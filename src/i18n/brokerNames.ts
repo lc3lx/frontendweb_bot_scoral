@@ -1,3 +1,4 @@
+import { applyBrokerName } from '@shared/i18n';
 import type { BrokerId } from '@shared/api/types';
 import { BROKER_LINKS } from '@constants/brokers';
 
@@ -14,9 +15,6 @@ import { BROKER_LINKS } from '@constants/brokers';
  * the `{broker}` placeholder both become the user's actual broker. When that broker IS
  * Binolla the replacement is a no-op, which is why this is safe to apply unconditionally.
  */
-
-/** Names that stand in for "the user's broker" wherever they appear in copy. */
-const BROKER_NAME_PATTERN = /\{broker\}|Binolla|بنولا/g;
 
 export function brokerDisplayName(broker: BrokerId): string {
   return BROKER_LINKS[broker]?.label ?? BROKER_LINKS.binolla.label;
@@ -36,12 +34,7 @@ export function withBrokerName<T>(bundle: T, broker: BrokerId): T {
 
 function transform(value: unknown, name: string): unknown {
   if (typeof value === 'string') {
-    // Skip the copy entirely when there is nothing to change — most strings never
-    // mention a broker, and this keeps the pass close to free.
-    BROKER_NAME_PATTERN.lastIndex = 0;
-    return BROKER_NAME_PATTERN.test(value)
-      ? value.replace(BROKER_NAME_PATTERN, name)
-      : value;
+    return applyBrokerName(value, name);
   }
 
   if (Array.isArray(value)) {

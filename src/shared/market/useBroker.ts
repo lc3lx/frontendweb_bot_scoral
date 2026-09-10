@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchCached } from '@shared/api/dataCache';
 import { binollaApi } from '@shared/api/endpoints';
 import { tokenStore } from '@shared/auth/tokenStore';
+import { setBrokerName } from '@shared/i18n';
 import { BROKER_LINKS } from '@constants/brokers';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 
@@ -40,7 +41,11 @@ export function useBroker(): BrokerId {
     let active = true;
     void fetchCached(CACHE_KEY, () => binollaApi.status(), { freshMs: 30_000 })
       .then((result) => {
-        if (active) setBroker(normalizeBroker(result.value.broker));
+        const resolved = normalizeBroker(result.value.broker);
+        // The shared bundle translates through a plain function with no React context,
+        // so it is told the name here rather than reading it from a provider.
+        setBrokerName(brokerLabel(resolved));
+        if (active) setBroker(resolved);
       })
       // The default is what every account predating the broker choice uses, so a failed
       // lookup shows the right name for the overwhelming majority rather than nothing.

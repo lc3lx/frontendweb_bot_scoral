@@ -60,6 +60,8 @@ import type {
   ReferralRewardDto,
   ReferralRewardsResponse,
   ReferralSummaryResponse,
+  GuidedLoginEvent,
+  GuidedLoginState,
 } from './types';
 
 export const authApi = {
@@ -214,6 +216,38 @@ export const binollaApi = {
   },
   status(): Promise<BinollaStatusDto> {
     return apiRequest<BinollaStatusDto>('/api/binolla/status');
+  },
+
+  /** Guided login — the user answers the broker's human check themselves. */
+  guidedStart(body: BinollaCredentialRequest): Promise<GuidedLoginState> {
+    return apiRequest<GuidedLoginState>('/api/binolla/login/guided/start', {
+      method: 'POST',
+      body: {
+        email: body.email,
+        password: body.password,
+        accountType: body.accountType ?? 'Real',
+        broker: body.broker ?? 'binolla',
+      },
+      // Launching a browser and loading the broker's page through a proxy is slow.
+      signal: timedSignal(BINOLLA_LOGIN_MS),
+    });
+  },
+  guidedEvent(body: GuidedLoginEvent): Promise<GuidedLoginState> {
+    return apiRequest<GuidedLoginState>('/api/binolla/login/guided/event', {
+      method: 'POST',
+      body,
+    });
+  },
+  guidedState(sessionId: string): Promise<GuidedLoginState> {
+    return apiRequest<GuidedLoginState>(
+      `/api/binolla/login/guided/state?sessionId=${encodeURIComponent(sessionId)}`,
+    );
+  },
+  guidedCancel(sessionId: string): Promise<{ cancelled: boolean }> {
+    return apiRequest<{ cancelled: boolean }>(
+      `/api/binolla/login/guided/cancel?sessionId=${encodeURIComponent(sessionId)}`,
+      { method: 'POST' },
+    );
   },
   balance(signal?: AbortSignal): Promise<BinollaBalanceDto> {
     return apiRequest<BinollaBalanceDto>('/api/binolla/balance', { signal });

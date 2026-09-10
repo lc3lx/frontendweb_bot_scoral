@@ -51,7 +51,12 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
       // code (if any was captured from ?ref=) so it isn't lost.
       referralCode: getStoredReferralCode(),
     });
-    return storeBinollaSession(result);
+    // A human check means the app account is signed in but the broker is not linked yet.
+    // The token is stored either way: the guided login needs it to authorise its calls.
+    return {
+      ...storeBinollaSession(result),
+      requiresGuidedLogin: result.requiresGuidedLogin === true,
+    };
   } catch (error) {
     throw toAuthError(error);
   }

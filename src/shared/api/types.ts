@@ -18,6 +18,35 @@ export type BinollaAuthResponse = AuthTelegramResponse & {
   approvalStatus: string;
   lastConnectedAt: string | null;
   balance: number | null;
+  /**
+   * The broker interrupted with a human check. The account is signed in — the token above
+   * is valid — but the broker is not linked until the user answers the challenge in the
+   * guided login.
+   */
+  requiresGuidedLogin?: boolean;
+};
+
+/** One frame of a guided login, plus the connection once it completes. */
+export type GuidedLoginState = {
+  sessionId: string;
+  state: 'starting' | 'awaiting-user' | 'success' | 'failed' | string;
+  /** The live broker page as a data URI. Display only. */
+  screenshot: string | null;
+  /** Frame size in page pixels, so a click on the image maps back to the real page. */
+  width: number;
+  height: number;
+  message: string | null;
+  connection: BinollaConnectResponse | null;
+};
+
+export type GuidedLoginEvent = {
+  sessionId: string;
+  type: 'click' | 'move' | 'type' | 'key' | 'scroll' | 'refresh';
+  x?: number;
+  y?: number;
+  text?: string;
+  key?: string;
+  deltaY?: number;
 };
 
 export type EmailAuthRequest = {
