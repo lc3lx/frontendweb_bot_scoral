@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '@features/Auth';
 import { emailRule } from '@features/Auth/validation';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
+import { invalidateBroker } from '@shared/market/useBroker';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { t } from '@shared/i18n';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
@@ -61,6 +62,9 @@ export function useLoginForm() {
         });
 
         invalidateBotSessionCache();
+        // The venue is what a login can change, and it is read from a 30-second cache.
+        // Left stale, a user who just chose Quotex lands on a page still naming Binolla.
+        invalidateBroker();
 
         if (result.requiresGuidedLogin) {
           // Hold the password only for as long as the challenge takes — the guided login
@@ -97,6 +101,7 @@ export function useLoginForm() {
       setPassword('');
       setStatus('success');
       invalidateBotSessionCache();
+      invalidateBroker();
       navigate(routeAfterWebAuth(access), { replace: true });
     },
     [navigate],

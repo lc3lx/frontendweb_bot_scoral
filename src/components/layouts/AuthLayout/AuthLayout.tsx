@@ -22,6 +22,13 @@ export function AuthLayout() {
 
       try {
         const status = await accountApi.status();
+        // The answer describes the moment the request was SENT. If the route has moved
+        // on since — which is exactly what a successful login does — acting on it now
+        // overrides where the user was just sent. That is how a login the server had
+        // accepted still landed on the link screen: this check had been started a moment
+        // earlier, while the account genuinely was not connected yet.
+        if (!active) return;
+
         const destination = routeAfterWebAuth(status.botAccess);
 
         if (location.pathname === ROUTES.pendingApproval) {
@@ -35,13 +42,21 @@ export function AuthLayout() {
           }
         }
 
-        const isGuestRoute =
-          location.pathname === ROUTES.login ||
-          location.pathname === ROUTES.signup ||
-          location.pathname === ROUTES.linkBinolla;
+        const isSignInRoute =
+          location.pathname === ROUTES.login || location.pathname === ROUTES.signup;
 
-        if (isGuestRoute && location.pathname !== ROUTES.linkBinolla) {
-          navigate(destination, { replace: true });
+        // Someone who is already set up has no business on the sign-in page, so they are
+        // sent on. Someone who is NOT — no broker linked, or a dead session — is left
+        // exactly where they are: the sign-in page is where that gets fixed, and it is
+        // the only place the broker can be chosen. Bouncing them to the link screen took
+        // that choice away and made a deliberate Binolla sign-in impossible to complete.
+        if (isSignInRoute) {
+          if (status.botAccess === 'Allowed' || status.botAccess === 'AdminApprovalRequired') {
+            navigate(destination, { replace: true });
+            return;
+          }
+
+          if (active) setReady(true);
           return;
         }
 

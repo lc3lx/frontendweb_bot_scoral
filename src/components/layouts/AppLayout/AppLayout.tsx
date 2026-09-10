@@ -20,12 +20,16 @@ export function AppLayout() {
 
     void (async () => {
       if (!tokenStore.isAuthenticated()) {
-        navigate(ROUTES.login, { replace: true, state: { from: location.pathname } });
+        if (active) navigate(ROUTES.login, { replace: true, state: { from: location.pathname } });
         return;
       }
 
       try {
         const status = await accountApi.status();
+        // Same rule as AuthLayout: a status fetched before the route changed must not
+        // redirect after it. Every branch below navigates, so the guard belongs here
+        // rather than on each one.
+        if (!active) return;
 
         if (isPendingApproval(status.botAccess)) {
           navigate(ROUTES.pendingApproval, { replace: true });
@@ -46,7 +50,7 @@ export function AppLayout() {
         // rejected the token. A transient failure leaves the user where they are.
         if (isSessionExpiredError(error)) {
           tokenStore.clear();
-          navigate(ROUTES.login, { replace: true });
+          if (active) navigate(ROUTES.login, { replace: true });
           return;
         }
       }

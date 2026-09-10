@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { fetchCached } from '@shared/api/dataCache';
+import { fetchCached, invalidateCached } from '@shared/api/dataCache';
 import { binollaApi } from '@shared/api/endpoints';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { setBrokerName } from '@shared/i18n';
@@ -28,6 +28,17 @@ export function normalizeBroker(value: string | null | undefined): BrokerId {
 /** Display name, e.g. "Quotex". */
 export function brokerLabel(broker: BrokerId | string | null | undefined): string {
   return BROKER_LINKS[normalizeBroker(broker)].label;
+}
+
+/**
+ * Forgets the cached broker.
+ *
+ * Called after a login, because the venue is exactly what a login can change and the
+ * cache is otherwise good for 30 seconds — long enough for a user who just chose Quotex
+ * to be shown Binolla's name and Binolla's screens on the page they land on.
+ */
+export function invalidateBroker(): void {
+  invalidateCached(CACHE_KEY);
 }
 
 export function useBroker(): BrokerId {
