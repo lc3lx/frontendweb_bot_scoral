@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { setLocale as setSharedLocale } from '@shared/i18n';
+import { useBroker } from '@shared/market/useBroker';
+import { withBrokerName } from './brokerNames';
 import { ar } from './locales/ar';
 import { en } from './locales/en';
 import {
@@ -15,6 +17,10 @@ const MESSAGES: Record<Locale, Messages> = { en, ar };
 type I18nContextValue = {
   locale: Locale;
   dir: 'ltr' | 'rtl';
+  /**
+   * Translations with the broker's name already resolved to the user's own venue, so no
+   * screen has to remember to substitute it.
+   */
   t: Messages;
   setLocale: (locale: Locale) => void;
   toggleLocale: () => void;
@@ -55,16 +61,22 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   }, [locale]);
 
+  const broker = useBroker();
+
+  // One pass per locale/broker change. Copy naming a broker is naming THIS user's broker,
+  // and doing it centrally is what stops a Quotex user seeing Binolla on their own trades.
+  const messages = useMemo(() => withBrokerName(MESSAGES[locale], broker), [locale, broker]);
+
   const value = useMemo<I18nContextValue>(() => {
     const setLocale = (next: Locale) => setLocaleState(next);
     return {
       locale,
       dir: LOCALE_META[locale].dir,
-      t: MESSAGES[locale],
+      t: messages,
       setLocale,
       toggleLocale: () => setLocaleState((prev) => (prev === 'en' ? 'ar' : 'en')),
     };
-  }, [locale]);
+  }, [locale, messages]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }

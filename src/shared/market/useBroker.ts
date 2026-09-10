@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { fetchCached } from '@shared/api/dataCache';
 import { binollaApi } from '@shared/api/endpoints';
+import { tokenStore } from '@shared/auth/tokenStore';
 import { BROKER_LINKS } from '@constants/brokers';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 
@@ -32,6 +33,10 @@ export function useBroker(): BrokerId {
   const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
 
   useEffect(() => {
+    // Public pages mount the provider too. Asking for a broker without a session would
+    // be a guaranteed 401 on every visitor's first paint.
+    if (!tokenStore.isAuthenticated()) return;
+
     let active = true;
     void fetchCached(CACHE_KEY, () => binollaApi.status(), { freshMs: 30_000 })
       .then((result) => {
