@@ -4,6 +4,7 @@ import { dashboardAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ApiClientError } from '@shared/api';
 import { useBroker } from '@shared/market/useBroker';
+import { useSessionProfile } from '@hooks/useSessionProfile';
 import { brokerLoginUrl } from '@constants/brokers';
 import { tradeService } from '@services/trades';
 import { liveRefresh } from '@shared/live/liveRefresh';
@@ -45,6 +46,8 @@ function TradingBackdrop() {
 export function TradingContent({ figmaNode }: TradingContentProps) {
   const { t } = useI18n();
   const broker = useBroker();
+  const profile = useSessionProfile();
+  const isReal = profile.accountType === 'Real';
   const [data, setData] = useState<TradingMockData | null>(() => tradingService.getCachedData());
   const [pairs, setPairs] = useState<TradingPairOption[]>([]);
   const [expiry, setExpiry] = useState(() => formatMmSs(candleExpiryRemaining(PERIOD_SEC)));
@@ -295,10 +298,16 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
             <span className={styles.chipDotGreen} aria-hidden="true" />
             {t.trading.status.connected}
           </span>
-          <span className={styles.chipDemo}>
-            <span className={styles.chipDotBlue} aria-hidden="true" />
-            {t.trading.status.demo}
-          </span>
+          <button
+            type="button"
+            className={isReal ? styles.chipReal : styles.chipDemo}
+            onClick={() => void profile.toggleAccount()}
+            title={t.dashboard.accountMenu.switchAccount}
+            disabled={profile.switching}
+          >
+            <span className={isReal ? styles.chipDotGreen : styles.chipDotBlue} aria-hidden="true" />
+            {isReal ? t.dashboard.user.live : t.dashboard.user.demo}
+          </button>
           <button
             type="button"
             className={styles.iconButton}

@@ -10,7 +10,7 @@ export type CandlestickPoint = {
 
 export type TradeStatus = 'running' | 'profit' | 'loss' | 'unknown';
 export type TradeSource = 'bot' | 'user';
-export type TradePlatform = 'global' | 'binolla';
+export type TradePlatform = 'global' | 'binolla' | 'quotex';
 export type TradeListFilter = 'all' | 'live' | 'profit' | 'loss' | 'today';
 
 export type TradeRecord = {

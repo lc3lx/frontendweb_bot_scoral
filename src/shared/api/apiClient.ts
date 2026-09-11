@@ -33,16 +33,38 @@ function resolveBaseUrl(): string {
   throw new ApiClientError('CONFIG_ERROR', t('api.configMissing'), 0);
 }
 
+function getActiveBrokerName(): 'Quotex' | 'Binolla' {
+  try {
+    const raw = localStorage.getItem('scar-alpha-broker') || localStorage.getItem('scar-alpha-user-profile');
+    if (raw && raw.toLowerCase().includes('quotex')) return 'Quotex';
+  } catch {
+    /* ignore */
+  }
+  return 'Binolla';
+}
+
 function mapMessage(code: string, fallback: string): string {
+  const broker = getActiveBrokerName();
+  let text = fallback?.trim() ?? '';
+  if (text) {
+    if (broker === 'Quotex' && /binolla/i.test(text) && !/quotex/i.test(text)) {
+      text = text.replace(/binolla/gi, 'Quotex');
+    } else if (broker === 'Binolla' && /quotex/i.test(text) && !/binolla/i.test(text)) {
+      text = text.replace(/quotex/gi, 'Binolla');
+    }
+    if (/quotex|binolla/i.test(text)) {
+      return text;
+    }
+  }
   switch (code) {
     case 'BINOLLA_NOT_CONNECTED':
-      return t('api.binollaNotConnected');
+      return broker === 'Quotex' ? 'Connect your Quotex account to continue.' : t('api.binollaNotConnected');
     case 'BINOLLA_SESSION_EXPIRED':
-      return t('api.binollaSessionExpired');
+      return broker === 'Quotex' ? 'Quotex session expired.' : t('api.binollaSessionExpired');
     case 'BINOLLA_LOGIN_FAILED':
-      return fallback?.trim() ? fallback : t('api.binollaLoginFailed');
+      return text ? text : (broker === 'Quotex' ? 'Quotex login failed.' : t('api.binollaLoginFailed'));
     case 'BINOLLA_CONNECTION_FAILED':
-      return t('api.binollaConnectionFailed');
+      return broker === 'Quotex' ? 'Quotex connection failed.' : t('api.binollaConnectionFailed');
     case 'ADMIN_APPROVAL_REQUIRED':
       return t('api.adminApprovalRequired');
     case 'NOT_ELIGIBLE':

@@ -23,6 +23,25 @@ const LIVE_REFRESH_MS = 10_000;
 const LIVE_TICK_MS = 3_000;
 
 let selectedAsset: string | null = null;
+let currentSeriesAsset: string | null = null;
+const SELECTED_ASSET_STORAGE_KEY = 'scar-alpha-selected-asset';
+
+function readStoredAsset(): string | null {
+  try {
+    return localStorage.getItem(SELECTED_ASSET_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function storeAsset(val: string): void {
+  try {
+    localStorage.setItem(SELECTED_ASSET_STORAGE_KEY, val);
+  } catch {
+    /* ignore */
+  }
+}
+
 let amount = '25';
 let durationLabel = '1 min';
 let durationSeconds = 60;
@@ -224,18 +243,30 @@ export const tradingService = {
         ? await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null)
         : null;
       const liveAssets = assets?.assets ?? [];
-      const preferred =
-        (selectedAsset
-          ? liveAssets.find((a) => a.symbol === selectedAsset)
-          : undefined) ??
-        pickPreferredMarketAsset(liveAssets) ??
-        liveAssets[0];
-      const asset = preferred?.symbol ?? null;
-      if (asset) selectedAsset = asset;
+      let asset = selectedAsset ?? readStoredAsset();
+      if (liveAssets.length > 0) {
+        const preferred =
+          (asset ? liveAssets.find((a) => a.symbol === asset) : undefined) ??
+          pickPreferredMarketAsset(liveAssets) ??
+          liveAssets[0];
+        if (preferred?.symbol) {
+          asset = preferred.symbol;
+        }
+      }
+      if (!asset) {
+        asset = readStoredAsset() ?? 'EURUSD_otc';
+      }
+      selectedAsset = asset;
+      if (asset) storeAsset(asset);
 
       if (asset) {
+        if (currentSeriesAsset !== asset) {
+          liveCandleSeries = [];
+          currentSeriesAsset = asset;
+        }
         data.assetSymbol = asset;
-        data.pair = formatPairLabel(asset, preferred?.name);
+        const matchingAsset = liveAssets.find((a) => a.symbol === asset);
+        data.pair = formatPairLabel(asset, matchingAsset?.name);
         data.pairType = pairTypeFromSymbol(asset);
         const [price, rsi, candles] = await Promise.all([
           marketApi.price(asset, timedSignal(MARKET_FETCH_MS)).catch(() => null),
@@ -297,12 +328,16 @@ export const tradingService = {
   },
 
   async fetchLivePrice(): Promise<number | null> {
-    if (!selectedAsset) return null;
-    const quote = await marketApi.price(selectedAsset, timedSignal(MARKET_FETCH_MS)).catch(() => null);
+    const asset = selectedAsset ?? readStoredAsset();
+    if (!asset) return null;
+    const quote = await marketApi.price(asset, timedSignal(MARKET_FETCH_MS)).catch(() => null);
     return quote?.price ?? null;
   },
 
   applyLiveQuote(current: TradingMockData, price: number): TradingMockData {
+    if (currentSeriesAsset && current.assetSymbol && currentSeriesAsset !== current.assetSymbol) {
+      return current;
+    }
     const nextCandles = applyQuoteToCandles(
       current.candles.length ? current.candles : liveCandleSeries,
       price,
@@ -328,13 +363,16 @@ export const tradingService = {
         403,
       );
     }
-    if (!selectedAsset) {
-      throw new ApiClientError('MARKET_UNAVAILABLE', t('trading.noAssetYet'), 503);
+    const asset = selectedAsset ?? readStoredAsset();
+    if (!asset) {
+      const broker = localStorage.getItem('scar-alpha-broker') === 'quotex' ? 'Quotex' : 'Binolla';
+      throw new ApiClientError('MARKET_UNAVAILABLE', `No ${broker} asset is available for trading yet.`, 503);
     }
+    const activeBroker = localStorage.getItem('scar-alpha-broker') === 'quotex' ? 'quotex' : 'binolla';
     return tradeService.placeTrade({
       direction,
-      pair: selectedAsset,
-      platform: 'binolla',
+      pair: asset,
+      platform: activeBroker,
       amount: Number.parseFloat(amount) || 25,
       durationLabel: `${durationSeconds}s`,
       strategy: 'rsi',
@@ -365,12 +403,15 @@ export const tradingService = {
   },
 
   setSelectedAsset(symbol: string) {
-    selectedAsset = symbol.trim() || null;
+    const trimmed = symbol.trim() || null;
+    selectedAsset = trimmed;
+    if (trimmed) storeAsset(trimmed);
     liveCandleSeries = [];
+    currentSeriesAsset = trimmed;
   },
 
   getSelectedAsset(): string | null {
-    return selectedAsset;
+    return selectedAsset ?? readStoredAsset();
   },
 
   async listPairs(): Promise<TradingPairOption[]> {
