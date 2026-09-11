@@ -82,6 +82,7 @@ import detailTrendBreakerUrl from './ai-bot/detail-trend-breaker.png';
 import chartPlaceholderUrl from './ai-bot/chart-placeholder.png';
 
 import iconTradingBinollaUrl from './trading/icon-binolla.svg';
+import iconTradingQuotexUrl from './trading/icon-quotex.svg';
 import iconTradingRefreshUrl from './trading/icon-refresh.svg';
 import iconTradingExternalUrl from './trading/icon-external.svg';
 import iconTradingChevronDownUrl from './trading/icon-chevron-down.svg';
@@ -207,6 +208,7 @@ export const dashboardAssets = {
 export const tradingAssets = {
 
   iconBinolla: iconTradingBinollaUrl,
+  iconQuotex: iconTradingQuotexUrl,
 
   iconRefresh: iconTradingRefreshUrl,
 

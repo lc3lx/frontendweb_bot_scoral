@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { dashboardAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ApiClientError } from '@shared/api';
+import { useBroker } from '@shared/market/useBroker';
+import { brokerLoginUrl } from '@constants/brokers';
 import { tradeService } from '@services/trades';
 import { liveRefresh } from '@shared/live/liveRefresh';
 import type { TradeRecord } from '@services/trades';
@@ -42,7 +44,8 @@ function TradingBackdrop() {
 
 export function TradingContent({ figmaNode }: TradingContentProps) {
   const { t } = useI18n();
-  const [data, setData] = useState<TradingMockData | null>(null);
+  const broker = useBroker();
+  const [data, setData] = useState<TradingMockData | null>(() => tradingService.getCachedData());
   const [pairs, setPairs] = useState<TradingPairOption[]>([]);
   const [expiry, setExpiry] = useState(() => formatMmSs(candleExpiryRemaining(PERIOD_SEC)));
   /** Last published countdown text — see the tick effect for why this guard exists. */
@@ -311,7 +314,12 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
               aria-hidden="true"
             />
           </button>
-          <button type="button" className={styles.iconButton} aria-label={t.trading.status.externalAria}>
+          <button
+            type="button"
+            className={styles.iconButton}
+            aria-label={t.trading.status.externalAria}
+            onClick={() => window.open(brokerLoginUrl(broker), '_blank', 'noopener,noreferrer')}
+          >
             <img
               className={styles.iconButtonImg}
               src={tradingAssets.iconExternal}

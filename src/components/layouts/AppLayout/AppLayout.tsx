@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { accountApi } from '@shared/api';
+import { getAccountStatusCached } from '@shared/api/botSessionCache';
 import { isPendingApproval } from '@shared/access/webAccess';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { isSessionExpiredError } from '@shared/auth/sessionErrors';
@@ -25,7 +25,7 @@ export function AppLayout() {
       }
 
       try {
-        const status = await accountApi.status();
+        const status = await getAccountStatusCached();
         // Same rule as AuthLayout: a status fetched before the route changed must not
         // redirect after it. Every branch below navigates, so the guard belongs here
         // rather than on each one.

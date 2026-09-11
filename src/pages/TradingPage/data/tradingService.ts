@@ -16,7 +16,9 @@ import { tradeService } from '@services/trades';
 import type { TradeRecord } from '@services/trades';
 
 const PERIOD_SEC = 60;
-const MAX_CANDLES = 80;
+/** 3 hours of 1-minute candles (3 * 60 = 180). Rolling window: new added, oldest dropped. */
+const MAX_CANDLES = 180;
+const THREE_HOURS_SEC = 3 * 3600;
 const LIVE_REFRESH_MS = 10_000;
 const LIVE_TICK_MS = 3_000;
 
@@ -26,8 +28,27 @@ let durationLabel = '1 min';
 let durationSeconds = 60;
 /** In-memory forming series so ticks survive full refresh merge. */
 let liveCandleSeries: TradingCandle[] = [];
+let cachedTradingData: TradingMockData | null = null;
+let lastKnownBalance: string | null = null;
 
-export { LIVE_REFRESH_MS, LIVE_TICK_MS, PERIOD_SEC };
+function readStoredBalance(): string | null {
+  try {
+    return localStorage.getItem('scar-alpha-last-balance');
+  } catch {
+    return null;
+  }
+}
+
+function storeBalance(val: string): void {
+  lastKnownBalance = val;
+  try {
+    localStorage.setItem('scar-alpha-last-balance', val);
+  } catch {
+    /* ignore */
+  }
+}
+
+export { LIVE_REFRESH_MS, LIVE_TICK_MS, PERIOD_SEC, MAX_CANDLES, THREE_HOURS_SEC };
 
 export function formatMmSs(totalSec: number): string {
   const s = Math.max(0, Math.floor(totalSec));
@@ -81,25 +102,6 @@ function toUnixSec(timestamp: string | undefined): number | undefined {
   return Math.floor(ms / 1000);
 }
 
-function stitchOpenToPrevClose(candles: TradingCandle[]): TradingCandle[] {
-  if (candles.length === 0) return candles;
-  const out: TradingCandle[] = [{ ...candles[0]! }];
-  for (let i = 1; i < candles.length; i++) {
-    const prev = out[i - 1]!;
-    const cur = candles[i]!;
-    const open = prev.close;
-    const close = cur.close;
-    out.push({
-      ...cur,
-      open,
-      high: Math.max(cur.high, open, close),
-      low: Math.min(cur.low, open, close),
-      close,
-    });
-  }
-  return out;
-}
-
 function applyQuoteToCandles(
   candles: TradingCandle[],
   price: number,
@@ -128,7 +130,9 @@ function applyQuoteToCandles(
       close: price,
       time: bucket,
     });
-    return next.length > MAX_CANDLES ? next.slice(-MAX_CANDLES) : next;
+    const cutoff = Math.floor(Date.now() / 1000) - THREE_HOURS_SEC;
+    const within3h = next.filter((c) => c.time == null || c.time >= cutoff);
+    return within3h.length > MAX_CANDLES ? within3h.slice(-MAX_CANDLES) : within3h;
   }
 
   last.close = price;
@@ -155,7 +159,10 @@ function mergeServerWithLive(server: TradingCandle[], live: TradingCandle[]): Tr
     return [...server.slice(0, -1), lastLive];
   }
   if (liveBucket != null && (serverBucket == null || liveBucket > serverBucket)) {
-    return [...server, lastLive].slice(-MAX_CANDLES);
+    const combined = [...server, lastLive];
+    const cutoff = Math.floor(Date.now() / 1000) - THREE_HOURS_SEC;
+    const within3h = combined.filter((c) => c.time == null || c.time >= cutoff);
+    return within3h.length > MAX_CANDLES ? within3h.slice(-MAX_CANDLES) : within3h;
   }
   return server;
 }
@@ -203,14 +210,14 @@ export const tradingService = {
         binollaApi.balance(timedSignal(MARKET_FETCH_MS)).catch(() => null),
       ]);
 
-      if (balance) {
-        data.balance = `$${balance.currentBalance.toLocaleString('en-US', {
+      if (balance && balance.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
+        const formatted = `$${balance.currentBalance.toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`;
-      } else {
-        data.balance = '—';
+        storeBalance(formatted);
       }
+      data.balance = lastKnownBalance ?? readStoredBalance() ?? (balance ? `$${balance.currentBalance.toFixed(2)}` : '—');
 
       const browse = canBrowseMarket(status?.botAccess);
       const assets = browse
@@ -238,15 +245,18 @@ export const tradingService = {
 
         let series: TradingCandle[] = [];
         if (candles?.candles?.length) {
-          series = stitchOpenToPrevClose(
-            candles.candles.slice(-MAX_CANDLES).map((c) => ({
+          const cutoff = Math.floor(Date.now() / 1000) - THREE_HOURS_SEC;
+          series = candles.candles
+            .map((c) => ({
               open: c.open,
               close: c.close,
               high: c.high,
               low: c.low,
               time: toUnixSec(c.timestamp),
-            })),
-          );
+            }))
+            .filter((c) => c.time == null || c.time >= cutoff)
+            .sort((a, b) => (a.time ?? 0) - (b.time ?? 0))
+            .slice(-MAX_CANDLES);
         }
 
         series = mergeServerWithLive(series, liveCandleSeries);
@@ -277,10 +287,12 @@ export const tradingService = {
       data.amount = amount;
       data.duration = durationLabel;
       data.expiry = formatMmSs(candleExpiryRemaining(PERIOD_SEC));
+      cachedTradingData = data;
     } catch {
       /* defaults */
     }
 
+    if (!cachedTradingData) cachedTradingData = data;
     return data;
   },
 
@@ -414,6 +426,18 @@ export const tradingService = {
       return matches[0] ?? null;
     } catch {
       return null;
+    }
+  },
+
+  /** Return in-memory cached trading data for instant page transitions without loading screens. */
+  getCachedData(): TradingMockData | null {
+    return cachedTradingData;
+  },
+
+  setCachedBalance(balanceFormatted: string): void {
+    storeBalance(balanceFormatted);
+    if (cachedTradingData) {
+      cachedTradingData.balance = balanceFormatted;
     }
   },
 };

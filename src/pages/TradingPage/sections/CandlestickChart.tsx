@@ -154,7 +154,10 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
     return () => observer.disconnect();
   }, []);
 
-  const sanitized = useMemo(() => candles.map(sanitize), [candles]);
+  const sanitized = useMemo(
+    () => candles.slice().sort((a, b) => (a.time ?? 0) - (b.time ?? 0)).map(sanitize),
+    [candles],
+  );
 
   const padL = 10;
   const padR = 56;
@@ -166,26 +169,23 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
   const bodyW = Math.max(3, Math.min(16, slot * 0.68));
   const wickW = bodyW >= 6 ? 1.6 : 1.25;
 
-  /** Live candle sits on the horizontal midpoint when pan ≈ 0 — empty half on the right. */
-  const liveCenterX = padL + plotW / 2;
-  const maxPanPx = Math.max(0, (sanitized.length - Math.ceil(barsVisible / 2)) * slot);
+  /** Live candle sits near the right margin (like TradingView/Quotex) with breathing room for price label */
+  const rightMarginBars = 2.5;
+  const liveCenterX = padL + plotW - rightMarginBars * slot;
+  const maxPanPx = Math.max(0, (sanitized.length - barsVisible) * slot);
   const clampedPan = Math.min(Math.max(0, panPx), maxPanPx);
   const followLive = clampedPan < slot * 0.25 && !dragging;
 
   const rightIndex =
     sanitized.length === 0 ? 0 : sanitized.length - 1 - Math.round(clampedPan / slot);
-  const halfBars = Math.floor(barsVisible / 2);
-  const leftIndex = Math.max(0, rightIndex - halfBars);
+  const leftIndex = Math.max(0, rightIndex - barsVisible);
 
   const visiblePoints = useMemo(() => {
     if (sanitized.length === 0) return [];
     const end = Math.min(sanitized.length, rightIndex + 1);
-    // Leave right-side empty: only take left half-ish of bars when following live.
-    const windowStart = followLive
-      ? Math.max(0, sanitized.length - halfBars - 1)
-      : Math.max(0, end - barsVisible);
+    const windowStart = Math.max(0, end - barsVisible);
     return sanitized.slice(windowStart, end);
-  }, [sanitized, rightIndex, barsVisible, followLive, halfBars]);
+  }, [sanitized, rightIndex, barsVisible]);
 
   const liveClose = sanitized.length > 0 ? sanitized[sanitized.length - 1]!.close : 0;
 
@@ -238,7 +238,7 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
       const nextSlot = plotW / Math.max(clamped, 1);
       const panCandles = panPxRef.current / Math.max(prevSlot, 1e-6);
       const nextPan = panCandles * nextSlot;
-      const nextMax = Math.max(0, (sanitized.length - Math.ceil(clamped / 2)) * nextSlot);
+      const nextMax = Math.max(0, (sanitized.length - clamped) * nextSlot);
       const clampedPanNext = Math.min(Math.max(0, nextPan), nextMax);
       panPxRef.current = clampedPanNext;
       setPanPx(clampedPanNext);
@@ -355,7 +355,7 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
 
   // Draw candles that fall inside (or near) the plot horizontally.
   const drawStart = Math.max(0, leftIndex - 2);
-  const drawEnd = Math.min(sanitized.length, rightIndex + halfBars + 3);
+  const drawEnd = Math.min(sanitized.length, rightIndex + 4);
 
   const timeTicks: { x: number; label: string }[] = [];
   const tickCount = Math.min(5, Math.max(2, visiblePoints.length));

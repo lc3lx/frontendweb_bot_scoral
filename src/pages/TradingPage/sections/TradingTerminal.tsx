@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { useBroker } from '@shared/market/useBroker';
 import { currencyFlagUrl, parseFxPair } from '@shared/market/pairDisplay';
 
 import type { TradingMockData, TradingPairOption } from '../data/trading.mock';
@@ -47,7 +48,11 @@ export function TradingTerminal({
   onSelectPair,
 }: TradingTerminalProps) {
   const { t } = useI18n();
+  const broker = useBroker();
   const [pairOpen, setPairOpen] = useState(false);
+
+  const brokerName = broker === 'quotex' ? 'Quotex' : (t.trading.terminal.binolla || 'Binolla');
+  const brokerIcon = broker === 'quotex' ? tradingAssets.iconQuotex : tradingAssets.iconBinolla;
 
   const pairChoices = useMemo(() => {
     if (pairs.length > 0) return pairs;
@@ -79,16 +84,16 @@ export function TradingTerminal({
           <div className={styles.binollaIconWrap}>
             <img
               className={styles.binollaIcon}
-              src={tradingAssets.iconBinolla}
+              src={brokerIcon}
               alt=""
-              width={12}
+              width={16}
               height={18}
               aria-hidden="true"
             />
           </div>
           <div>
             <p id="trading-terminal-title" className={styles.brandName}>
-              {t.trading.terminal.binolla}
+              {brokerName}
             </p>
             <p className={styles.brandSub}>{t.trading.terminal.embeddedTerminal}</p>
           </div>

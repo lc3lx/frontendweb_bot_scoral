@@ -31,65 +31,173 @@ function formatBalance(value: number | null | undefined): string {
 
 function normalizeAccountType(value: string | null | undefined): AccountMode {
   const normalized = value?.trim().toLowerCase();
-  // Only an explicit "demo" means demo. Anything unknown or missing is Live, which is
-  // the default account — falling back to 'Demo' would label a live balance as demo.
   return normalized === 'demo' ? 'Demo' : 'Real';
 }
 
-const idleProfile = {
-  name: '',
-  email: '',
-  balance: '—',
-  demoBalance: '—',
-  realBalance: '—',
-  // Live is the default account; demo is admin-granted.
-  accountType: 'Real' as AccountMode,
-  loading: true,
-  switching: false,
-  error: null as string | null,
+type CachedProfileData = {
+  name: string;
+  email: string;
+  balance: string;
+  demoBalance: string;
+  realBalance: string;
+  accountType: AccountMode;
 };
 
+const PROFILE_STORAGE_KEY = 'scar-alpha-user-profile';
+const BALANCE_STORAGE_KEY = 'scar-alpha-last-balance';
+
+function readStoredProfile(): CachedProfileData {
+  let bal = '—';
+  try {
+    const rawBal = localStorage.getItem(BALANCE_STORAGE_KEY);
+    if (rawBal && rawBal.trim() && rawBal !== '—') {
+      bal = rawBal.trim();
+    }
+  } catch {
+    /* ignore */
+  }
+
+  try {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          name: parsed.name || '',
+          email: parsed.email || '',
+          balance: parsed.balance && parsed.balance !== '—' ? parsed.balance : bal,
+          demoBalance: parsed.demoBalance || '—',
+          realBalance: parsed.realBalance || '—',
+          accountType: parsed.accountType === 'Demo' ? 'Demo' : 'Real',
+        };
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return {
+    name: '',
+    email: '',
+    balance: bal,
+    demoBalance: '—',
+    realBalance: '—',
+    accountType: 'Real',
+  };
+}
+
+let activeProfileData: CachedProfileData =
+  typeof window !== 'undefined'
+    ? readStoredProfile()
+    : {
+        name: '',
+        email: '',
+        balance: '—',
+        demoBalance: '—',
+        realBalance: '—',
+        accountType: 'Real',
+      };
+
+const subscribers = new Set<() => void>();
+
+function notifySubscribers() {
+  for (const sub of subscribers) {
+    try {
+      sub();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function saveActiveProfile(partial: Partial<CachedProfileData>) {
+  activeProfileData = { ...activeProfileData, ...partial };
+  try {
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(activeProfileData));
+    if (activeProfileData.balance && activeProfileData.balance !== '—') {
+      localStorage.setItem(BALANCE_STORAGE_KEY, activeProfileData.balance);
+    }
+  } catch {
+    /* ignore */
+  }
+  notifySubscribers();
+}
+
 export function useSessionProfile(): SessionProfile {
-  const [profile, setProfile] = useState(idleProfile);
-  const profileRef = useRef(profile);
-  profileRef.current = profile;
+  const [profileState, setProfileState] = useState(() => ({
+    ...activeProfileData,
+    loading: activeProfileData.balance === '—',
+    switching: false,
+    error: null as string | null,
+  }));
+
+  const profileRef = useRef(profileState);
+  profileRef.current = profileState;
+
+  // Keep all mounted instances across different pages and components in sync.
+  useEffect(() => {
+    const sync = () => {
+      setProfileState((prev) => ({
+        ...prev,
+        ...activeProfileData,
+      }));
+    };
+    subscribers.add(sync);
+    return () => {
+      subscribers.delete(sync);
+    };
+  }, []);
 
   const refresh = useCallback(async () => {
     if (!tokenStore.isAuthenticated()) {
-      setProfile({
-        ...idleProfile,
+      setProfileState((prev) => ({
+        ...prev,
         loading: false,
-      });
+      }));
       return;
     }
 
     try {
       const [me, balance] = await Promise.all([
-        meApi.get(),
+        meApi.get().catch(() => null),
         binollaApi.balance().catch(() => null),
       ]);
+
       const name =
-        me.fullName?.trim() || me.username?.trim() || me.email?.trim() || t('common.trader');
-      const email = me.email?.trim() || '';
-      const accountType = normalizeAccountType(balance?.accountType ?? me.binolla?.accountType);
-      const demoBalance = formatBalance(balance?.demoBalance);
-      const realBalance = formatBalance(balance?.realBalance);
-      const currentBalance = formatBalance(balance?.currentBalance);
-      setProfile((current) => ({
-        ...current,
+        me?.fullName?.trim() || me?.username?.trim() || me?.email?.trim() || activeProfileData.name || t('common.trader');
+      const email = me?.email?.trim() || activeProfileData.email || '';
+      const accountType = normalizeAccountType(balance?.accountType ?? me?.binolla?.accountType ?? activeProfileData.accountType);
+
+      const updates: Partial<CachedProfileData> = {
         name,
         email,
-        balance: currentBalance,
-        demoBalance,
-        realBalance,
         accountType,
+      };
+
+      if (balance) {
+        if (balance.demoBalance != null && balance.demoBalance > 0) {
+          updates.demoBalance = formatBalance(balance.demoBalance);
+        }
+        if (balance.realBalance != null && balance.realBalance > 0) {
+          updates.realBalance = formatBalance(balance.realBalance);
+        }
+        // Retain previous balance if incoming balance is null/0 while warming up
+        if (balance.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
+          updates.balance = formatBalance(balance.currentBalance);
+        }
+      }
+
+      saveActiveProfile(updates);
+
+      setProfileState((current) => ({
+        ...current,
+        ...activeProfileData,
         loading: false,
         error: null,
       }));
     } catch {
-      setProfile((current) => ({
+      setProfileState((current) => ({
         ...current,
-        name: current.name || t('common.trader'),
         loading: false,
       }));
     }
@@ -103,25 +211,36 @@ export function useSessionProfile(): SessionProfile {
     const snapshot = profileRef.current;
     if (snapshot.accountType === next || snapshot.switching) return;
 
-
-    setProfile((current) => ({ ...current, switching: true, error: null }));
+    setProfileState((current) => ({ ...current, switching: true, error: null }));
 
     try {
       await binollaApi.changeAccountType(next);
       const balance = await binollaApi.balance().catch(() => null);
-      setProfile((current) => ({
-        ...current,
+
+      const updates: Partial<CachedProfileData> = {
         accountType: normalizeAccountType(balance?.accountType ?? next),
-        balance: formatBalance(balance?.currentBalance),
-        demoBalance:
-          balance?.demoBalance != null ? formatBalance(balance.demoBalance) : current.demoBalance,
-        realBalance:
-          balance?.realBalance != null ? formatBalance(balance.realBalance) : current.realBalance,
+      };
+
+      if (balance?.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
+        updates.balance = formatBalance(balance.currentBalance);
+      }
+      if (balance?.demoBalance != null) {
+        updates.demoBalance = formatBalance(balance.demoBalance);
+      }
+      if (balance?.realBalance != null) {
+        updates.realBalance = formatBalance(balance.realBalance);
+      }
+
+      saveActiveProfile(updates);
+
+      setProfileState((current) => ({
+        ...current,
+        ...activeProfileData,
         switching: false,
         error: null,
       }));
+
       invalidateBotSessionCache();
-      // Full reload so every page drops Demo caches and reloads Live (or vice versa).
       window.location.reload();
     } catch (err) {
       const message =
@@ -130,7 +249,7 @@ export function useSessionProfile(): SessionProfile {
           : err instanceof Error
             ? err.message
             : t('api.network');
-      setProfile((current) => ({
+      setProfileState((current) => ({
         ...current,
         switching: false,
         error: message,
@@ -144,7 +263,7 @@ export function useSessionProfile(): SessionProfile {
   }, [switchAccount]);
 
   return {
-    ...profile,
+    ...profileState,
     refresh,
     switchAccount,
     toggleAccount,
