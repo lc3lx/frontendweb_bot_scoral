@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '@features/Auth';
 import { emailRule } from '@features/Auth/validation';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
-import { invalidateBroker } from '@shared/market/useBroker';
+import { invalidateBroker, normalizeBroker } from '@shared/market/useBroker';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { t } from '@shared/i18n';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
@@ -24,9 +24,13 @@ export function useLoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // Which venue the credentials belong to. Binolla by default: every existing account is
-  // a Binolla account, so the choice must never change what a returning user gets.
-  const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
+  const [broker, setBroker] = useState<BrokerId>(() => {
+    try {
+      const stored = localStorage.getItem('scar-alpha-broker');
+      if (stored) return normalizeBroker(stored);
+    } catch {}
+    return DEFAULT_BROKER;
+  });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   // Set when the broker interrupts with a human check: the account is signed in, but the

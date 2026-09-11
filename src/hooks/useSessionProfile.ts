@@ -166,7 +166,11 @@ export function useSessionProfile(): SessionProfile {
       const name =
         me?.fullName?.trim() || me?.username?.trim() || me?.email?.trim() || activeProfileData.name || t('common.trader');
       const email = me?.email?.trim() || activeProfileData.email || '';
-      const accountType = normalizeAccountType(balance?.accountType ?? me?.binolla?.accountType ?? activeProfileData.accountType);
+      const accountType = normalizeAccountType(
+        balance?.connected
+          ? (balance?.accountType ?? me?.binolla?.accountType ?? activeProfileData.accountType)
+          : (me?.binolla?.accountType ?? activeProfileData.accountType)
+      );
 
       const updates: Partial<CachedProfileData> = {
         name,

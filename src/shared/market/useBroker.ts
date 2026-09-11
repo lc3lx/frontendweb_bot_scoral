@@ -42,7 +42,13 @@ export function invalidateBroker(): void {
 }
 
 export function useBroker(): BrokerId {
-  const [broker, setBroker] = useState<BrokerId>(DEFAULT_BROKER);
+  const [broker, setBroker] = useState<BrokerId>(() => {
+    try {
+      const stored = localStorage.getItem('scar-alpha-broker');
+      if (stored) return normalizeBroker(stored);
+    } catch {}
+    return DEFAULT_BROKER;
+  });
 
   useEffect(() => {
     // Public pages mount the provider too. Asking for a broker without a session would
@@ -56,6 +62,9 @@ export function useBroker(): BrokerId {
         // The shared bundle translates through a plain function with no React context,
         // so it is told the name here rather than reading it from a provider.
         setBrokerName(brokerLabel(resolved));
+        try {
+          localStorage.setItem('scar-alpha-broker', resolved);
+        } catch {}
         if (active) setBroker(resolved);
       })
       // The default is what every account predating the broker choice uses, so a failed

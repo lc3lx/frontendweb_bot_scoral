@@ -27,6 +27,11 @@ export async function getAccountStatusCached(
     .status()
     .then((value) => {
       statusCache = { at: Date.now(), value };
+      if (value.broker) {
+        try {
+          localStorage.setItem('scar-alpha-broker', value.broker.toLowerCase());
+        } catch {}
+      }
       return value;
     })
     .finally(() => {

@@ -3,6 +3,7 @@ import {
   binollaApi,
   marketApi,
   strategiesApi,
+  type MarketAssetsResponse,
 } from '@shared/api';
 import { canBrowseMarket, canTrade, getAdminNotApprovedTradeMessage } from '@shared/access/webAccess';
 import { MARKET_FETCH_MS, timedSignal } from '@shared/api/timedSignal';
@@ -12,7 +13,7 @@ import { formatPairLabel, parseFxPair, pairTypeFromSymbol } from '@shared/market
 import { isTradablePairPayout } from '@shared/market/pairPayout';
 import { t } from '@shared/i18n';
 import { tradingMockData, type TradingCandle, type TradingMockData, type TradingPairOption } from './trading.mock';
-import { tradeService } from '@services/trades';
+import { tradeService, type TradePlatform } from '@services/trades';
 import type { TradeRecord } from '@services/trades';
 
 const PERIOD_SEC = 60;
@@ -49,6 +50,9 @@ let durationSeconds = 60;
 let liveCandleSeries: TradingCandle[] = [];
 let cachedTradingData: TradingMockData | null = null;
 let lastKnownBalance: string | null = null;
+let cachedAssets: MarketAssetsResponse | null = null;
+let cachedAssetsAt = 0;
+const ASSETS_CACHE_TTL = 60_000;
 
 function readStoredBalance(): string | null {
   try {
@@ -239,9 +243,14 @@ export const tradingService = {
       data.balance = lastKnownBalance ?? readStoredBalance() ?? (balance ? `$${balance.currentBalance.toFixed(2)}` : '—');
 
       const browse = canBrowseMarket(status?.botAccess);
-      const assets = browse
-        ? await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null)
-        : null;
+      let assets = cachedAssets;
+      if (browse && (!assets || Date.now() - cachedAssetsAt > ASSETS_CACHE_TTL)) {
+        assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
+        if (assets?.assets?.length) {
+          cachedAssets = assets;
+          cachedAssetsAt = Date.now();
+        }
+      }
       const liveAssets = assets?.assets ?? [];
       let asset = selectedAsset ?? readStoredAsset();
       if (liveAssets.length > 0) {
@@ -363,12 +372,9 @@ export const tradingService = {
         403,
       );
     }
-    const asset = selectedAsset ?? readStoredAsset();
-    if (!asset) {
-      const broker = localStorage.getItem('scar-alpha-broker') === 'quotex' ? 'Quotex' : 'Binolla';
-      throw new ApiClientError('MARKET_UNAVAILABLE', `No ${broker} asset is available for trading yet.`, 503);
-    }
-    const activeBroker = localStorage.getItem('scar-alpha-broker') === 'quotex' ? 'quotex' : 'binolla';
+    const asset = selectedAsset ?? readStoredAsset() ?? 'EURUSD_otc';
+    const broker = (localStorage.getItem('scar-alpha-broker') || '').toLowerCase().includes('quotex') ? 'Quotex' : 'Binolla';
+    const activeBroker: TradePlatform = broker.toLowerCase() === 'quotex' ? 'quotex' : 'binolla';
     return tradeService.placeTrade({
       direction,
       pair: asset,
@@ -415,7 +421,14 @@ export const tradingService = {
   },
 
   async listPairs(): Promise<TradingPairOption[]> {
-    const assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
+    let assets = cachedAssets;
+    if (!assets || Date.now() - cachedAssetsAt > ASSETS_CACHE_TTL) {
+      assets = await marketApi.assets(timedSignal(MARKET_FETCH_MS)).catch(() => null);
+      if (assets?.assets?.length) {
+        cachedAssets = assets;
+        cachedAssetsAt = Date.now();
+      }
+    }
     if (!assets?.assets?.length) return [];
 
     const fxAssets = filterFxCurrencyAssets(assets.assets);

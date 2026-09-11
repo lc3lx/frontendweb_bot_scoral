@@ -49,8 +49,6 @@ function mapMessage(code: string, fallback: string): string {
   if (text) {
     if (broker === 'Quotex' && /binolla/i.test(text) && !/quotex/i.test(text)) {
       text = text.replace(/binolla/gi, 'Quotex');
-    } else if (broker === 'Binolla' && /quotex/i.test(text) && !/binolla/i.test(text)) {
-      text = text.replace(/quotex/gi, 'Binolla');
     }
     if (/quotex|binolla/i.test(text)) {
       return text;

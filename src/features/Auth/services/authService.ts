@@ -53,6 +53,9 @@ export async function loginWithBinolla(credentials: LoginCredentials): Promise<B
       // code (if any was captured from ?ref=) so it isn't lost.
       referralCode: getStoredReferralCode(),
     });
+    try {
+      localStorage.setItem('scar-alpha-broker', (credentials.broker || 'binolla').toLowerCase());
+    } catch {}
     // A human check means the app account is signed in but the broker is not linked yet.
     // The token is stored either way: the guided login needs it to authorise its calls.
     return {
@@ -76,6 +79,9 @@ export async function signupWithBinolla(credentials: LoginCredentials): Promise<
       // Quotex got a Binolla account, and every screen afterwards followed that.
       broker: credentials.broker,
     });
+    try {
+      localStorage.setItem('scar-alpha-broker', (credentials.broker || 'binolla').toLowerCase());
+    } catch {}
     return storeBinollaSession(result);
   } catch (error) {
     throw toAuthError(error);
