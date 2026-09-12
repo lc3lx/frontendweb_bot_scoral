@@ -17,6 +17,8 @@ export type BinollaAuthSession = AuthSession & {
   requiresGuidedLogin?: boolean;
   access: string;
   connected: boolean;
+  balance?: number | null;
+  accountType?: string;
 };
 
 export type LoginCredentials = {

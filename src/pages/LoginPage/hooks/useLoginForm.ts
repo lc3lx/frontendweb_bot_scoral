@@ -7,6 +7,7 @@ import { invalidateBroker, normalizeBroker } from '@shared/market/useBroker';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
 import { t } from '@shared/i18n';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
+import { tradingService } from '@pages/TradingPage/data/tradingService';
 
 const MIN_BINOLLA_PASSWORD = 4;
 
@@ -69,6 +70,14 @@ export function useLoginForm() {
         // The venue is what a login can change, and it is read from a 30-second cache.
         // Left stale, a user who just chose Quotex lands on a page still naming Binolla.
         invalidateBroker();
+
+        if (result.balance != null && result.balance > 0) {
+          const formatted = `$${result.balance.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+          tradingService.setCachedBalance(formatted);
+        }
 
         if (result.requiresGuidedLogin) {
           // Hold the password only for as long as the challenge takes — the guided login

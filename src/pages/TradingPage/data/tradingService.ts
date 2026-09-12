@@ -56,7 +56,16 @@ const ASSETS_CACHE_TTL = 60_000;
 
 function readStoredBalance(): string | null {
   try {
-    return localStorage.getItem('scar-alpha-last-balance');
+    const raw = localStorage.getItem('scar-alpha-last-balance');
+    if (raw && raw.trim() && raw !== '—') return raw.trim();
+    const userProfile = localStorage.getItem('scar-alpha-user-profile');
+    if (userProfile) {
+      const p = JSON.parse(userProfile);
+      if (p?.balance && p.balance !== '—') return p.balance;
+      if (p?.realBalance && p.realBalance !== '—') return p.realBalance;
+      if (p?.demoBalance && p.demoBalance !== '—') return p.demoBalance;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -225,7 +234,7 @@ export const tradingService = {
     // stand-in values that could be mistaken for live figures. Chart candles are
     // replaced wholesale further down when real ones arrive.
     const data = structuredClone(tradingMockData);
-    data.balance = '—';
+    data.balance = lastKnownBalance ?? readStoredBalance() ?? '—';
 
     try {
       const [status, balance] = await Promise.all([
@@ -239,8 +248,15 @@ export const tradingService = {
           maximumFractionDigits: 2,
         })}`;
         storeBalance(formatted);
+        data.balance = formatted;
+      } else {
+        data.balance =
+          lastKnownBalance ??
+          readStoredBalance() ??
+          (balance && balance.currentBalance != null && balance.currentBalance > 0
+            ? `$${balance.currentBalance.toFixed(2)}`
+            : (data.balance !== '—' ? data.balance : '—'));
       }
-      data.balance = lastKnownBalance ?? readStoredBalance() ?? (balance ? `$${balance.currentBalance.toFixed(2)}` : '—');
 
       const browse = canBrowseMarket(status?.botAccess);
       let assets = cachedAssets;

@@ -45,14 +45,21 @@ type CachedProfileData = {
 
 const PROFILE_STORAGE_KEY = 'scar-alpha-user-profile';
 const BALANCE_STORAGE_KEY = 'scar-alpha-last-balance';
+const REAL_BALANCE_STORAGE_KEY = 'scar-alpha-real-balance';
+const DEMO_BALANCE_STORAGE_KEY = 'scar-alpha-demo-balance';
 
 function readStoredProfile(): CachedProfileData {
   let bal = '—';
+  let realBal = '—';
+  let demoBal = '—';
+
   try {
     const rawBal = localStorage.getItem(BALANCE_STORAGE_KEY);
-    if (rawBal && rawBal.trim() && rawBal !== '—') {
-      bal = rawBal.trim();
-    }
+    if (rawBal && rawBal.trim() && rawBal !== '—') bal = rawBal.trim();
+    const rawReal = localStorage.getItem(REAL_BALANCE_STORAGE_KEY);
+    if (rawReal && rawReal.trim() && rawReal !== '—') realBal = rawReal.trim();
+    const rawDemo = localStorage.getItem(DEMO_BALANCE_STORAGE_KEY);
+    if (rawDemo && rawDemo.trim() && rawDemo !== '—') demoBal = rawDemo.trim();
   } catch {
     /* ignore */
   }
@@ -62,13 +69,23 @@ function readStoredProfile(): CachedProfileData {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') {
+        const storedAccountType: AccountMode = parsed.accountType === 'Demo' ? 'Demo' : 'Real';
+        const finalReal = parsed.realBalance && parsed.realBalance !== '—' ? parsed.realBalance : realBal;
+        const finalDemo = parsed.demoBalance && parsed.demoBalance !== '—' ? parsed.demoBalance : demoBal;
+        const finalBal =
+          parsed.balance && parsed.balance !== '—'
+            ? parsed.balance
+            : storedAccountType === 'Demo'
+              ? (finalDemo !== '—' ? finalDemo : bal)
+              : (finalReal !== '—' ? finalReal : bal);
+
         return {
           name: parsed.name || '',
           email: parsed.email || '',
-          balance: parsed.balance && parsed.balance !== '—' ? parsed.balance : bal,
-          demoBalance: parsed.demoBalance || '—',
-          realBalance: parsed.realBalance || '—',
-          accountType: parsed.accountType === 'Demo' ? 'Demo' : 'Real',
+          balance: finalBal,
+          demoBalance: finalDemo,
+          realBalance: finalReal,
+          accountType: storedAccountType,
         };
       }
     }
@@ -80,8 +97,8 @@ function readStoredProfile(): CachedProfileData {
     name: '',
     email: '',
     balance: bal,
-    demoBalance: '—',
-    realBalance: '—',
+    demoBalance: demoBal,
+    realBalance: realBal,
     accountType: 'Real',
   };
 }
@@ -116,6 +133,12 @@ function saveActiveProfile(partial: Partial<CachedProfileData>) {
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(activeProfileData));
     if (activeProfileData.balance && activeProfileData.balance !== '—') {
       localStorage.setItem(BALANCE_STORAGE_KEY, activeProfileData.balance);
+    }
+    if (activeProfileData.realBalance && activeProfileData.realBalance !== '—') {
+      localStorage.setItem(REAL_BALANCE_STORAGE_KEY, activeProfileData.realBalance);
+    }
+    if (activeProfileData.demoBalance && activeProfileData.demoBalance !== '—') {
+      localStorage.setItem(DEMO_BALANCE_STORAGE_KEY, activeProfileData.demoBalance);
     }
   } catch {
     /* ignore */
@@ -191,6 +214,27 @@ export function useSessionProfile(): SessionProfile {
         }
       }
 
+      if ((!updates.balance || updates.balance === '—') && me?.binolla?.balance != null && me.binolla.balance > 0) {
+        updates.balance = formatBalance(me.binolla.balance);
+      }
+
+      if (!updates.balance || updates.balance === '—') {
+        const targetType = updates.accountType ?? activeProfileData.accountType;
+        if (targetType === 'Demo') {
+          const d = updates.demoBalance ?? activeProfileData.demoBalance;
+          if (d && d !== '—') updates.balance = d;
+        } else {
+          const r = updates.realBalance ?? activeProfileData.realBalance;
+          if (r && r !== '—') updates.balance = r;
+        }
+      }
+
+      if (!updates.balance || updates.balance === '—') {
+        if (activeProfileData.balance && activeProfileData.balance !== '—') {
+          updates.balance = activeProfileData.balance;
+        }
+      }
+
       saveActiveProfile(updates);
 
       setProfileState((current) => ({
@@ -228,11 +272,21 @@ export function useSessionProfile(): SessionProfile {
       if (balance?.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
         updates.balance = formatBalance(balance.currentBalance);
       }
-      if (balance?.demoBalance != null) {
+      if (balance?.demoBalance != null && balance.demoBalance > 0) {
         updates.demoBalance = formatBalance(balance.demoBalance);
       }
-      if (balance?.realBalance != null) {
+      if (balance?.realBalance != null && balance.realBalance > 0) {
         updates.realBalance = formatBalance(balance.realBalance);
+      }
+
+      if (!updates.balance || updates.balance === '—') {
+        const nextBal =
+          next === 'Demo'
+            ? (updates.demoBalance && updates.demoBalance !== '—' ? updates.demoBalance : activeProfileData.demoBalance)
+            : (updates.realBalance && updates.realBalance !== '—' ? updates.realBalance : activeProfileData.realBalance);
+        if (nextBal && nextBal !== '—') {
+          updates.balance = nextBal;
+        }
       }
 
       saveActiveProfile(updates);

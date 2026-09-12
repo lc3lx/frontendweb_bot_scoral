@@ -15,7 +15,12 @@ export function BalanceCard({ data }: BalanceCardProps) {
   const profile = useSessionProfile();
   const accountLabel =
     profile.accountType === 'Real' ? t.dashboard.user.live : t.dashboard.user.demo;
-
+  const displayValue =
+    data.value && data.value !== '—'
+      ? data.value
+      : profile.balance && profile.balance !== '—'
+        ? profile.balance
+        : '—';
 
   return (
     <HomeTilt>
@@ -31,7 +36,7 @@ export function BalanceCard({ data }: BalanceCardProps) {
         </div>
 
         <div className={styles.valueRow}>
-          <p className={styles.value}>{data.value}</p>
+          <p className={styles.value}>{displayValue}</p>
           <span className={styles.growth}>
             <img
               className={styles.growthIcon}

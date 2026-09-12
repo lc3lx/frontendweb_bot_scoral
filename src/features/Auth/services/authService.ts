@@ -27,13 +27,31 @@ function storeBinollaSession(result: {
   userId: string;
   access: string;
   connected: boolean;
+  balance?: number | null;
+  accountType?: string;
 }): BinollaAuthSession {
   tokenStore.setSession(result.accessToken, result.userId);
+  if (result.balance != null && result.balance > 0) {
+    const formatted = `$${result.balance.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+    try {
+      localStorage.setItem('scar-alpha-last-balance', formatted);
+      if (result.accountType?.toLowerCase() === 'demo') {
+        localStorage.setItem('scar-alpha-demo-balance', formatted);
+      } else {
+        localStorage.setItem('scar-alpha-real-balance', formatted);
+      }
+    } catch {}
+  }
   return {
     accessToken: result.accessToken,
     userId: result.userId,
     access: result.access,
     connected: result.connected,
+    balance: result.balance,
+    accountType: result.accountType,
   };
 }
 

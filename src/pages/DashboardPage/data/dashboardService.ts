@@ -120,7 +120,11 @@ export const dashboardService = {
       ]);
 
       if (balance && (balance.connected || balance.currentBalance > 0)) {
-        data.balance.value = formatMoneyPlain(balance.currentBalance);
+        const formatted = formatMoneyPlain(balance.currentBalance);
+        data.balance.value = formatted;
+        try {
+          localStorage.setItem('scar-alpha-last-balance', formatted);
+        } catch {}
       } else {
         const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('scar-alpha-last-balance') : null;
         data.balance.value = stored && stored !== '—' ? stored : '—';

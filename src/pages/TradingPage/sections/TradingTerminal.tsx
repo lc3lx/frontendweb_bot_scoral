@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
+import { useSessionProfile } from '@hooks/useSessionProfile';
 import { useBroker } from '@shared/market/useBroker';
 import { currencyFlagUrl, parseFxPair } from '@shared/market/pairDisplay';
 
@@ -77,6 +78,14 @@ export function TradingTerminal({
     [pairChoices, data.assetSymbol],
   );
 
+  const profile = useSessionProfile();
+  const displayBalance =
+    data.balance && data.balance !== '—'
+      ? data.balance
+      : profile.balance && profile.balance !== '—'
+        ? profile.balance
+        : '—';
+
   return (
     <section className={styles.terminal} aria-labelledby="trading-terminal-title">
       <div className={styles.topBar}>
@@ -100,7 +109,7 @@ export function TradingTerminal({
         </div>
         <div className={styles.balanceBlock}>
           <p className={styles.balanceLabel}>{t.trading.terminal.balance}</p>
-          <p className={`${styles.balanceValue} ${styles.ltrValue}`}>{data.balance}</p>
+          <p className={`${styles.balanceValue} ${styles.ltrValue}`}>{displayBalance}</p>
         </div>
       </div>
 
