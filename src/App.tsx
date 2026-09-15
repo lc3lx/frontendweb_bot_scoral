@@ -46,11 +46,13 @@ function AppChrome() {
 }
 
 export default function App() {
+  const basename = window.location.pathname.startsWith('/app') ? '/app' : undefined;
   return (
     <I18nProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <AppChrome />
       </BrowserRouter>
     </I18nProvider>
   );
 }
+
