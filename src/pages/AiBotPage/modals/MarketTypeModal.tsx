@@ -12,10 +12,16 @@ type MarketTypeModalProps = {
   onSelect: (id: MarketTypeId) => void;
 };
 
+const ALL_MARKETS_ID: MarketTypeId = 'all-markets';
+
 export function MarketTypeModal({ isOpen, selectedId, onClose, onSelect }: MarketTypeModalProps) {
   // Broker names in these labels are resolved by the i18n layer, so the OTC option reads
   // as the user's own venue without this screen knowing which one that is.
   const { t } = useI18n();
+
+  const allMarketsOption = MARKET_TYPE_OPTIONS.find((option) => option.id === ALL_MARKETS_ID);
+  const scopedOptions = MARKET_TYPE_OPTIONS.filter((option) => option.id !== ALL_MARKETS_ID);
+  const allSelected = selectedId === ALL_MARKETS_ID;
 
   return (
     <AppModal
@@ -26,8 +32,24 @@ export function MarketTypeModal({ isOpen, selectedId, onClose, onSelect }: Marke
       title={t.aiBot.modals.marketType.title}
       subtitle={t.aiBot.modals.marketType.subtitle}
     >
+      {allMarketsOption ? (
+        <button
+          type="button"
+          className={`${styles.selectAllButton} ${styles.marketSelectAll}${allSelected ? ` ${styles.selectAllButtonSelected}` : ''}`}
+          onClick={() => {
+            onSelect(ALL_MARKETS_ID);
+            onClose();
+          }}
+          aria-pressed={allSelected}
+        >
+          {t.aiBot.modals.marketType[allMarketsOption.titleKey]}
+          {allSelected ? ' ✓' : ''}
+          <img className={styles.selectAllIcon} src={aiBotAssets.iconSelectAll} alt="" aria-hidden="true" />
+        </button>
+      ) : null}
+
       <div className={styles.grid2}>
-        {MARKET_TYPE_OPTIONS.map((option) => {
+        {scopedOptions.map((option) => {
           const selected = option.id === selectedId;
           return (
             <button

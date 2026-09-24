@@ -116,7 +116,7 @@ export function TradingPairModal({
 
         <button
           type="button"
-          className={styles.selectAllButton}
+          className={`${styles.selectAllButton}${isAllMode ? ` ${styles.selectAllButtonSelected}` : ''}`}
           onClick={() => onSelectAll(['*'])}
           aria-pressed={isAllMode}
         >

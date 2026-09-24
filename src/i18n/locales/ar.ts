@@ -888,13 +888,13 @@ export const ar: Messages = {
 
       riskLevels: {
 
-        low: 'منخفض',
+        low: 'المخاطرة الثابتة',
 
-        medium: 'متوسط',
+        medium: 'المخاطرة المتدرجة',
 
-        high: 'مرتفع',
+        high: 'المخاطرة المضاعفة',
 
-        highPlus: 'مرتفع+',
+        highPlus: 'المخاطرة القصوى',
 
       },
 

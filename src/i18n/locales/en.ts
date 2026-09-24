@@ -891,13 +891,13 @@ export const en: Messages = {
 
       riskLevels: {
 
-        low: 'Low',
+        low: 'Fixed Risk',
 
-        medium: 'Medium',
+        medium: 'Progressive Risk',
 
-        high: 'High',
+        high: 'Double Risk',
 
-        highPlus: 'High+',
+        highPlus: 'Maximum Risk',
 
       },
 

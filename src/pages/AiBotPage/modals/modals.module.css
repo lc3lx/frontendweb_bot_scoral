@@ -272,6 +272,16 @@
   cursor: pointer;
 }
 
+.selectAllButtonSelected {
+  border-color: rgba(221, 9, 18, 0.4);
+  background: rgba(221, 9, 18, 0.06);
+}
+
+.marketSelectAll {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
 .selectAllIcon {
   width: 16px;
   height: 16px;
