@@ -947,9 +947,11 @@ export const en: Messages = {
 
         ema: 'EMA + RSI',
 
-        alt5: 'Alternating Candles',
+        alt5: 'Candle Tracking Strategy',
 
         ai: 'AI',
+
+        timeAnalysis: 'Time-Based Trading Strategy',
 
         rsiDesc: 'Momentum reversals from overbought and oversold zones.',
 
@@ -963,7 +965,7 @@ export const en: Messages = {
 
         emaDesc: 'EMA 9/21 trend filter with RSI confirmation for scalps.',
 
-        alt5Desc: 'Alternating candle pattern entries on the 5-minute chart.',
+        alt5Desc: 'Tracks candle patterns and enters when the signal completes.',
 
         aiDesc: 'Neural strategy layer — launching soon.',
 

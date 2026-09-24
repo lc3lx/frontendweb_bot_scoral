@@ -34,7 +34,7 @@ function strategyCopy(
       ema: grid.emaDesc,
       alt5: grid.alt5Desc,
       ai: grid.aiDesc,
-      time_analysis: (grid as any).timeAnalysisDesc ?? 'تنفيذ تلقائي لصفقات مجدولة زمنياً من لوحة التحكم.',
+      time_analysis: grid.timeAnalysisDesc,
     };
     return map[key];
   }
@@ -47,9 +47,29 @@ function strategyCopy(
     ema: grid.emaBestFor,
     alt5: grid.alt5BestFor,
     ai: grid.aiBestFor,
-    time_analysis: (grid as any).timeAnalysisBestFor ?? 'الأفضل لصفقات وتوصيات التحليل الزمني',
+    time_analysis: grid.timeAnalysisBestFor,
   };
   return map[key];
+}
+
+function strategyTitle(
+  t: ReturnType<typeof useI18n>['t'],
+  id: string,
+  fallback: string,
+): string {
+  const grid = t.aiBot.modals.strategyGrid;
+  const map: Record<string, string> = {
+    rsi: grid.rsi,
+    bollinger: grid.bollinger,
+    macd: grid.macd,
+    stochastic: grid.stochastic,
+    smart: grid.smart,
+    ema: grid.ema,
+    alt5: grid.alt5,
+    ai: grid.ai,
+    time_analysis: grid.timeAnalysis,
+  };
+  return map[id.trim().toLowerCase()] ?? fallback;
 }
 
 export function StrategyGridModal({
@@ -134,7 +154,7 @@ export function StrategyGridModal({
                   aria-hidden="true"
                 />
                 <div className={styles.strategyCardHead}>
-                  <p className={styles.strategyCardTitle}>{option.name}</p>
+                  <p className={styles.strategyCardTitle}>{strategyTitle(t, option.id, option.name)}</p>
                   <div className={styles.strategyCardBadges}>
                     {comingSoon ? (
                       <span className={styles.comingSoonBadge}>

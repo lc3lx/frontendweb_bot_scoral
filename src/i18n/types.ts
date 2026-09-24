@@ -987,6 +987,8 @@ export type Messages = {
 
         ai: string;
 
+        timeAnalysis: string;
+
         rsiDesc: string;
 
         bollingerDesc: string;

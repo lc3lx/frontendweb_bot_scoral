@@ -944,9 +944,11 @@ export const ar: Messages = {
 
         ema: 'EMA + RSI',
 
-        alt5: 'Alternating Candles',
+        alt5: 'استراتيجية تتبّع الشموع',
 
         ai: 'AI',
+
+        timeAnalysis: 'استراتيجية الصفقات الزمنية',
 
         rsiDesc: 'انعكاسات زخم من مناطق التشبع.',
 
@@ -960,7 +962,7 @@ export const ar: Messages = {
 
         emaDesc: 'فلتر اتجاه EMA 9/21 مع تأكيد RSI للسكالب.',
 
-        alt5Desc: 'دخول بنمط الشموع المتناوبة على فريم 5 دقائق.',
+        alt5Desc: 'تتبّع نمط الشموع والدخول عند اكتمال الإشارة.',
 
         aiDesc: 'طبقة استراتيجية عصبية — قريباً.',
 

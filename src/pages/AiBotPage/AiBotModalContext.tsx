@@ -207,6 +207,18 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     const marketOption = MARKET_TYPE_OPTIONS.find((item) => item.id === marketTypeId);
     const strategyOption = strategies.find((item) => item.id === strategyGridId);
     const brandedOption = BRANDED_STRATEGY_OPTIONS.find((item) => item.id === brandedStrategyId);
+    const grid = t.aiBot.modals.strategyGrid;
+    const strategyNames: Record<string, string> = {
+      rsi: grid.rsi,
+      bollinger: grid.bollinger,
+      macd: grid.macd,
+      stochastic: grid.stochastic,
+      smart: grid.smart,
+      ema: grid.ema,
+      alt5: grid.alt5,
+      ai: grid.ai,
+      time_analysis: grid.timeAnalysis,
+    };
     return {
       marketTypeId,
       tradingPairIds,
@@ -214,7 +226,7 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
       brandedStrategyId,
       marketType: marketOption ? t.aiBot.modals.marketType[marketOption.titleKey] : marketTypeId,
       tradingPair: formatSelectedPairsLabel(tradingPairIds),
-      strategy: strategyOption?.name ?? strategyGridId,
+      strategy: strategyNames[strategyGridId] ?? strategyOption?.name ?? strategyGridId,
       indicator: brandedOption
         ? t.aiBot.modals.brandedStrategy[brandedOption.titleKey]
         : brandedStrategyId,

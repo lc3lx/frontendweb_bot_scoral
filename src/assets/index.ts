@@ -76,6 +76,8 @@ import previewAlphaMomentumUrl from './ai-bot/preview-alpha-momentum.png';
 import previewScarPrecisionUrl from './ai-bot/preview-scar-precision.png';
 import previewRedSignalProUrl from './ai-bot/preview-red-signal-pro.png';
 import previewTrendBreakerUrl from './ai-bot/preview-trend-breaker.png';
+import previewTimeAnalysisUrl from './ai-bot/preview-time-analysis.png';
+import previewCandleTrackingUrl from './ai-bot/preview-candle-tracking.png';
 import detailAlphaMomentumUrl from './ai-bot/detail-alpha-momentum.png';
 import detailScarPrecisionUrl from './ai-bot/detail-scar-precision.png';
 import detailRedSignalProUrl from './ai-bot/detail-red-signal-pro.png';
@@ -270,6 +272,10 @@ export const aiBotAssets = {
   previewRedSignalPro: previewRedSignalProUrl,
 
   previewTrendBreaker: previewTrendBreakerUrl,
+
+  previewTimeAnalysis: previewTimeAnalysisUrl,
+
+  previewCandleTracking: previewCandleTrackingUrl,
 
   detailAlphaMomentum: detailAlphaMomentumUrl,
 

@@ -162,7 +162,7 @@ export const STRATEGY_PRESENTATION: Record<string, StrategyPresentation> = {
     bestForKey: 'ema',
   },
   alt5: {
-    preview: aiBotAssets.previewBollinger,
+    preview: aiBotAssets.previewCandleTracking,
     risk: 'medium',
     descriptionKey: 'alt5',
     bestForKey: 'alt5',
@@ -180,7 +180,7 @@ export const STRATEGY_PRESENTATION: Record<string, StrategyPresentation> = {
     bestForKey: 'ai',
   },
   time_analysis: {
-    preview: aiBotAssets.previewRsi,
+    preview: aiBotAssets.previewTimeAnalysis,
     risk: 'low',
     descriptionKey: 'time_analysis',
     bestForKey: 'time_analysis',
