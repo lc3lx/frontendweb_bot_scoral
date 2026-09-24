@@ -15,6 +15,10 @@ type StrategyDetailModalProps = {
   onConfirm: (id: BrandedStrategyId) => void;
 };
 
+function isRiskFormulaLine(line: string) {
+  return line.includes('→') || line.includes('×') || line.includes('=');
+}
+
 export function StrategyDetailModal({
   isOpen,
   strategyId,
@@ -28,6 +32,8 @@ export function StrategyDetailModal({
   if (!strategyId) return null;
 
   const content = STRATEGY_DETAIL_CONTENT[strategyId];
+  const riskLines = t.aiBot.modals.strategyDetail.riskHow[content.riskHowKey];
+  const [intro, ...exampleLines] = riskLines;
 
   return (
     <AppModal
@@ -61,7 +67,7 @@ export function StrategyDetailModal({
           />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+        <div className={styles.detailCopy}>
           <RiskBadge risk={content.risk} label={t.aiBot.modals.riskLevels[content.risk]} />
 
           <div className={styles.detailStats}>
@@ -87,33 +93,24 @@ export function StrategyDetailModal({
             </div>
           </div>
 
-          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskHowTitle}</p>
-          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail.riskHow[content.riskHowKey][0]}</p>
-          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskDescriptionLabel}</p>
-          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail.riskExampleLabel}</p>
-          {t.aiBot.modals.strategyDetail.riskHow[content.riskHowKey].slice(1).map((line) => (
-            <p
-              key={line}
-              className={`${styles.sectionText}${line.includes('→') || line.includes('×') || line.includes('=') ? ` ${styles.riskChain}` : ''}`}
-            >
-              {line}
-            </p>
-          ))}
+          <div className={styles.riskHowBlock}>
+            <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskHowTitle}</p>
+            <p className={styles.sectionText}>{intro}</p>
 
-          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.aboutTitle}</p>
-          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail[content.aboutKey]}</p>
+            <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskDescriptionLabel}</p>
+            <p className={styles.sectionTextEmphasis}>{t.aiBot.modals.strategyDetail.riskExampleLabel}</p>
 
-          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.howTitle}</p>
-          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail[content.howItWorksKey]}</p>
-
-          <ul className={styles.bulletList}>
-            {content.bullets.map((bulletKey) => (
-              <li key={bulletKey} className={styles.bulletItem}>
-                <img className={styles.bulletIcon} src={aiBotAssets.iconBullet} alt="" aria-hidden="true" />
-                {t.aiBot.modals.strategyDetail[bulletKey]}
-              </li>
-            ))}
-          </ul>
+            <div className={styles.riskExampleBox}>
+              {exampleLines.map((line) => (
+                <p
+                  key={line}
+                  className={`${styles.sectionText}${isRiskFormulaLine(line) ? ` ${styles.riskChain}` : ''}`}
+                >
+                  {line}
+                </p>
+              ))}
+            </div>
+          </div>
 
           <div className={styles.detailActions}>
             <button type="button" className={styles.ghostAction} onClick={onBack}>
