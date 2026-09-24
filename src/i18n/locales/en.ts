@@ -1035,13 +1035,13 @@ export const en: Messages = {
 
         trendBreaker: 'Trend Breaker',
 
-        alphaMomentumDesc: 'Trend-following entries with balanced risk.',
+        alphaMomentumDesc: 'Gradual increase in the next trade after a loss ×1.5',
 
-        scarPrecisionDesc: 'High-accuracy mean reversion entries.',
+        scarPrecisionDesc: 'Double the next trade amount after a loss ×2',
 
-        redSignalProDesc: 'Conservative scalping with tight filters.',
+        redSignalProDesc: 'Fixed trade amount with no change after a loss',
 
-        trendBreakerDesc: 'Aggressive breakout strategy for volatile pairs.',
+        trendBreakerDesc: 'Significant increase in the next trade amount after a loss ×2.5',
 
         redSignalProRisk: 'Fixed trade amount with no change after a loss',
 

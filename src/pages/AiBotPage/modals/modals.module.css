@@ -486,17 +486,18 @@
 }
 
 .brandedDescription {
-  margin: 2px 0 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: rgba(255, 255, 255, 0.72);
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.78);
+  min-height: 36px;
 }
 
 .brandedRiskRow {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
 }
 

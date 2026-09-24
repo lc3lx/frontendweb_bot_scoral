@@ -1032,13 +1032,13 @@ export const ar: Messages = {
 
         trendBreaker: 'Trend Breaker',
 
-        alphaMomentumDesc: 'دخول اتجاهي مع مخاطر متوازنة.',
+        alphaMomentumDesc: 'زيادة تدريجية في الصفقة التالية بعد الخسارة ×1.5',
 
-        scarPrecisionDesc: 'انعكاسات عالية الدقة.',
+        scarPrecisionDesc: 'مضاعفة حجم الصفقة التالية بعد الخسارة ×2',
 
-        redSignalProDesc: 'سكالب محافظ بفلاتر دقيقة.',
+        redSignalProDesc: 'حجم الصفقة ثابت دون تغيير بعد الخسارة',
 
-        trendBreakerDesc: 'استراتيجية اختراق عدوانية.',
+        trendBreakerDesc: 'زيادة مرتفعة في حجم الصفقة التالية بعد الخسارة ×2.5',
 
         redSignalProRisk: 'حجم الصفقة ثابت دون تغيير بعد الخسارة',
 

@@ -75,9 +75,6 @@ export function TechnicalIndicatorModal({
                       risk={option.risk}
                       label={t.aiBot.modals.riskLevels[option.risk]}
                     />
-                    <p className={styles.brandedRiskNote}>
-                      {t.aiBot.modals.brandedStrategy[option.riskShortKey]}
-                    </p>
                   </div>
                 </span>
               </button>
