@@ -83,6 +83,9 @@ build_webapp() {
   info "Building scar-alpha-web (tsc + vite)..."
   npm run build
   [[ -d "$ROOT/dist" ]] || die "dist/ missing after build"
+  if [[ -f "$ROOT/serve.json" ]]; then
+    cp "$ROOT/serve.json" "$ROOT/dist/serve.json"
+  fi
   ok "Build done → $ROOT/dist"
 }
 
