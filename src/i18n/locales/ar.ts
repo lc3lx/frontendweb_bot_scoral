@@ -1042,7 +1042,7 @@ export const ar: Messages = {
 
         redSignalProRisk: 'حجم الصفقة ثابت دون تغيير بعد الخسارة',
 
-        alphaMomentumRisk: 'زيادة بنسبة 50% بعد الخسارة ×1.5',
+        alphaMomentumRisk: 'زيادة تدريجية في الصفقة التالية بعد الخسارة ×1.5',
 
         scarPrecisionRisk: 'مضاعفة حجم الصفقة التالية بعد الخسارة ×2',
 

@@ -1045,7 +1045,7 @@ export const en: Messages = {
 
         redSignalProRisk: 'Fixed trade amount with no change after a loss',
 
-        alphaMomentumRisk: 'Increase by 50% after a loss ×1.5',
+        alphaMomentumRisk: 'Gradual increase in the next trade after a loss ×1.5',
 
         scarPrecisionRisk: 'Double the next trade amount after a loss ×2',
 
