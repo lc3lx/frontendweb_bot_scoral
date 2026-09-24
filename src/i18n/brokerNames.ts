@@ -17,7 +17,7 @@ import { BROKER_LINKS } from '@constants/brokers';
  */
 
 export function brokerDisplayName(broker: BrokerId): string {
-  return BROKER_LINKS[broker]?.label ?? BROKER_LINKS.binolla.label;
+  return BROKER_LINKS[broker]?.label ?? BROKER_LINKS.quotex.label;
 }
 
 /**

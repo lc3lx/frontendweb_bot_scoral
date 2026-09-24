@@ -87,6 +87,19 @@ export function StrategyDetailModal({
             </div>
           </div>
 
+          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskHowTitle}</p>
+          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail.riskHow[content.riskHowKey][0]}</p>
+          <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.riskDescriptionLabel}</p>
+          <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail.riskExampleLabel}</p>
+          {t.aiBot.modals.strategyDetail.riskHow[content.riskHowKey].slice(1).map((line) => (
+            <p
+              key={line}
+              className={`${styles.sectionText}${line.includes('→') || line.includes('×') || line.includes('=') ? ` ${styles.riskChain}` : ''}`}
+            >
+              {line}
+            </p>
+          ))}
+
           <p className={styles.sectionLabel}>{t.aiBot.modals.strategyDetail.aboutTitle}</p>
           <p className={styles.sectionText}>{t.aiBot.modals.strategyDetail[content.aboutKey]}</p>
 

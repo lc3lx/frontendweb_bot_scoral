@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@features/Auth';
 import { emailRule } from '@features/Auth/validation';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
 import { invalidateBroker, normalizeBroker } from '@shared/market/useBroker';
 import { routeAfterWebAuth } from '@shared/access/webAccess';
-import { t } from '@shared/i18n';
+import { setBrokerName, t } from '@shared/i18n';
 import { DEFAULT_BROKER, type BrokerId } from '@shared/api/types';
 import { tradingService } from '@pages/TradingPage/data/tradingService';
 
@@ -25,13 +25,23 @@ export function useLoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [broker, setBroker] = useState<BrokerId>(() => {
+  const [broker, setBrokerState] = useState<BrokerId>(() => {
     try {
       const stored = localStorage.getItem('scar-alpha-broker');
-      if (stored) return normalizeBroker(stored);
+      if (stored && stored !== 'binolla') return normalizeBroker(stored);
     } catch {}
     return DEFAULT_BROKER;
   });
+
+  const setBroker = useCallback((nextBroker: BrokerId) => {
+    if (nextBroker === 'binolla') return;
+    setBrokerState(nextBroker);
+    setBrokerName(nextBroker);
+  }, []);
+
+  useEffect(() => {
+    setBrokerName(broker);
+  }, [broker]);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   // Set when the broker interrupts with a human check: the account is signed in, but the
@@ -103,8 +113,8 @@ export function useLoginForm() {
   );
 
   const isSubmitDisabled = useMemo(
-    () => status === 'loading' || status === 'success',
-    [status],
+    () => status === 'loading' || status === 'success' || broker === 'binolla',
+    [status, broker],
   );
 
   /** The user answered the challenge and the broker is linked. */

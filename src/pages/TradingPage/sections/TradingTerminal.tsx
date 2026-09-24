@@ -5,6 +5,7 @@ import { useI18n } from '@i18n';
 import { useSessionProfile } from '@hooks/useSessionProfile';
 import { useBroker } from '@shared/market/useBroker';
 import { currencyFlagUrl, parseFxPair } from '@shared/market/pairDisplay';
+import { getLocale } from '@shared/i18n';
 
 import type { TradingMockData, TradingPairOption } from '../data/trading.mock';
 import { CandlestickChart, type ChartEntryMarker } from './CandlestickChart';
@@ -52,7 +53,8 @@ export function TradingTerminal({
   const broker = useBroker();
   const [pairOpen, setPairOpen] = useState(false);
 
-  const brokerName = broker === 'quotex' ? 'Quotex' : (t.trading.terminal.binolla || 'Binolla');
+  const isAr = getLocale() === 'ar';
+  const brokerName = broker === 'quotex' ? (isAr ? 'كوتكس' : 'Quotex') : (t.trading.terminal.binolla || 'Binolla');
   const brokerIcon = broker === 'quotex' ? tradingAssets.iconQuotex : tradingAssets.iconBinolla;
 
   const pairChoices = useMemo(() => {
@@ -94,10 +96,9 @@ export function TradingTerminal({
             <img
               className={styles.binollaIcon}
               src={brokerIcon}
-              alt=""
-              width={16}
-              height={18}
-              aria-hidden="true"
+              alt={brokerName}
+              width={24}
+              height={24}
             />
           </div>
           <div>

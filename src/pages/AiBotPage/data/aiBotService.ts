@@ -20,6 +20,7 @@ import {
 } from '@shared/market/preferAsset';
 import {
   formatPairLabel,
+  formatSelectedPairsLabel,
   pairTypeFromSymbol,
   parseFxPair,
 } from '@shared/market/pairDisplay';
@@ -39,9 +40,9 @@ import {
   type StrategyGridOption,
 } from '../modals/aiBotModals.data';
 import type { BotSettingsState } from '../modals/BotSettingsModal';
-import type { StrategyDto } from '@shared/api/types';
+import type { StrategyDto, StrategySignalResponse } from '@shared/api/types';
 
-const RUNNABLE_STRATEGY_IDS = new Set(['rsi', 'ema', 'smart', 'alt5']);
+const RUNNABLE_STRATEGY_IDS = new Set(['rsi', 'ema', 'smart', 'alt5', 'time_analysis']);
 
 function resolveStrategyId(strategyId?: string | null): string {
   const id = strategyId?.trim().toLowerCase();
@@ -106,7 +107,133 @@ export type AiBotSignalSnapshot = {
   freshSeconds: number;
   market: string;
   marketLabel: string;
+  rsi: number | null;
+  live: boolean;
+  backtestLabel: string;
+  backtestReady: boolean;
+  skipReason: string;
+  candleTimeMs: number;
 };
+
+export type AiBotPairRsi = {
+  asset: string;
+  marketLabel: string;
+  rsi: number | null;
+  rsiLabel: string;
+  signal: string;
+  signalSide: 'up' | 'down' | 'none';
+  live: boolean;
+  backtestLabel: string;
+  backtestReady: boolean;
+  skipReason: string;
+  candleTimeMs: number;
+};
+
+const EMPTY_AUTOMATION = new Set([
+  'NOT_CONNECTED',
+  'INSUFFICIENT_HISTORY',
+  'PAYOUT_TOO_LOW',
+]);
+const BOARD_FETCH_MS = 8_000;
+
+function readRsi(rsi: { liveRsi?: number | null; rsi: number }): number | null {
+  const n = Number(rsi.liveRsi ?? rsi.rsi);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n;
+}
+
+function sampleCount(bt: { totalSignals?: number } | null | undefined): number {
+  const total = Number(bt?.totalSignals ?? 0);
+  return Number.isFinite(total) && total > 0 ? total : 0;
+}
+
+function pickBacktest(rsi: StrategySignalResponse) {
+  const shown = readRsi(rsi);
+  const closed = Number(rsi.rsi);
+  const pivot = shown != null ? shown : Number.isFinite(closed) ? closed : NaN;
+  const call = rsi.callBacktest;
+  const put = rsi.putBacktest;
+  const atCall = Number.isFinite(pivot) && pivot <= 25;
+  const atPut = Number.isFinite(pivot) && pivot >= 75;
+  const nearer = Number.isFinite(pivot) && pivot >= 50 ? put : call;
+  const preferred = atCall ? call : atPut ? put : nearer ?? rsi.backtest;
+  const withSamples = (bt: typeof call) => (sampleCount(bt) > 0 ? bt : null);
+  const bt =
+    withSamples(preferred) ??
+    withSamples(call) ??
+    withSamples(put) ??
+    preferred ??
+    call ??
+    put ??
+    rsi.backtest;
+  if (!bt) return null;
+  const total = sampleCount(bt);
+  const rate = Number(bt.successRate ?? 0);
+  if (!Number.isFinite(rate)) return null;
+  const atExtreme = Number.isFinite(pivot) && (pivot <= 25 || pivot >= 75);
+  return {
+    rate,
+    total,
+    passed: bt.passed === true && rate >= 75 && atExtreme && total > 0,
+  };
+}
+
+function formatBacktestLabel(
+  bits: { rate: number; passed: boolean } | null,
+): string {
+  if (!bits) return '—';
+  const rounded = Math.round(bits.rate);
+  if (!Number.isFinite(rounded)) return '—';
+  return `${rounded}%`;
+}
+
+function toSnapshot(
+  symbol: string,
+  rsi: StrategySignalResponse,
+): AiBotSignalSnapshot {
+  const value = readRsi(rsi);
+    const dead = Boolean(rsi.automationError && EMPTY_AUTOMATION.has(rsi.automationError));
+    const live = value != null && !dead;
+    const candleMs = Date.parse(rsi.candleTime);
+    const backtest = pickBacktest(rsi);
+    return {
+      signal: live ? formatSignal(rsi.signal) : t('common.none'),
+      signalSide: live ? signalSide(rsi.signal) : 'none',
+      strength: value != null ? value.toFixed(2) : '—',
+    updated:
+      live && Number.isFinite(candleMs)
+        ? new Date(candleMs).toLocaleTimeString('en-GB', { hour12: false })
+        : new Date().toLocaleTimeString('en-GB', { hour12: false }),
+    freshSeconds:
+      live && Number.isFinite(candleMs)
+        ? Math.max(0, Math.floor((Date.now() - candleMs) / 1000))
+        : 0,
+    market: rsi.asset || symbol,
+    marketLabel: formatPairLabel(rsi.asset || symbol),
+    rsi: live ? value : null,
+    live,
+    backtestLabel: formatBacktestLabel(backtest),
+    backtestReady: Boolean(backtest?.passed),
+    skipReason: rsi.entryBlockReason?.trim() || '',
+    candleTimeMs: Number.isFinite(candleMs) ? candleMs : Date.now(),
+  };
+}
+
+function toPairRow(snapshot: AiBotSignalSnapshot): AiBotPairRsi {
+  return {
+    asset: snapshot.market,
+    marketLabel: snapshot.marketLabel,
+    rsi: snapshot.rsi,
+    rsiLabel: snapshot.rsi != null ? snapshot.rsi.toFixed(2) : '—',
+    signal: snapshot.signal,
+    signalSide: snapshot.signalSide,
+    live: snapshot.live,
+    backtestLabel: snapshot.backtestLabel,
+    backtestReady: snapshot.backtestReady,
+    skipReason: snapshot.skipReason,
+    candleTimeMs: snapshot.candleTimeMs,
+  };
+}
 
 export const aiBotService = {
   async fetchData(preferredAsset?: string | null): Promise<AiBotMockData> {
@@ -156,7 +283,8 @@ export const aiBotService = {
       if (bot) {
         data.status.botState = mapBotState(bot.state);
         data.status.engineLabel = bot.state;
-        data.configuration.tradingPair = bot.asset || bot.assets?.join(', ') || '—';
+        const botPairs = bot.assets?.length ? bot.assets : bot.asset ? [bot.asset] : [];
+        data.configuration.tradingPair = formatSelectedPairsLabel(botPairs);
         data.configuration.strategy = strategyName;
         data.targets.profitTarget = `+$${bot.dailyProfitTarget}`;
         data.targets.lossLimit = `-$${bot.dailyLossLimit}`;
@@ -194,27 +322,48 @@ export const aiBotService = {
       if (!canBrowseMarket(status?.botAccess)) return null;
 
       const rsi = await strategiesApi
-        .rsiSignal(symbol, 60, timedSignal(MARKET_FETCH_MS))
+        .rsiSignal(symbol, 60, timedSignal(MARKET_FETCH_MS), {
+          expiryCandles: 5,
+          backtestCandles: 400,
+        })
         .catch(() => null);
       if (!rsi) return null;
 
-      const candleMs = Date.parse(rsi.candleTime);
-      return {
-        signal: formatSignal(rsi.signal),
-        signalSide: signalSide(rsi.signal),
-        strength: Number(rsi.liveRsi ?? rsi.rsi).toFixed(2),
-        updated: Number.isFinite(candleMs)
-          ? new Date(candleMs).toLocaleTimeString('en-GB', { hour12: false })
-          : new Date().toLocaleTimeString('en-GB', { hour12: false }),
-        freshSeconds: Number.isFinite(candleMs)
-          ? Math.max(0, Math.floor((Date.now() - candleMs) / 1000))
-          : 0,
-        market: rsi.asset || symbol,
-        marketLabel: formatPairLabel(rsi.asset || symbol),
-      };
+      return toSnapshot(symbol, rsi);
     } catch {
       return null;
     }
+  },
+
+  async fetchSignalBoard(assets: string[], signal?: AbortSignal): Promise<AiBotPairRsi[]> {
+    const unique = [...new Set(assets.map((asset) => asset.trim()).filter(Boolean))];
+    const status = await getAccountStatusCached().catch(() => null);
+    if (!canBrowseMarket(status?.botAccess)) return [];
+
+    const board = await strategiesApi
+      .rsiBoard(unique, signal ?? timedSignal(BOARD_FETCH_MS))
+      .catch(() => null);
+    const pairs = board?.pairs ?? [];
+    if (pairs.length === 0) return [];
+
+    const rows = pairs.map((rsi) => toPairRow(toSnapshot(rsi.asset || '', rsi)));
+    return rows.sort((a, b) => {
+      if (a.backtestReady !== b.backtestReady) return a.backtestReady ? -1 : 1;
+      if (a.signalSide !== b.signalSide) {
+        if (a.signalSide !== 'none' && b.signalSide === 'none') return -1;
+        if (b.signalSide !== 'none' && a.signalSide === 'none') return 1;
+      }
+      if (a.live !== b.live) return a.live ? -1 : 1;
+      return (b.rsi ?? -1) - (a.rsi ?? -1);
+    });
+  },
+
+  pickLiveSnapshot(rows: AiBotPairRsi[], rotateIndex = 0): AiBotPairRsi | null {
+    const ready = rows.filter((row) => row.live && row.signalSide !== 'none' && row.backtestReady);
+    const live = rows.filter((row) => row.live);
+    const pool = ready.length > 0 ? ready : live.length > 0 ? live : rows;
+    if (pool.length === 0) return null;
+    return pool[Math.abs(rotateIndex) % pool.length] ?? pool[0] ?? null;
   },
 
   async applyControl(
@@ -232,7 +381,7 @@ export const aiBotService = {
     },
   ): Promise<void> {
     const amount = config?.amount ?? 25;
-    const durationSeconds = config?.durationSeconds ?? 60;
+    const durationSeconds = config?.durationSeconds ?? 300;
     const pairs = config?.pairs?.length ? config.pairs : ['EURUSD_otc'];
     const profitTarget = config?.profitTarget ?? 50;
     const lossLimit = config?.lossLimit ?? 30;
@@ -248,7 +397,7 @@ export const aiBotService = {
         },
         riskLevel: 'medium',
         tradeAmount: '$25',
-        duration: '1m',
+        duration: '5m',
         profitTarget: '50',
         lossLimit: '30',
       }, config?.strategyId),

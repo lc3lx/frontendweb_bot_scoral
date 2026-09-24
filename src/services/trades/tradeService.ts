@@ -16,6 +16,7 @@ import type {
 } from './types';
 import type { TradeDirection } from '@components/types';
 import { ApiClientError, createIdempotencyKey, marketApi, tradesApi } from '@shared/api';
+import { armSlowBrokerNotice, isBrokerReconnectError, waitForBrokerLink } from '@shared/api/brokerLink';
 import type { TradeDto } from '@shared/api';
 import { t } from '@shared/i18n';
 import { CACHE_KEYS, fetchCached, invalidateCached } from '@shared/api/dataCache';
@@ -46,11 +47,11 @@ function mapStatus(
     if (createdAt) {
       const opened = Date.parse(createdAt);
       const dur = (durationSeconds && durationSeconds > 0 ? durationSeconds : 60) + 90;
-      if (Number.isFinite(opened) && Date.now() > opened + dur * 1000) return 'unknown';
+      if (Number.isFinite(opened) && Date.now() > opened + dur * 1000) return 'failed';
     }
     return 'running';
   }
-  if (s === 'failed' || s === 'cancelled' || s === 'unknown') return 'unknown';
+  if (s === 'failed' || s === 'cancelled') return 'failed';
   return 'unknown';
 }
 
@@ -146,6 +147,7 @@ function buildTradeRef(trade: TradeRecord): string {
 function formatTradeStatusValue(status: TradeRecord['status']): string {
   if (status === 'running') return t('history.status.running');
   if (status === 'profit') return t('history.status.profit');
+  if (status === 'failed') return t('history.status.failed') || t('history.status.unknown');
   if (status === 'unknown') return t('history.status.unknown');
   return t('history.status.loss');
 }
@@ -209,7 +211,7 @@ function buildDetailContent(trade: TradeRecord): TradeDetailContent {
       ? 'warning'
       : trade.status === 'profit'
         ? 'success'
-        : trade.status === 'unknown'
+        : trade.status === 'failed' || trade.status === 'unknown'
           ? 'neutral'
           : 'danger';
   const statusLabel =
@@ -217,9 +219,11 @@ function buildDetailContent(trade: TradeRecord): TradeDetailContent {
       ? t('trade.detail.statusLive')
       : trade.status === 'profit'
         ? t('trade.detail.statusWon')
-        : trade.status === 'unknown'
-          ? t('trade.detail.statusUnknown')
-          : t('trade.detail.statusLost');
+        : trade.status === 'failed'
+          ? (t('trade.detail.statusFailed') || t('trade.detail.statusUnknown'))
+          : trade.status === 'unknown'
+            ? t('trade.detail.statusUnknown')
+            : t('trade.detail.statusLost');
 
   return {
     id: trade.id,
@@ -359,22 +363,35 @@ export const tradeService = {
     const direction = input.direction === 'down' ? 'PUT' : 'CALL';
     const durationSeconds = parseDurationSeconds(input.durationLabel);
     const strategyId = input.strategy?.toLowerCase() === 'rsi' ? 'rsi' : 'rsi';
+    const key = createIdempotencyKey();
+    const body = {
+      asset: input.pair,
+      direction,
+      amount: input.amount,
+      durationSeconds,
+      strategyId,
+    };
 
-    const dto = await tradesApi.place(
-      {
-        asset: input.pair,
-        direction,
-        amount: input.amount,
-        durationSeconds,
-        strategyId,
-      },
-      createIdempotencyKey(),
-    );
+    const finish = (dto: { id: string }) => {
+      invalidateCached();
+      notifyListeners();
+      return dto.id;
+    };
 
-    // A placed trade changes every list; serving a cached one would hide it.
-    invalidateCached();
-    notifyListeners();
-    return dto.id;
+    // Same key on the retry, so a slow reconnect cannot open two orders.
+    const disarm = armSlowBrokerNotice();
+    try {
+      try {
+        return finish(await tradesApi.place(body, key));
+      } catch (error) {
+        if (!isBrokerReconnectError(error)) throw error;
+        const back = await waitForBrokerLink();
+        if (!back) throw error;
+        return finish(await tradesApi.place(body, key));
+      }
+    } finally {
+      disarm();
+    }
   },
 
   getHistoryPageContent() {

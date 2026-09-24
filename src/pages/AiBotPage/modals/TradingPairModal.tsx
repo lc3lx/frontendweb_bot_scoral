@@ -43,7 +43,6 @@ export function TradingPairModal({
   onClose,
   onToggle,
   onSelectAll,
-  onClearAll,
 }: TradingPairModalProps) {
   const { t } = useI18n();
   const [query, setQuery] = useState('');
@@ -54,16 +53,33 @@ export function TradingPairModal({
     if (!isOpen) return;
     setQuery('');
     setLoading(true);
-    void aiBotService
-      .listTradingPairs()
-      .then(setPairs)
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const refresh = async () => {
+      try {
+        const next = await aiBotService.listTradingPairs();
+        if (!cancelled) setPairs(next);
+      } catch {
+        // Keep the last list until the next refresh if the request fails.
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          timer = setTimeout(() => void refresh(), 15_000);
+        }
+      }
+    };
+    void refresh();
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [isOpen]);
 
+  const scopedPairs = useMemo(
+    () => pairs.filter((pair) => pairMatchesMarketType(pair.id, marketTypeId)),
+    [pairs, marketTypeId],
+  );
   const filteredPairs = useMemo(() => {
     // Market scope first: the chosen market decides which pairs exist here at all,
     // and the search box then narrows what is left.
-    const inScope = pairs.filter((pair) => pairMatchesMarketType(pair.id, marketTypeId));
+    const inScope = scopedPairs;
 
     const normalized = query.trim().toLowerCase();
     if (!normalized) return inScope;
@@ -73,11 +89,9 @@ export function TradingPairModal({
         pair.id.toLowerCase().includes(normalized) ||
         pair.type.toLowerCase().includes(normalized),
     );
-  }, [marketTypeId, pairs, query]);
+  }, [scopedPairs, query]);
 
-  const filteredSelectedCount = filteredPairs.filter((pair) => selectedIds.includes(pair.id)).length;
-  const allFilteredSelected =
-    filteredPairs.length > 0 && filteredSelectedCount === filteredPairs.length;
+  const isAllMode = selectedIds.includes('*');
 
   return (
     <AppModal
@@ -100,25 +114,16 @@ export function TradingPairModal({
         />
       </div>
 
-      {!loading && pairs.length > 0 ? (
         <button
           type="button"
           className={styles.selectAllButton}
-          onClick={() => {
-            if (allFilteredSelected) {
-              onClearAll();
-              return;
-            }
-            onSelectAll(filteredPairs.filter((pair) => pair.tradable).map((pair) => pair.id));
-          }}
-          disabled={filteredPairs.length === 0}
+          onClick={() => onSelectAll(['*'])}
+          aria-pressed={isAllMode}
         >
-          {allFilteredSelected
-            ? t.aiBot.modals.tradingPair.clearAll
-            : t.aiBot.modals.tradingPair.chooseAll}
+          {t.aiBot.modals.tradingPair.chooseAll}
+          {isAllMode ? ' ✓' : ''}
           <img className={styles.selectAllIcon} src={aiBotAssets.iconSelectAll} alt="" aria-hidden="true" />
         </button>
-      ) : null}
 
       {loading ? (
         <p className={styles.pairStatus}>{t.aiBot.modals.tradingPair.loading}</p>
@@ -129,7 +134,7 @@ export function TradingPairModal({
       ) : (
         <div className={styles.pairGrid}>
           {filteredPairs.map((pair) => {
-            const selected = selectedIds.includes(pair.id);
+            const selected = isAllMode || selectedIds.includes(pair.id);
             const disabled = !pair.tradable;
             return (
               <button
@@ -138,6 +143,13 @@ export function TradingPairModal({
                 className={`${styles.pairCard}${selected ? ` ${styles.pairCardSelected}` : ''}${disabled ? ` ${styles.pairCardDisabled}` : ''}`}
                 onClick={() => {
                   if (disabled) return;
+                  if (isAllMode) {
+                    const remaining = scopedPairs
+                      .filter((p) => p.tradable && p.id !== pair.id)
+                      .map((p) => p.id);
+                    onSelectAll(remaining);
+                    return;
+                  }
                   onToggle(pair.id);
                 }}
                 disabled={disabled}

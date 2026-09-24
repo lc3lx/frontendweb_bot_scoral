@@ -45,34 +45,43 @@ function resolveTradeSourceLabel(
 export function TradeCard({ trade }: TradeCardProps) {
   const { t } = useI18n();
   const isRunning = trade.outcome === 'running';
+  const isFailed = trade.outcome === 'failed';
 
   const outcomeBoxClass =
     trade.outcome === 'profit'
       ? styles.outcomeBoxProfit
       : trade.outcome === 'loss'
         ? styles.outcomeBoxLoss
-        : styles.outcomeBoxRunning;
+        : trade.outcome === 'running'
+          ? styles.outcomeBoxRunning
+          : styles.outcomeBoxFailed;
 
   const outcomeChipClass =
     trade.outcome === 'profit'
       ? styles.outcomeChipProfit
       : trade.outcome === 'loss'
         ? styles.outcomeChipLoss
-        : styles.outcomeChipRunning;
+        : trade.outcome === 'running'
+          ? styles.outcomeChipRunning
+          : styles.outcomeChipFailed;
 
   const outcomeChipDotClass =
     trade.outcome === 'profit'
       ? styles.outcomeChipDotProfit
       : trade.outcome === 'loss'
         ? styles.outcomeChipDotLoss
-        : styles.outcomeChipDotRunning;
+        : trade.outcome === 'running'
+          ? styles.outcomeChipDotRunning
+          : styles.outcomeChipDotFailed;
 
   const outcomeBadgeLabel =
     trade.outcome === 'profit'
       ? t.trades.outcome.profit
       : trade.outcome === 'loss'
         ? t.trades.outcome.loss
-        : t.trades.outcome.running;
+        : trade.outcome === 'running'
+          ? t.trades.outcome.running
+          : (t.trades.outcome.failed || 'Failed');
 
   const sourceLabel =
     trade.source === 'binolla' ? t.trades.source.binolla : t.trades.source.global;
@@ -112,7 +121,7 @@ export function TradeCard({ trade }: TradeCardProps) {
         <div className={`${styles.outcomeBox} ${outcomeBoxClass}`}>
           <div>
             <p className={styles.outcomeLabel}>
-              {isRunning ? t.trades.fields.status : t.trades.fields.profitLoss}
+              {isRunning || isFailed ? t.trades.fields.status : t.trades.fields.profitLoss}
             </p>
             {isRunning ? (
               <div className={styles.runningValueRow}>
@@ -122,10 +131,14 @@ export function TradeCard({ trade }: TradeCardProps) {
             ) : (
               <p
                 className={`${styles.outcomeValue} ${
-                  trade.outcome === 'profit' ? styles.outcomeValueProfit : styles.outcomeValueLoss
+                  trade.outcome === 'profit'
+                    ? styles.outcomeValueProfit
+                    : trade.outcome === 'loss'
+                      ? styles.outcomeValueLoss
+                      : styles.outcomeValueFailed
                 }`}
               >
-                {trade.pl}
+                {isFailed ? outcomeBadgeLabel : trade.pl}
               </p>
             )}
           </div>

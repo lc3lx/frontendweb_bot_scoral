@@ -5,7 +5,8 @@ import type { TradeCardData, TradeFilterId, TradeOrigin, TradeOutcome, TradeSour
 function mapOutcome(status: TradeRecord['status']): TradeOutcome {
   if (status === 'running') return 'running';
   if (status === 'profit') return 'profit';
-  return 'loss';
+  if (status === 'loss') return 'loss';
+  return 'failed';
 }
 
 function mapOrigin(source: TradeRecord['source']): TradeOrigin {

@@ -130,18 +130,27 @@ export function LoginPage() {
                 <span className={styles.label}>{tFlat('binolla.auth.brokerLabel')}</span>
                 <div className={styles.brokerChoice} role="radiogroup"
                      aria-label={tFlat('binolla.auth.brokerLabel')}>
-                  {(['binolla', 'quotex'] as const).map((id) => (
+                  {(['quotex', 'binolla'] as const).map((id) => (
                     <button
                       key={id}
                       type="button"
                       role="radio"
+                      disabled={id === 'binolla'}
+                      aria-disabled={id === 'binolla'}
                       aria-checked={form.values.broker === id}
                       className={`${styles.brokerOption}${
                         form.values.broker === id ? ` ${styles.brokerOptionActive}` : ''
                       }`}
-                      onClick={() => form.setBroker(id)}
+                      style={id === 'binolla' ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                      onClick={() => {
+                        if (id !== 'binolla') {
+                          form.setBroker(id);
+                        }
+                      }}
                     >
-                      {tFlat(`binolla.auth.broker.${id}`)}
+                      {id === 'binolla'
+                        ? `${tFlat(`binolla.auth.broker.${id}`)} (قريباً)`
+                        : tFlat(`binolla.auth.broker.${id}`)}
                     </button>
                   ))}
                 </div>

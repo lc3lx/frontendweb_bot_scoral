@@ -573,13 +573,10 @@ export const en: Messages = {
     },
 
     outcome: {
-
       profit: 'Profit',
-
       loss: 'Loss',
-
       running: 'Running',
-
+      failed: 'Failed',
     },
 
     source: {
@@ -742,10 +739,52 @@ export const en: Messages = {
 
       scanningPairs: 'Scanning {count} pairs',
 
+      backtest: 'Backtest',
+
+      skipWin: 'Win condition not met',
+
+      skipPayout: 'Pair payout too low',
+
+      skipPayoutValue: 'Pair payout {n}%',
+
+      pairsDoorTitle: 'Pairs and RSI',
+
+      pairsDoorHint: 'Tap the signal to watch RSI and backtest on every open pair',
+
+      pairsDoorClose: 'Close',
+
+      waitingMarket: 'Waiting for market data',
+
       profitTargetReached: 'Daily profit target reached — bot auto-stopped.',
 
       lossLimitReached: 'Daily loss limit reached — bot auto-stopped.',
 
+    },
+
+    advisor: {
+      title: 'AI advisor',
+      hint: 'Pick a pair and press analyze. If the factors agree it enters the trade itself, and if the payout is low it says why it stayed out. You can talk with it below.',
+      welcome: 'Welcome. How are you feeling today, and how is your profit going? Pick a pair and press analyze, and I will enter the trade myself when the factors agree.',
+      entered: 'I entered a {side} trade on your account.',
+      skippedPayout: 'I did not enter because the pair payout is too low.',
+      openTrade: 'A trade is already open, so I did not enter another one.',
+      chatPlaceholder: 'Write a greeting or a question...',
+      send: 'Send',
+      pair: 'Pair',
+      analyze: 'Analyze',
+      analyzing: 'Analyzing...',
+      approve: 'Approve',
+      reject: 'Reject',
+      approved: 'Approved. A {side} trade was opened on your account.',
+      rejected: 'Rejected. No trade was opened.',
+      youAsked: 'Analyze {pair}',
+      emptyPairs: 'No pairs yet. Choose pairs in the bot settings.',
+      badAmount: 'Set a trade amount first.',
+      sourceAi: 'OpenRouter analysis',
+      sourceRules: 'Rule reading',
+      placeFailed: 'The trade was not opened: {message}',
+      sideUp: 'up',
+      sideDown: 'down',
     },
 
     controls: {
@@ -926,6 +965,8 @@ export const en: Messages = {
 
         aiDesc: 'Neural strategy layer — launching soon.',
 
+        timeAnalysisDesc: 'Automated execution of scheduled time-based signals sent by the admin.',
+
         rsiBestFor: 'Best for ranging markets',
 
         bollingerBestFor: 'Best for volatile breakouts',
@@ -941,6 +982,8 @@ export const en: Messages = {
         alt5BestFor: 'Best for patterned 5m sessions',
 
         aiBestFor: 'Coming soon',
+
+        timeAnalysisBestFor: 'Best for scheduled time-analysis signals',
 
       },
 
@@ -998,6 +1041,14 @@ export const en: Messages = {
 
         trendBreakerDesc: 'Aggressive breakout strategy for volatile pairs.',
 
+        redSignalProRisk: 'Fixed trade amount with no change after a loss',
+
+        alphaMomentumRisk: 'Gradual increase in the next trade after a loss ×1.5',
+
+        scarPrecisionRisk: 'Double the next trade amount after a loss ×2',
+
+        trendBreakerRisk: 'Significant increase in the next trade amount after a loss ×2.5',
+
       },
 
       strategyDetail: {
@@ -1011,6 +1062,82 @@ export const en: Messages = {
         aboutTitle: 'About this strategy',
 
         howTitle: 'How it works',
+
+        riskHowTitle: 'How This Risk Works',
+
+        riskDescriptionLabel: 'Description',
+
+        riskExampleLabel: 'Simple example:',
+
+        riskHow: {
+
+          redSignalPro: [
+
+            'The same trade amount is used every time, with no increase or change in trade size after a loss.',
+
+            'If the trade amount is $20 and the trade loses, the next trade remains $20.',
+
+            '$20 → $20 → $20 → $20',
+
+            'Whether the previous trade wins or loses, the trade amount remains fixed at $20.',
+
+          ],
+
+          alphaMomentum: [
+
+            'The next trade amount is multiplied by 1.5 after every loss.',
+
+            'If the trade amount is $20 and the trade loses, the next trade becomes $30.',
+
+            '$20 × 1.5 = $30',
+
+            'If the next trade also loses, the following trade becomes $45.',
+
+            '$30 × 1.5 = $45',
+
+            'If a trade wins, the increase stops and the trade amount returns to the base amount of $20.',
+
+            '$20 → $30 → $45 → Win → $20',
+
+          ],
+
+          scarPrecision: [
+
+            'The next trade amount is doubled after every loss, using ×2 of the previous trade amount.',
+
+            'If the trade amount is $20 and the trade loses, the next trade becomes $40.',
+
+            '$20 × 2 = $40',
+
+            'If the next trade also loses, the following trade becomes $80.',
+
+            '$40 × 2 = $80',
+
+            'If a trade wins, the doubling stops and the trade amount returns to the base amount of $20.',
+
+            '$20 → $40 → $80 → Win → $20',
+
+          ],
+
+          trendBreaker: [
+
+            'The next trade amount is multiplied by 2.5 after every loss.',
+
+            'If the trade amount is $20 and the trade loses, the next trade becomes $50.',
+
+            '$20 × 2.5 = $50',
+
+            'If the next trade also loses, the following trade becomes $125.',
+
+            '$50 × 2.5 = $125',
+
+            'If a trade wins, the multiplier stops and the trade amount returns to the base amount of $20.',
+
+            '$20 → $50 → $125 → Win → $20',
+
+          ],
+
+        },
 
         select: 'Select strategy',
 

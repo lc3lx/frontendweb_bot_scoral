@@ -34,6 +34,7 @@ function strategyCopy(
       ema: grid.emaDesc,
       alt5: grid.alt5Desc,
       ai: grid.aiDesc,
+      time_analysis: (grid as any).timeAnalysisDesc ?? 'تنفيذ تلقائي لصفقات مجدولة زمنياً من لوحة التحكم.',
     };
     return map[key];
   }
@@ -46,6 +47,7 @@ function strategyCopy(
     ema: grid.emaBestFor,
     alt5: grid.alt5BestFor,
     ai: grid.aiBestFor,
+    time_analysis: (grid as any).timeAnalysisBestFor ?? 'الأفضل لصفقات وتوصيات التحليل الزمني',
   };
   return map[key];
 }

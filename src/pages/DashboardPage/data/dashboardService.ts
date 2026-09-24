@@ -119,15 +119,14 @@ export const dashboardService = {
         botApi.status().catch(() => null),
       ]);
 
-      if (balance && (balance.connected || balance.currentBalance > 0)) {
+      if (balance?.connected) {
         const formatted = formatMoneyPlain(balance.currentBalance);
         data.balance.value = formatted;
         try {
           localStorage.setItem('scar-alpha-last-balance', formatted);
         } catch {}
       } else {
-        const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('scar-alpha-last-balance') : null;
-        data.balance.value = stored && stored !== '—' ? stored : '—';
+        data.balance.value = '—';
       }
 
       if (trades) {

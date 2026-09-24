@@ -5,13 +5,16 @@ import { useI18n } from '@i18n';
 import { formatPairLabel } from '@shared/market/pairDisplay';
 
 import { SIGNAL_ROTATE_MS, type BotRunState } from './data/aiBot.mock';
-import { aiBotService, type AiBotSignalSnapshot } from './data/aiBotService';
+import { aiBotService, type AiBotPairRsi } from './data/aiBotService';
+import { pairMatchesMarketType, type MarketTypeId } from './modals/aiBotModals.data';
 import styles from './AiBotPage.module.css';
 
 type LiveSignal = {
   signal: string;
   signalSide: 'up' | 'down' | 'none';
   strength: string;
+  backtest: string;
+  backtestReady: boolean;
   updated: string;
   freshSeconds: number;
   market: string;
@@ -25,7 +28,15 @@ type AiBotSignalPanelProps = {
   strategy: string;
   tradingPairIds: string[];
   tradingPairLabel: string;
+  marketTypeId: MarketTypeId | string;
 };
+
+function isAllPairs(ids: string[]): boolean {
+  return (
+    ids.length === 0 ||
+    ids.some((id) => id.trim() === '*' || id.trim().toLowerCase() === 'all')
+  );
+}
 
 function AiBotSignalPanelComponent({
   botName,
@@ -35,23 +46,34 @@ function AiBotSignalPanelComponent({
   strategy,
   tradingPairIds,
   tradingPairLabel,
+  marketTypeId,
 }: AiBotSignalPanelProps) {
   const { t } = useI18n();
   const [live, setLive] = useState<LiveSignal>({
     signal: '—',
     signalSide: 'none',
     strength: '—',
+    backtest: '—',
+    backtestReady: false,
     updated: '—',
     freshSeconds: 0,
     market: tradingPairLabel || '—',
   });
+  const [board, setBoard] = useState<AiBotPairRsi[]>([]);
+  const [doorOpen, setDoorOpen] = useState(false);
   const [softSwap, setSoftSwap] = useState(false);
 
-  const rotateIndexRef = useRef(0);
-  const tradablePairIdsRef = useRef<string[]>([]);
   const softSwapTimerRef = useRef<number | null>(null);
+  const candleAtRef = useRef(0);
+  const coreKeyRef = useRef('');
+  const doorOpenRef = useRef(false);
+  const rotateRef = useRef(0);
+  const lastRotateAtRef = useRef(0);
+  const refreshGenRef = useRef(0);
   const pairsRef = useRef(tradingPairIds);
+  const marketRef = useRef(marketTypeId);
   pairsRef.current = tradingPairIds;
+  marketRef.current = marketTypeId;
 
   const applyLive = useCallback((next: LiveSignal, animate: boolean) => {
     setLive((prev) => {
@@ -59,6 +81,7 @@ function AiBotSignalPanelComponent({
         prev.signal === next.signal &&
         prev.signalSide === next.signalSide &&
         prev.strength === next.strength &&
+        prev.backtest === next.backtest &&
         prev.updated === next.updated &&
         prev.freshSeconds === next.freshSeconds &&
         prev.market === next.market
@@ -77,55 +100,88 @@ function AiBotSignalPanelComponent({
   }, []);
 
   useEffect(() => {
-    void aiBotService.listTradingPairs().then((pairs) => {
-      const tradable = new Set(pairs.filter((pair) => pair.tradable).map((pair) => pair.id));
-      tradablePairIdsRef.current = pairsRef.current.filter((id) => tradable.has(id));
-    });
-  }, [tradingPairIds]);
-
-  useEffect(() => {
     return () => {
       if (softSwapTimerRef.current) window.clearTimeout(softSwapTimerRef.current);
     };
   }, []);
 
-  const rotateSignal = useCallback(async () => {
-    if (typeof document !== 'undefined' && document.hidden) return;
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const candleAt = candleAtRef.current;
+      if (!candleAt) return;
+      const next = Math.max(0, Math.floor((Date.now() - candleAt) / 1000));
+      setLive((prev) => (prev.freshSeconds === next ? prev : { ...prev, freshSeconds: next }));
+    }, 250);
+    return () => window.clearInterval(id);
+  }, []);
 
-    const pairs =
-      tradablePairIdsRef.current.length > 0
-        ? tradablePairIdsRef.current
-        : pairsRef.current.filter(Boolean);
-    if (pairs.length === 0) return;
+  const refreshBoard = useCallback(async () => {
+    if (typeof document !== 'undefined' && document.hidden && !doorOpenRef.current) return;
+    const gen = ++refreshGenRef.current;
 
-    const index = rotateIndexRef.current % pairs.length;
-    const asset = pairs[index]!;
-    rotateIndexRef.current = (index + 1) % pairs.length;
+    try {
+      const selected = pairsRef.current;
+      const scanIds = isAllPairs(selected) ? ['*'] : selected;
+      const rows = (await aiBotService.fetchSignalBoard(scanIds)).filter((row) =>
+        pairMatchesMarketType(row.asset, marketRef.current),
+      );
+      if (gen !== refreshGenRef.current) return;
+      setBoard(rows);
 
-    const snapshot: AiBotSignalSnapshot | null = await aiBotService.fetchSignalSnapshot(asset);
-    if (!snapshot) return;
+      const now = Date.now();
+      if (now - lastRotateAtRef.current >= 2000) {
+        rotateRef.current += 1;
+        lastRotateAtRef.current = now;
+      }
+      const picked = rows.length > 0 ? aiBotService.pickLiveSnapshot(rows, rotateRef.current) : null;
+      if (!picked) {
+        applyLive(
+          {
+            signal: '—',
+            signalSide: 'none',
+            strength: '—',
+            backtest: '—',
+            backtestReady: false,
+            updated: '—',
+            freshSeconds: 0,
+            market: tradingPairLabel || '—',
+          },
+          false,
+        );
+        return;
+      }
 
-    applyLive(
-      {
-        signal: snapshot.signal,
-        signalSide: snapshot.signalSide,
-        strength: snapshot.strength,
-        updated: snapshot.updated,
-        freshSeconds: snapshot.freshSeconds,
-        market: snapshot.marketLabel,
-      },
-      true,
-    );
-  }, [applyLive]);
+      const candleAt = picked.candleTimeMs > 0 ? picked.candleTimeMs : Date.now();
+      candleAtRef.current = candleAt;
+      const coreKey = `${picked.signal}|${picked.rsiLabel}|${picked.marketLabel}|${picked.backtestLabel}|${picked.skipReason}`;
+      const animate = coreKey !== coreKeyRef.current;
+      coreKeyRef.current = coreKey;
+      applyLive(
+        {
+          signal: picked.signal,
+          signalSide: picked.signalSide,
+          strength: picked.rsiLabel,
+          backtest: picked.backtestLabel,
+          backtestReady: picked.backtestReady,
+          updated: new Date().toLocaleTimeString('en-GB', { hour12: false }),
+          freshSeconds: Math.max(0, Math.floor((Date.now() - candleAt) / 1000)),
+          market: picked.marketLabel,
+        },
+        animate,
+      );
+    } catch {
+      /* keep the last board */
+    }
+  }, [applyLive, tradingPairLabel]);
 
   useEffect(() => {
-    void rotateSignal();
+    void refreshBoard();
     const id = window.setInterval(() => {
-      void rotateSignal();
+      void refreshBoard();
     }, SIGNAL_ROTATE_MS);
 
     const onVisibility = () => {
-      if (!document.hidden) void rotateSignal();
+      if (!document.hidden) void refreshBoard();
     };
     document.addEventListener('visibilitychange', onVisibility);
 
@@ -133,7 +189,7 @@ function AiBotSignalPanelComponent({
       window.clearInterval(id);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [rotateSignal]);
+  }, [refreshBoard, tradingPairIds, marketTypeId]);
 
   const stateLabel =
     botState === 'running'
@@ -156,8 +212,15 @@ function AiBotSignalPanelComponent({
         ? styles.stateChipPaused
         : styles.stateChipStopped;
 
+  const scanCountLabel = isAllPairs(tradingPairIds)
+    ? t.aiBot.status.scanningPairs.replace('{count}', String(Math.max(board.length, 1)))
+    : tradingPairIds.length > 1
+      ? t.aiBot.status.scanningPairs.replace('{count}', String(tradingPairIds.length))
+      : null;
+
   const signalRows = [
     {
+      id: 'signal',
       label: t.aiBot.status.signal,
       value: live.signal,
       tone:
@@ -167,16 +230,25 @@ function AiBotSignalPanelComponent({
             ? styles.signalDown
             : '',
       ltr: true,
+      opensDoor: true,
     },
-    { label: t.aiBot.status.strength, value: live.strength, ltr: true },
-    { label: t.aiBot.status.indicator, value: indicator },
-    { label: t.aiBot.status.strategy, value: strategy },
+    { id: 'strength', label: t.aiBot.status.strength, value: live.strength, ltr: true },
     {
+      id: 'backtest',
+      label: t.aiBot.status.backtest,
+      value: live.backtest,
+      tone: live.backtestReady ? styles.signalUp : '',
+      ltr: true,
+    },
+    { id: 'indicator', label: t.aiBot.status.indicator, value: indicator },
+    { id: 'strategy', label: t.aiBot.status.strategy, value: strategy },
+    {
+      id: 'market',
       label: t.aiBot.status.market,
       value: live.market || formatPairLabel(tradingPairIds[0] ?? '') || tradingPairLabel,
       ltr: true,
     },
-    { label: t.aiBot.status.updated, value: live.updated, ltr: true },
+    { id: 'updated', label: t.aiBot.status.updated, value: live.updated, ltr: true },
   ];
 
   return (
@@ -202,10 +274,10 @@ function AiBotSignalPanelComponent({
             <span className={styles.freshChip}>
               {t.aiBot.status.fresh.replace('{seconds}', String(live.freshSeconds))}
             </span>
-            {tradingPairIds.length > 1 ? (
-              <span className={styles.rotateChip}>
-                {t.aiBot.status.scanningPairs.replace('{count}', String(tradingPairIds.length))}
-              </span>
+            {isAllPairs(tradingPairIds) ? (
+              <span className={styles.rotateChip}>جميع الأزواج النشطة (تلقائي)</span>
+            ) : scanCountLabel ? (
+              <span className={styles.rotateChip}>{scanCountLabel}</span>
             ) : null}
           </div>
           {stopReasonLabel && botState === 'stopped' ? (
@@ -215,21 +287,135 @@ function AiBotSignalPanelComponent({
       </div>
 
       <div className={`${styles.signalGrid}${softSwap ? ` ${styles.signalGridPulse}` : ''}`}>
-        {signalRows.map((row) => (
-          <div key={row.label} className={styles.signalCell}>
-            <p className={styles.signalLabel}>{row.label}</p>
-            <p
-              className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
-                row.ltr ? ` ${styles.ltrValue}` : ''
-              }`}
+        {signalRows.map((row) =>
+          row.opensDoor ? (
+            <button
+              key={row.id}
+              type="button"
+              className={`${styles.signalCell} ${styles.signalDoorTrigger}`}
+              onClick={() => {
+                doorOpenRef.current = true;
+                setDoorOpen(true);
+                void refreshBoard();
+              }}
+              aria-expanded={doorOpen}
+              aria-controls="ai-bot-signal-door"
+              title={t.aiBot.status.pairsDoorHint}
             >
-              {row.value}
-            </p>
-          </div>
-        ))}
+              <p className={styles.signalLabel}>{row.label}</p>
+              <p
+                className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
+                  row.ltr ? ` ${styles.ltrValue}` : ''
+                }`}
+              >
+                {row.value}
+                <span className={styles.signalDoorCaret} aria-hidden="true" />
+              </p>
+            </button>
+          ) : (
+            <div key={row.id} className={styles.signalCell}>
+              <p className={styles.signalLabel}>{row.label}</p>
+              <p
+                className={`${styles.signalValue}${row.tone ? ` ${row.tone}` : ''}${
+                  row.ltr ? ` ${styles.ltrValue}` : ''
+                }`}
+              >
+                {row.value}
+              </p>
+            </div>
+          ),
+        )}
       </div>
+
+      {doorOpen ? (
+        <div
+          id="ai-bot-signal-door"
+          className={styles.signalDoor}
+          role="dialog"
+          aria-label={t.aiBot.status.pairsDoorTitle}
+        >
+          <div className={styles.signalDoorHead}>
+            <div>
+              <p className={styles.signalDoorTitle}>{t.aiBot.status.pairsDoorTitle}</p>
+              <p className={styles.signalDoorHint}>{t.aiBot.status.pairsDoorHint}</p>
+            </div>
+            <button
+              type="button"
+              className={styles.signalDoorClose}
+              onClick={() => {
+                doorOpenRef.current = false;
+                setDoorOpen(false);
+              }}
+            >
+              {t.aiBot.status.pairsDoorClose}
+            </button>
+          </div>
+          <div className={styles.signalDoorCols} aria-hidden="true">
+            <span>{t.aiBot.status.market}</span>
+            <span>{t.aiBot.status.signal}</span>
+            <span>{t.aiBot.status.strength}</span>
+            <span>{t.aiBot.status.backtest}</span>
+          </div>
+          <ul className={styles.signalDoorList}>
+            {board.length === 0 ? (
+              <li className={styles.signalDoorEmpty}>{t.aiBot.status.waitingMarket}</li>
+            ) : (
+              board.map((row) => (
+                <li key={row.asset} className={styles.signalDoorRow}>
+                  <span className={`${styles.signalDoorPair} ${styles.ltrValue}`}>
+                    {row.marketLabel}
+                  </span>
+                  <span
+                    className={`${styles.signalDoorSide}${
+                      row.signalSide === 'up'
+                        ? ` ${styles.signalUp}`
+                        : row.signalSide === 'down'
+                          ? ` ${styles.signalDown}`
+                          : ''
+                    }`}
+                  >
+                    {row.signal}
+                  </span>
+                  <span className={`${styles.signalDoorRsi} ${styles.ltrValue}`}>
+                    {row.rsiLabel}
+                  </span>
+                  <span
+                    className={`${styles.signalDoorBacktest} ${styles.ltrValue}${
+                      row.backtestReady ? ` ${styles.signalUp}` : ''
+                    }`}
+                  >
+                    {row.backtestLabel}
+                  </span>
+                  {row.skipReason ? (
+                    <span className={styles.signalDoorReason}>{formatSkipReason(row.skipReason, t)}</span>
+                  ) : null}
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
+}
+
+function formatSkipReason(
+  code: string,
+  t: { aiBot: { status: { skipWin: string; skipPayout: string; skipPayoutValue: string } } },
+): string {
+  return code
+    .split('|')
+    .filter(Boolean)
+    .map((part) => {
+      if (part === 'WIN_CONDITION') return t.aiBot.status.skipWin;
+      if (part.startsWith('LOW_PAYOUT')) {
+        const n = part.split(':')[1];
+        return n ? t.aiBot.status.skipPayoutValue.replace('{n}', n) : t.aiBot.status.skipPayout;
+      }
+      return '';
+    })
+    .filter(Boolean)
+    .join(' · ');
 }
 
 export const AiBotSignalPanel = memo(AiBotSignalPanelComponent);

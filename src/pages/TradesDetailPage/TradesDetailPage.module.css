@@ -77,6 +77,12 @@
   color: #f5c462;
 }
 
+.statusChipFailed {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(148, 163, 184, 0.08);
+  color: #cbd5e1;
+}
+
 .statusChipDot {
   width: 4px;
   height: 4px;
@@ -93,6 +99,10 @@
 
 .statusChipDotRunning {
   background: #f59e0b;
+}
+
+.statusChipDotFailed {
+  background: #94a3b8;
 }
 
 .summaryCard {
@@ -285,6 +295,10 @@
 
 .specValueRunning {
   color: #f5c462;
+}
+
+.specValueFailed {
+  color: #94a3b8;
 }
 
 .timelineSection {

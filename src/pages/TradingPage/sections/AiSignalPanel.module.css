@@ -145,6 +145,18 @@
   color: #4ade9a;
 }
 
+.signalUp {
+  color: #4ade9a;
+}
+
+.signalDown {
+  color: #f87171;
+}
+
+.signalNone {
+  color: #8a8688;
+}
+
 .ltrValue {
   direction: ltr;
   unicode-bidi: isolate;

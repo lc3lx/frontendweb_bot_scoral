@@ -78,5 +78,5 @@ export const TRADE_AMOUNTS = ['$10', '$25', '$50', '$100'] as const;
 export const TRADE_DURATIONS = ['30s', '1m', '3m', '5m', '15m', 'Custom'] as const;
 /** Full bot status / balance refresh. */
 export const SIGNAL_POLL_MS = 12_000;
-/** Rotate live signal across selected pairs. */
-export const SIGNAL_ROTATE_MS = 4_000;
+/** Live RSI board — ticks with the quote stream. */
+export const SIGNAL_ROTATE_MS = 500;

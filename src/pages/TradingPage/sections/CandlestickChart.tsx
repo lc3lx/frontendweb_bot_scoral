@@ -90,20 +90,33 @@ function formatCandleTime(timeSec: number | undefined): string {
 function domainFrom(points: TradingCandle[], extra: number[] = []): PriceDomain {
   const lows = points.map((p) => p.low);
   const highs = points.map((p) => p.high);
-  const minPrice = Math.min(...lows, ...extra);
-  const maxPrice = Math.max(...highs, ...extra);
+  const minCandle = lows.length ? Math.min(...lows) : 0;
+  const maxCandle = highs.length ? Math.max(...highs) : 1;
+  const mid = (minCandle + maxCandle) / 2 || 1;
+  const validExtra = extra.filter(
+    (x) => Number.isFinite(x) && x > 0 && Math.abs(x - mid) / mid < 0.03,
+  );
+  const minPrice = Math.min(minCandle, ...validExtra);
+  const maxPrice = Math.max(maxCandle, ...validExtra);
   const span = Math.max(maxPrice - minPrice, Math.abs(maxPrice) * 1e-4, 1e-5);
-  const pad = span * 0.18;
+  const pad = span * 0.15;
   return { lo: minPrice - pad, hi: maxPrice + pad };
 }
 
 function domainTrackingFocus(points: TradingCandle[], focus: number, extra: number[] = []): PriceDomain {
-  const minPrice = Math.min(...points.map((p) => p.low), focus, ...extra);
-  const maxPrice = Math.max(...points.map((p) => p.high), focus, ...extra);
+  const validExtra = extra.filter(
+    (x) => Number.isFinite(x) && x > 0 && Math.abs(x - focus) / (focus || 1) < 0.03,
+  );
+  const lows = points.map((p) => p.low);
+  const highs = points.map((p) => p.high);
+  const minCandle = lows.length ? Math.min(...lows) : focus;
+  const maxCandle = highs.length ? Math.max(...highs) : focus;
+  const minPrice = Math.min(minCandle, focus, ...validExtra);
+  const maxPrice = Math.max(maxCandle, focus, ...validExtra);
   const dataSpan = Math.max(maxPrice - minPrice, Math.abs(focus) * 1e-4, 1e-5);
-  const above = Math.max(maxPrice - focus, dataSpan * 0.45);
-  const below = Math.max(focus - minPrice, dataSpan * 0.45);
-  const half = Math.max(above, below) * 1.28;
+  const above = Math.max(maxPrice - focus, dataSpan * 0.25);
+  const below = Math.max(focus - minPrice, dataSpan * 0.25);
+  const half = Math.max(above, below) * 1.15;
   return { lo: focus - half, hi: focus + half };
 }
 
@@ -193,12 +206,20 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
     entryMarker && sanitized.length > 0
       ? findCandleIndexByTime(sanitized, entryMarker.timeSec)
       : -1;
-  const entryPrice =
-    entryMarker?.price != null && Number.isFinite(entryMarker.price)
+  const rawEntryPrice =
+    entryMarker?.price != null && Number.isFinite(entryMarker.price) && entryMarker.price > 0
       ? entryMarker.price
+      : undefined;
+  const isSaneEntryPrice =
+    rawEntryPrice != null &&
+    liveClose > 0 &&
+    Math.abs(rawEntryPrice - liveClose) / liveClose < 0.05;
+  const entryPrice =
+    isSaneEntryPrice
+      ? rawEntryPrice
       : entryIndex >= 0
         ? sanitized[entryIndex]?.close
-        : undefined;
+        : rawEntryPrice;
   const extraPrice =
     entryPrice != null && Number.isFinite(entryPrice) ? [entryPrice] : [];
 
@@ -210,8 +231,28 @@ export function CandlestickChart({ candles, height = 280, entryMarker }: Candles
 
   useEffect(() => {
     if (dragging || !followLive) return;
-    smoothDomainRef.current = lerpDomain(smoothDomainRef.current, targetDomain, 0.42);
-    bump((n) => n + 1);
+    let frameId: number;
+    const step = () => {
+      const current = smoothDomainRef.current;
+      if (!current) {
+        smoothDomainRef.current = targetDomain;
+        bump((n) => n + 1);
+        return;
+      }
+      const span = Math.max(targetDomain.hi - targetDomain.lo, 1e-5);
+      const diffLo = Math.abs(current.lo - targetDomain.lo);
+      const diffHi = Math.abs(current.hi - targetDomain.hi);
+      if (diffLo < span * 0.002 && diffHi < span * 0.002) {
+        smoothDomainRef.current = targetDomain;
+        bump((n) => n + 1);
+        return;
+      }
+      smoothDomainRef.current = lerpDomain(current, targetDomain, 0.35);
+      bump((n) => n + 1);
+      frameId = requestAnimationFrame(step);
+    };
+    frameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frameId);
   }, [targetDomain, dragging, followLive]);
 
   const domain: PriceDomain = (() => {

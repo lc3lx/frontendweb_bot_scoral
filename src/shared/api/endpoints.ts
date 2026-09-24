@@ -23,6 +23,10 @@ import type {
   PlaceTradeRequest,
   RsiSmartBacktestOptions,
   StrategiesResponse,
+  AiAdviceResponse,
+  AiChatResponse,
+  AiChatTurn,
+  StrategyBoardResponse,
   StrategySignalResponse,
   TradeDto,
   TradeListResponse,
@@ -311,6 +315,15 @@ export const strategiesApi = {
       { signal },
     );
   },
+  rsiBoard(assets?: string[], signal?: AbortSignal): Promise<StrategyBoardResponse> {
+    const query = new URLSearchParams();
+    const list = (assets ?? []).map((item) => item.trim()).filter(Boolean);
+    if (list.length > 0 && !list.some((item) => item === '*' || item.toLowerCase() === 'all')) {
+      query.set('assets', list.join(','));
+    }
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return apiRequest<StrategyBoardResponse>(`/api/strategies/rsi/board${suffix}`, { signal });
+  },
 };
 
 export const botApi = {
@@ -371,6 +384,26 @@ type BotPreferences = {
   stakeMode?: string;
   /** UI market scope. */
   marketTypeId?: string;
+};
+
+export const aiApi = {
+  advise(asset: string, lang: string): Promise<AiAdviceResponse> {
+    return apiRequest<AiAdviceResponse>('/api/ai/advise', {
+      method: 'POST',
+      body: { asset, lang },
+    });
+  },
+  chat(message: string, lang: string, history: AiChatTurn[]): Promise<AiChatResponse> {
+    return apiRequest<AiChatResponse>('/api/ai/chat', {
+      method: 'POST',
+      body: {
+        message,
+        lang,
+        tzOffsetMinutes: new Date().getTimezoneOffset(),
+        history,
+      },
+    });
+  },
 };
 
 export const marketApi = {

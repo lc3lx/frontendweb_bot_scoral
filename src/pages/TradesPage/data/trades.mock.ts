@@ -1,6 +1,6 @@
 export type TradeSource = 'global' | 'binolla';
 export type TradeDirection = 'up' | 'down';
-export type TradeOutcome = 'profit' | 'loss' | 'running';
+export type TradeOutcome = 'profit' | 'loss' | 'running' | 'failed';
 export type TradeFilterId = 'all' | 'live' | 'profit' | 'loss' | 'today';
 export type TradeOrigin = 'bot' | 'manual' | 'user' | 'demo';
 

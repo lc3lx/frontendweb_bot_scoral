@@ -44,8 +44,8 @@ function storeAsset(val: string): void {
 }
 
 let amount = '25';
-let durationLabel = '1 min';
-let durationSeconds = 60;
+let durationLabel = '5 min';
+let durationSeconds = 300;
 /** In-memory forming series so ticks survive full refresh merge. */
 let liveCandleSeries: TradingCandle[] = [];
 let cachedTradingData: TradingMockData | null = null;
@@ -75,6 +75,9 @@ function storeBalance(val: string): void {
   lastKnownBalance = val;
   try {
     localStorage.setItem('scar-alpha-last-balance', val);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scar-alpha-balance-updated', { detail: val }));
+    }
   } catch {
     /* ignore */
   }
@@ -120,12 +123,6 @@ export function resolveEntryFromCandles(
   };
 }
 
-function formatSignal(signal: string): string {
-  const s = signal.toLowerCase();
-  if (s === 'call') return t('common.callUp');
-  if (s === 'put') return t('common.putDown');
-  return t('common.none');
-}
 
 function toUnixSec(timestamp: string | undefined): number | undefined {
   if (!timestamp) return undefined;
@@ -242,7 +239,7 @@ export const tradingService = {
         binollaApi.balance(timedSignal(MARKET_FETCH_MS)).catch(() => null),
       ]);
 
-      if (balance && balance.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
+      if (balance?.connected && balance.currentBalance != null) {
         const formatted = `$${balance.currentBalance.toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -250,12 +247,7 @@ export const tradingService = {
         storeBalance(formatted);
         data.balance = formatted;
       } else {
-        data.balance =
-          lastKnownBalance ??
-          readStoredBalance() ??
-          (balance && balance.currentBalance != null && balance.currentBalance > 0
-            ? `$${balance.currentBalance.toFixed(2)}`
-            : (data.balance !== '—' ? data.balance : '—'));
+        data.balance = '—';
       }
 
       const browse = canBrowseMarket(status?.botAccess);
@@ -328,13 +320,30 @@ export const tradingService = {
         liveCandleSeries = series;
         data.candles = series;
 
+        const marketLabel = data.pair || formatPairLabel(asset, matchingAsset?.name);
         if (rsi) {
+          const rawSig = (rsi.signal || '').toLowerCase();
+          const isCall = rawSig === 'call';
+          const isPut = rawSig === 'put';
+          const numStrength = Number(rsi.liveRsi ?? rsi.rsi);
+          const strengthStr = Number.isFinite(numStrength) && numStrength > 0
+            ? `${numStrength.toFixed(1)}%`
+            : '—';
           data.signal = {
-            lastSignal: formatSignal(rsi.signal),
-            strength: Number(rsi.liveRsi ?? rsi.rsi).toFixed(2),
-            indicator: t('common.rsi'),
-            strategy: t('common.rsi'),
-            market: asset,
+            lastSignal: isCall ? 'UP ↑' : isPut ? 'DOWN ↓' : 'NONE',
+            strength: strengthStr,
+            indicator: 'RSI Smart',
+            strategy: 'RSI Smart Backtest',
+            market: marketLabel,
+            freshSeconds: 0,
+          };
+        } else {
+          data.signal = {
+            lastSignal: 'NONE',
+            strength: '—',
+            indicator: 'RSI Smart',
+            strategy: 'RSI Smart Backtest',
+            market: marketLabel,
             freshSeconds: 0,
           };
         }

@@ -1,4 +1,4 @@
-import { t } from '@shared/i18n';
+import { getLocale, t } from '@shared/i18n';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { beginRequest, endRequest } from './requestActivity';
 import type { ApiErrorBody } from './types';
@@ -26,43 +26,58 @@ function resolveBaseUrl(): string {
     return base.replace(/\/+$/, '');
   }
 
-  if (import.meta.env.DEV) {
+  // Production fallback: same-origin reverse-proxy or www.scaralphaai.com
+  if (typeof window !== 'undefined' && window.location?.origin) {
     return '';
   }
 
-  throw new ApiClientError('CONFIG_ERROR', t('api.configMissing'), 0);
+  return 'https://www.scaralphaai.com';
 }
 
 function getActiveBrokerName(): 'Quotex' | 'Binolla' {
   try {
     const raw = localStorage.getItem('scar-alpha-broker') || localStorage.getItem('scar-alpha-user-profile');
-    if (raw && raw.toLowerCase().includes('quotex')) return 'Quotex';
+    if (raw && raw.toLowerCase().includes('binolla')) return 'Binolla';
   } catch {
     /* ignore */
   }
-  return 'Binolla';
+  return 'Quotex';
 }
 
 function mapMessage(code: string, fallback: string): string {
   const broker = getActiveBrokerName();
+  const isAr = getLocale() === 'ar';
+  if (code === 'BROKER_RECONNECTING') {
+    return isAr ? 'عم نعيد الربط مع كوتكس.' : 'Reconnecting to Quotex.';
+  }
   let text = fallback?.trim() ?? '';
   if (text) {
-    if (broker === 'Quotex' && /binolla/i.test(text) && !/quotex/i.test(text)) {
-      text = text.replace(/binolla/gi, 'Quotex');
+    if (broker === 'Quotex') {
+      text = text
+        .replace(/binolla/gi, isAr ? 'كوتكس' : 'Quotex')
+        .replace(/بينولا|بنولا/g, 'كوتكس');
     }
-    if (/quotex|binolla/i.test(text)) {
+    if (/quotex|كوتكس|binolla|بينولا/i.test(text)) {
       return text;
     }
   }
   switch (code) {
     case 'BINOLLA_NOT_CONNECTED':
-      return broker === 'Quotex' ? 'Connect your Quotex account to continue.' : t('api.binollaNotConnected');
+      return broker === 'Quotex'
+        ? (isAr ? 'يرجى ربط حساب كوتكس للمتابعة.' : 'Connect your Quotex account to continue.')
+        : t('api.binollaNotConnected');
     case 'BINOLLA_SESSION_EXPIRED':
-      return broker === 'Quotex' ? 'Quotex session expired.' : t('api.binollaSessionExpired');
+      return broker === 'Quotex'
+        ? (isAr ? 'انتهت صلاحية جلسة كوتكس.' : 'Quotex session expired.')
+        : t('api.binollaSessionExpired');
     case 'BINOLLA_LOGIN_FAILED':
-      return text ? text : (broker === 'Quotex' ? 'Quotex login failed.' : t('api.binollaLoginFailed'));
+      return text ? text : (broker === 'Quotex'
+        ? (isAr ? 'فشل تسجيل الدخول إلى كوتكس.' : 'Quotex login failed.')
+        : t('api.binollaLoginFailed'));
     case 'BINOLLA_CONNECTION_FAILED':
-      return broker === 'Quotex' ? 'Quotex connection failed.' : t('api.binollaConnectionFailed');
+      return broker === 'Quotex'
+        ? (isAr ? 'فشل الاتصال بـ كوتكس.' : 'Quotex connection failed.')
+        : t('api.binollaConnectionFailed');
     case 'ADMIN_APPROVAL_REQUIRED':
       return t('api.adminApprovalRequired');
     case 'NOT_ELIGIBLE':

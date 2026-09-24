@@ -91,21 +91,27 @@ export function TradesDetailContent({ tradeId, isLiveView, figmaNode }: TradesDe
       ? styles.statusChipProfit
       : displayOutcome === 'loss'
         ? styles.statusChipLoss
-        : styles.statusChipRunning;
+        : displayOutcome === 'running'
+          ? styles.statusChipRunning
+          : styles.statusChipFailed;
 
   const statusChipDotClass =
     displayOutcome === 'profit'
       ? styles.statusChipDotProfit
       : displayOutcome === 'loss'
         ? styles.statusChipDotLoss
-        : styles.statusChipDotRunning;
+        : displayOutcome === 'running'
+          ? styles.statusChipDotRunning
+          : styles.statusChipDotFailed;
 
   const statusLabel =
     displayOutcome === 'profit'
       ? t.trades.outcome.profit
       : displayOutcome === 'loss'
         ? t.trades.outcome.loss
-        : t.trades.outcome.running;
+        : displayOutcome === 'running'
+          ? t.trades.outcome.running
+          : (t.trades.outcome.failed || 'Failed');
 
   const directionLabel =
     trade.direction === 'up' ? t.tradeDetail.direction.up : t.tradeDetail.direction.down;
@@ -115,7 +121,9 @@ export function TradesDetailContent({ tradeId, isLiveView, figmaNode }: TradesDe
       ? styles.specValueProfit
       : displayOutcome === 'loss'
         ? styles.specValueLoss
-        : styles.specValueRunning;
+        : displayOutcome === 'running'
+          ? styles.specValueRunning
+          : styles.specValueFailed;
 
   const specRows = [
     { id: 'direction', label: t.tradeDetail.fields.direction, value: directionLabel },

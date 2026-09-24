@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiClientError, binollaApi, meApi } from '@shared/api';
 import { invalidateBotSessionCache } from '@shared/api/botSessionCache';
+import { armSlowBrokerNotice, isBrokerReconnectError, waitForBrokerLink } from '@shared/api/brokerLink';
 import { tokenStore } from '@shared/auth/tokenStore';
 import { t } from '@shared/i18n';
+import { liveRefresh } from '@shared/live/liveRefresh';
 
 export type AccountMode = 'Demo' | 'Real';
 
@@ -133,12 +135,18 @@ function saveActiveProfile(partial: Partial<CachedProfileData>) {
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(activeProfileData));
     if (activeProfileData.balance && activeProfileData.balance !== '—') {
       localStorage.setItem(BALANCE_STORAGE_KEY, activeProfileData.balance);
+    } else {
+      localStorage.removeItem(BALANCE_STORAGE_KEY);
     }
     if (activeProfileData.realBalance && activeProfileData.realBalance !== '—') {
       localStorage.setItem(REAL_BALANCE_STORAGE_KEY, activeProfileData.realBalance);
+    } else {
+      localStorage.removeItem(REAL_BALANCE_STORAGE_KEY);
     }
     if (activeProfileData.demoBalance && activeProfileData.demoBalance !== '—') {
       localStorage.setItem(DEMO_BALANCE_STORAGE_KEY, activeProfileData.demoBalance);
+    } else {
+      localStorage.removeItem(DEMO_BALANCE_STORAGE_KEY);
     }
   } catch {
     /* ignore */
@@ -202,10 +210,10 @@ export function useSessionProfile(): SessionProfile {
       };
 
       if (balance) {
-        if (balance.demoBalance != null && balance.demoBalance > 0) {
+        if (balance.demoBalance != null && balance.connected) {
           updates.demoBalance = formatBalance(balance.demoBalance);
         }
-        if (balance.realBalance != null && balance.realBalance > 0) {
+        if (balance.realBalance != null && balance.connected) {
           updates.realBalance = formatBalance(balance.realBalance);
         }
         // Retain previous balance if incoming balance is null/0 while warming up
@@ -235,6 +243,11 @@ export function useSessionProfile(): SessionProfile {
         }
       }
 
+      if (!balance?.connected) {
+        updates.balance = '—';
+        updates.demoBalance = '—';
+        updates.realBalance = '—';
+      }
       saveActiveProfile(updates);
 
       setProfileState((current) => ({
@@ -251,7 +264,48 @@ export function useSessionProfile(): SessionProfile {
     }
   }, []);
 
+let moduleSubscribed = false;
+function setupLiveSync() {
+  if (moduleSubscribed || typeof window === 'undefined') return;
+  moduleSubscribed = true;
+
+  liveRefresh.subscribe((changes) => {
+    if (
+      changes.includes('trade-settled') ||
+      changes.includes('heartbeat') ||
+      changes.includes('trades-changed')
+    ) {
+      if (tokenStore.isAuthenticated()) {
+        binollaApi
+          .balance()
+          .then((bal) => {
+            if (!bal?.connected) {
+              saveActiveProfile({ balance: '—', demoBalance: '—', realBalance: '—' });
+              return;
+            }
+            const updates: Partial<CachedProfileData> = { accountType: normalizeAccountType(bal.accountType) };
+            if (bal.demoBalance != null && bal.connected) updates.demoBalance = formatBalance(bal.demoBalance);
+            if (bal.realBalance != null && bal.connected) updates.realBalance = formatBalance(bal.realBalance);
+            if (bal.currentBalance != null && (bal.connected || bal.currentBalance > 0)) {
+              updates.balance = formatBalance(bal.currentBalance);
+            }
+            if (Object.keys(updates).length > 0) saveActiveProfile(updates);
+          })
+          .catch(() => null);
+      }
+    }
+  });
+
+  window.addEventListener('scar-alpha-balance-updated', (e: Event) => {
+    const customEvent = e as CustomEvent<string>;
+    if (customEvent.detail) {
+      saveActiveProfile({ balance: customEvent.detail });
+    }
+  });
+}
+
   useEffect(() => {
+    setupLiveSync();
     void refresh();
   }, [refresh]);
 
@@ -261,8 +315,16 @@ export function useSessionProfile(): SessionProfile {
 
     setProfileState((current) => ({ ...current, switching: true, error: null }));
 
+    const disarm = armSlowBrokerNotice();
     try {
-      await binollaApi.changeAccountType(next);
+      try {
+        await binollaApi.changeAccountType(next);
+      } catch (error) {
+        if (!isBrokerReconnectError(error)) throw error;
+        const back = await waitForBrokerLink();
+        if (!back) throw error;
+        await binollaApi.changeAccountType(next);
+      }
       const balance = await binollaApi.balance().catch(() => null);
 
       const updates: Partial<CachedProfileData> = {
@@ -272,10 +334,10 @@ export function useSessionProfile(): SessionProfile {
       if (balance?.currentBalance != null && (balance.connected || balance.currentBalance > 0)) {
         updates.balance = formatBalance(balance.currentBalance);
       }
-      if (balance?.demoBalance != null && balance.demoBalance > 0) {
+      if (balance?.demoBalance != null && balance.connected) {
         updates.demoBalance = formatBalance(balance.demoBalance);
       }
-      if (balance?.realBalance != null && balance.realBalance > 0) {
+      if (balance?.realBalance != null && balance.connected) {
         updates.realBalance = formatBalance(balance.realBalance);
       }
 
@@ -312,6 +374,8 @@ export function useSessionProfile(): SessionProfile {
         switching: false,
         error: message,
       }));
+    } finally {
+      disarm();
     }
   }, []);
 
@@ -320,10 +384,13 @@ export function useSessionProfile(): SessionProfile {
     await switchAccount(next);
   }, [switchAccount]);
 
-  return {
-    ...profileState,
-    refresh,
-    switchAccount,
-    toggleAccount,
-  };
+  return useMemo(
+    () => ({
+      ...profileState,
+      refresh,
+      switchAccount,
+      toggleAccount,
+    }),
+    [profileState, refresh, switchAccount, toggleAccount],
+  );
 }

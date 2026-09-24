@@ -134,8 +134,10 @@
 
 /* Signal card (bot-linked) */
 .signalCard {
+  position: relative;
   height: 100%;
   padding: 20px;
+  overflow: hidden;
   /* Isolate paints so live signal text updates do not dirty the scrolling layer. */
   contain: layout paint style;
 }
@@ -318,6 +320,190 @@
 .ltrValue {
   direction: ltr;
   unicode-bidi: isolate;
+}
+
+.signalDoorTrigger {
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  text-align: inherit;
+  color: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+.signalDoorCaret {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-inline-start: 6px;
+  border-inline-end: 1.5px solid currentColor;
+  border-block-end: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 0.7;
+}
+
+[dir='rtl'] .signalDoorCaret {
+  transform: rotate(135deg);
+}
+
+.signalDoor {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 12px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(52, 10, 12, 0.96) 0%, rgba(12, 8, 8, 0.98) 55%, #0c0909 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transform-origin: inline-start center;
+  animation: signalDoorOpen 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes signalDoorOpen {
+  from {
+    transform: perspective(820px) rotateY(-78deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+[dir='rtl'] .signalDoor {
+  transform-origin: inline-end center;
+  animation-name: signalDoorOpenRtl;
+}
+
+@keyframes signalDoorOpenRtl {
+  from {
+    transform: perspective(820px) rotateY(78deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.signalDoorHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.signalDoorTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #ffffff;
+}
+
+.signalDoorHint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 16px;
+  color: #8a8688;
+}
+
+.signalDoorClose {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signalDoorCols,
+.signalDoorRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(56px, auto) minmax(52px, auto) minmax(58px, auto);
+  align-items: center;
+  gap: 8px;
+}
+
+.signalDoorCols {
+  padding: 0 11px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6e6a6c;
+}
+
+.signalDoorList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signalDoorList::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.signalDoorRow,
+.signalDoorEmpty {
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(18, 13, 13, 0.72);
+}
+
+.signalDoorEmpty {
+  display: block;
+  color: #8a8688;
+  font-size: 12px;
+}
+
+.signalDoorReason {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #e0b15a;
+}
+
+.signalDoorPair {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.signalDoorSide {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a8688;
+  text-transform: uppercase;
+}
+
+.signalDoorRsi,
+.signalDoorBacktest {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f5c462;
+}
+
+.signalDoorBacktest {
+  color: #c4bfc2;
 }
 
 /* Performance / total balance */
@@ -810,6 +996,111 @@
   cursor: not-allowed;
 }
 
+.advisor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px 18px;
+}
+
+.advisorHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.advisorTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f4f1f2;
+}
+
+.advisorHint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #a39a9c;
+}
+
+.advisorForm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.advisorSelect {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(221, 9, 18, 0.28);
+  background: rgba(8, 4, 5, 0.72);
+  color: #f4f1f2;
+  font: inherit;
+  font-size: 14px;
+  padding: 0 12px;
+}
+
+.advisorLog {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.advisorBubble {
+  align-self: flex-start;
+  max-width: 92%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #f4f1f2;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.advisorBubbleUser {
+  align-self: flex-end;
+  background: rgba(221, 9, 18, 0.16);
+  border-color: rgba(221, 9, 18, 0.28);
+}
+
+.advisorSource {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #e0b15a;
+}
+
+.advisorActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.advisorComposer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.advisorInput {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(221, 9, 18, 0.28);
+  background: rgba(8, 4, 5, 0.72);
+  color: #f4f1f2;
+  font: inherit;
+  font-size: 14px;
+  padding: 0 12px;
+}
+
 .disclaimer {
   position: relative;
   margin: 8px 0;
@@ -827,7 +1118,8 @@
   .settingRow,
   .controlButton,
   .ghostButton,
-  .signalGridPulse {
+  .signalGridPulse,
+  .signalDoor {
     animation: none !important;
     transition: none !important;
   }

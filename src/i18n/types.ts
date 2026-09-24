@@ -611,13 +611,10 @@ export type Messages = {
     };
 
     outcome: {
-
       profit: string;
-
       loss: string;
-
       running: string;
-
+      failed: string;
     };
 
     source: {
@@ -780,10 +777,52 @@ export type Messages = {
 
       scanningPairs: string;
 
+      backtest: string;
+
+      skipWin: string;
+
+      skipPayout: string;
+
+      skipPayoutValue: string;
+
+      pairsDoorTitle: string;
+
+      pairsDoorHint: string;
+
+      pairsDoorClose: string;
+
+      waitingMarket: string;
+
       profitTargetReached: string;
 
       lossLimitReached: string;
 
+    };
+
+    advisor: {
+      title: string;
+      hint: string;
+      welcome: string;
+      entered: string;
+      skippedPayout: string;
+      openTrade: string;
+      chatPlaceholder: string;
+      send: string;
+      pair: string;
+      analyze: string;
+      analyzing: string;
+      approve: string;
+      reject: string;
+      approved: string;
+      rejected: string;
+      youAsked: string;
+      emptyPairs: string;
+      badAmount: string;
+      sourceAi: string;
+      sourceRules: string;
+      placeFailed: string;
+      sideUp: string;
+      sideDown: string;
     };
 
     controls: {
@@ -978,6 +1017,10 @@ export type Messages = {
 
         aiBestFor: string;
 
+        timeAnalysisDesc: string;
+
+        timeAnalysisBestFor: string;
+
       };
 
       tradingPair: {
@@ -1034,6 +1077,14 @@ export type Messages = {
 
         trendBreakerDesc: string;
 
+        redSignalProRisk: string;
+
+        alphaMomentumRisk: string;
+
+        scarPrecisionRisk: string;
+
+        trendBreakerRisk: string;
+
       };
 
       strategyDetail: {
@@ -1047,6 +1098,24 @@ export type Messages = {
         aboutTitle: string;
 
         howTitle: string;
+
+        riskHowTitle: string;
+
+        riskDescriptionLabel: string;
+
+        riskExampleLabel: string;
+
+        riskHow: {
+
+          redSignalPro: string[];
+
+          alphaMomentum: string[];
+
+          scarPrecision: string[];
+
+          trendBreaker: string[];
+
+        };
 
         select: string;
 

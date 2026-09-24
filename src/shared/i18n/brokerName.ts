@@ -13,7 +13,7 @@
  */
 
 /** Names that stand in for "the user's broker" wherever they appear in copy. */
-const BROKER_NAME_PATTERN = /\{broker\}|Binolla|بينولا|بنولا/g;
+const BROKER_NAME_PATTERN = /\{broker\}|Binolla|Quotex|بينولا|بنولا|كوتكس/g;
 
 /**
  * Keys whose value IS a particular broker's name, not "the user's broker".
@@ -28,22 +28,62 @@ export function namesASpecificBroker(key: string): boolean {
   return LITERAL_BROKER_KEY.test(key);
 }
 
-let currentName = 'Binolla';
+function resolveInitialBroker(): 'quotex' | 'binolla' {
+  try {
+    const stored = localStorage.getItem('scar-alpha-broker');
+    if (stored && stored.toLowerCase().includes('binolla')) return 'binolla';
+  } catch {}
+  return 'quotex';
+}
 
-/** Set once the user's broker is known. Defaults to Binolla, which every older link uses. */
+let currentBroker: 'quotex' | 'binolla' = resolveInitialBroker();
+let currentName = currentBroker === 'binolla' ? 'Binolla' : 'Quotex';
+
+/** Set once the user's broker is known. Defaults to Quotex. */
 export function setBrokerName(name: string): void {
-  if (name) currentName = name;
+  if (!name) return;
+  const norm = name.trim().toLowerCase();
+  if (norm.includes('binolla') || norm.includes('بينولا')) {
+    currentBroker = 'binolla';
+    currentName = 'Binolla';
+  } else {
+    currentBroker = 'quotex';
+    currentName = 'Quotex';
+  }
 }
 
 export function getBrokerName(): string {
   return currentName;
 }
 
-/** Replaces broker names in one string. A no-op when the user is on Binolla. */
+const HAS_ARABIC = /[\u0600-\u06FF]/;
+
+/** Replaces broker names in one string according to active broker and language context. */
 export function applyBrokerName(text: string, name: string = currentName): string {
-  // Cheap guard: most strings never mention a broker, and `test` on a /g regex needs its
-  // index reset or alternate calls return false.
+  if (!text) return text;
+
+  let activeBroker: 'quotex' | 'binolla' = currentBroker;
+  if (name) {
+    const norm = name.trim().toLowerCase();
+    if (norm.includes('binolla') || norm.includes('بينولا')) {
+      activeBroker = 'binolla';
+    } else if (norm.includes('quotex') || norm.includes('كوتكس')) {
+      activeBroker = 'quotex';
+    }
+  }
+
+  const isArabicContext = HAS_ARABIC.test(text);
+
   BROKER_NAME_PATTERN.lastIndex = 0;
   if (!BROKER_NAME_PATTERN.test(text)) return text;
-  return text.replace(BROKER_NAME_PATTERN, name);
+
+  BROKER_NAME_PATTERN.lastIndex = 0;
+  return text.replace(BROKER_NAME_PATTERN, (match) => {
+    const isArabicMatch = HAS_ARABIC.test(match);
+    if (isArabicContext || isArabicMatch) {
+      return activeBroker === 'binolla' ? 'بينولا' : 'كوتكس';
+    }
+    return activeBroker === 'binolla' ? 'Binolla' : 'Quotex';
+  });
 }
+

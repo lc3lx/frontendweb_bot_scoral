@@ -192,6 +192,28 @@ export type BotRuntimeResponse = {
   marketTypeId?: string | null;
 };
 
+export type AiChatTurn = {
+  role: 'user' | 'assistant';
+  text: string;
+};
+
+export type AiChatResponse = {
+  reply: string;
+  source: 'openrouter' | 'rules' | string;
+};
+
+export type AiAdviceResponse = {
+  asset: string;
+  direction: 'Call' | 'Put' | 'Wait' | string;
+  summary: string;
+  source: 'openrouter' | 'rules' | string;
+  closedRsi?: number | null;
+  liveRsi?: number | null;
+  backtestRate?: number | null;
+  backtestVisits?: number | null;
+  blockReason?: string | null;
+};
+
 export type StrategySignalResponse = {
   strategyId: string;
   asset: string;
@@ -210,8 +232,34 @@ export type StrategySignalResponse = {
     minimumSuccessRate: number;
     passed: boolean;
   } | null;
+  callBacktest?: {
+    totalSignals: number;
+    successfulSignals: number;
+    failedSignals: number;
+    successRate: number;
+    lookbackCandles: number;
+    expiryCandles: number;
+    minimumSuccessRate: number;
+    passed: boolean;
+  } | null;
+  putBacktest?: {
+    totalSignals: number;
+    successfulSignals: number;
+    failedSignals: number;
+    successRate: number;
+    lookbackCandles: number;
+    expiryCandles: number;
+    minimumSuccessRate: number;
+    passed: boolean;
+  } | null;
   automatedTradeId?: string | null;
   automationError?: string | null;
+  entryBlockReason?: string | null;
+};
+
+export type StrategyBoardResponse = {
+  generatedAt: string;
+  pairs: StrategySignalResponse[];
 };
 
 export type RsiSmartBacktestOptions = {
@@ -740,5 +788,5 @@ export type AdminReferralPayoutsResponse = {
 /** Trading venues a user can sign in to. */
 export type BrokerId = 'binolla' | 'quotex';
 
-/** Omitted means Binolla — every account created before the choice existed. */
-export const DEFAULT_BROKER: BrokerId = 'binolla';
+/** Default to Quotex while Binolla is coming soon. */
+export const DEFAULT_BROKER: BrokerId = 'quotex';

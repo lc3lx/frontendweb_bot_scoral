@@ -15,8 +15,16 @@ type AiSignalPanelProps = {
 export function AiSignalPanel({ signal }: AiSignalPanelProps) {
   const { t } = useI18n();
 
+  const raw = (signal.lastSignal || '').toLowerCase();
+  const isUp = raw.includes('up') || raw.includes('call');
+  const isDown = raw.includes('down') || raw.includes('put');
+  const isNone = !isUp && !isDown;
+
+  const signalTone = isUp ? styles.signalUp : isDown ? styles.signalDown : styles.signalNone;
+  const signalDisplay = isUp ? 'UP ↑' : isDown ? 'DOWN ↓' : '—';
+
   const cells = [
-    { label: t.trading.signal.lastSignal, value: signal.lastSignal, tone: styles.signal, ltr: true },
+    { label: t.trading.signal.lastSignal, value: signalDisplay, tone: signalTone, ltr: !isNone },
     { label: t.trading.signal.strength, value: signal.strength, ltr: true },
     { label: t.trading.signal.indicator, value: signal.indicator },
     { label: t.trading.signal.strategy, value: signal.strategy },

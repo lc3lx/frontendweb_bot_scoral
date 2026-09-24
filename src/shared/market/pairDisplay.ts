@@ -46,6 +46,7 @@ export function parseFxPair(symbol: string): ParsedFxPair | null {
 }
 
 export function formatPairLabel(symbol: string, name?: string): string {
+  if (symbol === '*') return 'جميع الأزواج النشطة (تلقائي)';
   if (name && name.includes('/')) return name.split(' ')[0] ?? name;
   const base = symbol.replace(/_otc$/i, '');
   if (base.length === 6) return `${base.slice(0, 3)}/${base.slice(3)}`;
@@ -53,6 +54,7 @@ export function formatPairLabel(symbol: string, name?: string): string {
 }
 
 export function pairTypeFromSymbol(symbol: string): 'OTC' | 'Global' {
+  if (symbol === '*') return 'OTC';
   return symbol.toLowerCase().includes('otc') ? 'OTC' : 'Global';
 }
 
@@ -63,6 +65,7 @@ export function currencyFlagUrl(code: string, size = 40): string {
 
 export function formatSelectedPairsLabel(ids: string[]): string {
   if (ids.length === 0) return '—';
+  if (ids.includes('*')) return 'جميع الأزواج النشطة (تلقائي)';
   const labels = ids.map((id) => formatPairLabel(id));
   if (labels.length === 1) return labels[0] ?? '—';
   return `${labels[0]} +${labels.length - 1}`;

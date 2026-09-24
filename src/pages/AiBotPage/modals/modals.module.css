@@ -483,7 +483,25 @@
 }
 
 .brandedRiskRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   margin-top: 10px;
+}
+
+.brandedRiskNote {
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.riskChain {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-weight: 600;
+  color: #f4f1f2;
 }
 
 .brandedFooter {

@@ -4,6 +4,7 @@ import { dashboardAssets, tradingAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { ApiClientError } from '@shared/api';
 import { useBroker } from '@shared/market/useBroker';
+import { getLocale } from '@shared/i18n';
 import { useSessionProfile } from '@hooks/useSessionProfile';
 import { brokerLoginUrl } from '@constants/brokers';
 import { tradeService } from '@services/trades';
@@ -47,6 +48,8 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
   const { t } = useI18n();
   const broker = useBroker();
   const profile = useSessionProfile();
+  const profileRef = useRef(profile);
+  profileRef.current = profile;
   const isReal = profile.accountType === 'Real';
   const [data, setData] = useState<TradingMockData | null>(() => tradingService.getCachedData());
   const [pairs, setPairs] = useState<TradingPairOption[]>([]);
@@ -60,6 +63,7 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
   const [liveTrade, setLiveTrade] = useState<TradeRecord | null>(null);
   const [localEntryPrice, setLocalEntryPrice] = useState<number | undefined>();
   const seenTradeIdRef = useRef<string | null>(null);
+  const lastPlacedTradeIdRef = useRef<string | null>(null);
   const dataRef = useRef(data);
   dataRef.current = data;
 
@@ -67,6 +71,38 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
     const next = await tradingService.fetchData();
     setData(next);
   }, []);
+
+  const checkFinishedTradeOutcome = useCallback(
+    async (tradeId?: string | null) => {
+      try {
+        const list = await tradeService.listTrades({ filter: 'all', page: 1, pageSize: 5 });
+        const target = tradeId
+          ? list.items.find((x) => x.id === tradeId)
+          : list.items[0];
+        if (!target) return;
+
+        if (target.status === 'profit' || target.status === 'loss') {
+          const isWin = target.status === 'profit';
+          const pnlText = target.result || (isWin ? `+$${target.amount}` : `-$${target.amount}`);
+          const label = isWin ? 'ربح' : 'خسارة';
+          setFeedback(`${label}: ${pnlText}`);
+          setFeedbackTone(isWin ? 'ok' : 'err');
+          void profileRef.current.refresh();
+          void load();
+          window.setTimeout(() => {
+            setFeedback((current) => (current?.includes(label) ? null : current));
+            setFeedbackTone((current) => (current === (isWin ? 'ok' : 'err') ? null : current));
+          }, 8000);
+        }
+      } catch {
+        /* ignore */
+      }
+    },
+    [load],
+  );
+
+  const checkOutcomeRef = useRef(checkFinishedTradeOutcome);
+  checkOutcomeRef.current = checkFinishedTradeOutcome;
 
   const loadPairs = useCallback(async () => {
     const next = await tradingService.listPairs();
@@ -143,6 +179,10 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
         changes.includes('heartbeat') ||
         changes.includes('trades-changed')
       ) {
+        if (changes.includes('trade-settled') && lastPlacedTradeIdRef.current) {
+          void checkOutcomeRef.current(lastPlacedTradeIdRef.current);
+        }
+        void profileRef.current.refresh();
         void (async () => {
           try {
             const next = await tradingService.fetchData();
@@ -184,9 +224,15 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       }
 
       if (activeTrade && activeTrade.endsAt - Date.now() <= 0) {
+        const idToCheck = lastPlacedTradeIdRef.current;
         setActiveTrade(null);
         setLiveTrade(null);
         setLocalEntryPrice(undefined);
+        void profileRef.current.refresh();
+        void load();
+        window.setTimeout(() => {
+          void checkOutcomeRef.current(idToCheck);
+        }, 1200);
       }
     };
 
@@ -207,14 +253,21 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       window.clearInterval(id);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [activeTrade]);
+  }, [activeTrade, load]);
 
   const entryMarker = useMemo<ChartEntryMarker | null>(() => {
     if (!liveTrade || !data) return null;
     const resolved = resolveEntryFromCandles(data.candles, liveTrade.openedAt);
+    const resolvedPx = resolved.price;
+    const validLocal =
+      localEntryPrice != null &&
+      Number.isFinite(localEntryPrice) &&
+      (resolvedPx == null || Math.abs(localEntryPrice - resolvedPx) / (resolvedPx || 1) < 0.03);
+    const finalPrice = validLocal ? localEntryPrice : (resolvedPx ?? localEntryPrice);
+
     return {
       timeSec: resolved.timeSec,
-      price: localEntryPrice ?? resolved.price,
+      price: finalPrice,
       direction: liveTrade.direction,
       label: t.trading.terminal.chartEntry,
     };
@@ -248,8 +301,13 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       setFeedback(null);
       setFeedbackTone(null);
       try {
-        const priceNow = Number.parseFloat(dataRef.current?.price ?? '');
-        await tradingService.placeTrade(direction);
+        const latestClose = dataRef.current?.candles?.slice(-1)[0]?.close;
+        const priceNow =
+          latestClose != null && Number.isFinite(latestClose)
+            ? latestClose
+            : Number.parseFloat(dataRef.current?.price ?? '');
+        const tradeId = await tradingService.placeTrade(direction);
+        lastPlacedTradeIdRef.current = tradeId;
         const durationSec = tradingService.getDurationSeconds();
         setActiveTrade({ endsAt: Date.now() + durationSec * 1000 });
         if (Number.isFinite(priceNow)) setLocalEntryPrice(priceNow);
@@ -269,8 +327,8 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       } finally {
         setPlacing(false);
         window.setTimeout(() => {
-          setFeedback(null);
-          setFeedbackTone(null);
+          setFeedback((current) => (current === t.trading.terminal.placed ? null : current));
+          setFeedbackTone((current) => (current === 'ok' ? null : current));
         }, 4500);
       }
     },
@@ -291,7 +349,13 @@ export function TradingContent({ figmaNode }: TradingContentProps) {
       <TradingBackdrop />
 
       <div className={styles.pageHeader}>
-        <h2 className={styles.pageTitle}>{t.trading.header.title}</h2>
+        <div className={styles.titleWrap}>
+          <h2 className={styles.pageTitle}>{t.trading.header.title}</h2>
+          <div className={styles.quotexBadge}>
+            <img src={tradingAssets.iconQuotex} alt="Quotex" className={styles.quotexBadgeLogo} />
+            <span>{getLocale() === 'ar' ? 'كوتكس' : 'Quotex'}</span>
+          </div>
+        </div>
 
         <div className={styles.statusRow}>
           <span className={styles.chipConnected}>

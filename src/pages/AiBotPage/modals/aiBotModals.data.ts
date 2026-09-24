@@ -40,7 +40,8 @@ export type StrategyPresentationKey =
   | 'macd'
   | 'ai'
   | 'bollinger'
-  | 'stochastic';
+  | 'stochastic'
+  | 'time_analysis';
 
 export type StrategyGridOption = {
   id: StrategyGridId;
@@ -72,6 +73,8 @@ export type BrandedStrategyOption = {
     | 'redSignalProDesc'
     | 'trendBreakerDesc';
   risk: RiskLevel;
+  riskShortKey: 'redSignalProRisk' | 'alphaMomentumRisk' | 'scarPrecisionRisk' | 'trendBreakerRisk';
+  riskHowKey: 'redSignalPro' | 'alphaMomentum' | 'scarPrecision' | 'trendBreaker';
   balance: string;
   detailModalNode: string;
 };
@@ -85,6 +88,8 @@ export type StrategyDetailContent = {
   risk: RiskLevel;
   recommendedBalance: string;
   riskLabelKey: 'medium' | 'low' | 'high' | 'highPlus';
+  riskShortKey: BrandedStrategyOption['riskShortKey'];
+  riskHowKey: BrandedStrategyOption['riskHowKey'];
   aboutKey: 'alphaMomentumAbout' | 'scarPrecisionAbout' | 'redSignalProAbout' | 'trendBreakerAbout';
   howItWorksKey:
     | 'alphaMomentumHow'
@@ -174,6 +179,12 @@ export const STRATEGY_PRESENTATION: Record<string, StrategyPresentation> = {
     descriptionKey: 'ai',
     bestForKey: 'ai',
   },
+  time_analysis: {
+    preview: aiBotAssets.previewRsi,
+    risk: 'low',
+    descriptionKey: 'time_analysis',
+    bestForKey: 'time_analysis',
+  },
 };
 
 const DEFAULT_STRATEGY_PRESENTATION: StrategyPresentation = {
@@ -248,6 +259,8 @@ export const BRANDED_STRATEGY_OPTIONS: BrandedStrategyOption[] = [
     titleKey: 'redSignalPro',
     descriptionKey: 'redSignalProDesc',
     risk: 'low',
+    riskShortKey: 'redSignalProRisk',
+    riskHowKey: 'redSignalPro',
     balance: '$50+',
     detailModalNode: '737:8458',
   },
@@ -257,6 +270,8 @@ export const BRANDED_STRATEGY_OPTIONS: BrandedStrategyOption[] = [
     titleKey: 'alphaMomentum',
     descriptionKey: 'alphaMomentumDesc',
     risk: 'medium',
+    riskShortKey: 'alphaMomentumRisk',
+    riskHowKey: 'alphaMomentum',
     balance: '$250+',
     detailModalNode: '737:7760',
   },
@@ -266,6 +281,8 @@ export const BRANDED_STRATEGY_OPTIONS: BrandedStrategyOption[] = [
     titleKey: 'scarPrecision',
     descriptionKey: 'scarPrecisionDesc',
     risk: 'high',
+    riskShortKey: 'scarPrecisionRisk',
+    riskHowKey: 'scarPrecision',
     balance: '$1000+',
     detailModalNode: '737:8109',
   },
@@ -275,6 +292,8 @@ export const BRANDED_STRATEGY_OPTIONS: BrandedStrategyOption[] = [
     titleKey: 'trendBreaker',
     descriptionKey: 'trendBreakerDesc',
     risk: 'highPlus',
+    riskShortKey: 'trendBreakerRisk',
+    riskHowKey: 'trendBreaker',
     balance: '$2500+',
     detailModalNode: '737:8807',
   },
@@ -290,6 +309,8 @@ export const STRATEGY_DETAIL_CONTENT: Record<BrandedStrategyId, StrategyDetailCo
     risk: 'medium',
     recommendedBalance: '$250+',
     riskLabelKey: 'medium',
+    riskShortKey: 'alphaMomentumRisk',
+    riskHowKey: 'alphaMomentum',
     aboutKey: 'alphaMomentumAbout',
     howItWorksKey: 'alphaMomentumHow',
     bullets: ['bulletTrending', 'bulletSwings', 'bulletBalanced'],
@@ -303,6 +324,8 @@ export const STRATEGY_DETAIL_CONTENT: Record<BrandedStrategyId, StrategyDetailCo
     risk: 'high',
     recommendedBalance: '$1000+',
     riskLabelKey: 'high',
+    riskShortKey: 'scarPrecisionRisk',
+    riskHowKey: 'scarPrecision',
     aboutKey: 'scarPrecisionAbout',
     howItWorksKey: 'scarPrecisionHow',
     bullets: ['bulletMeanReversion', 'bulletSwings', 'bulletBalanced'],
@@ -316,6 +339,8 @@ export const STRATEGY_DETAIL_CONTENT: Record<BrandedStrategyId, StrategyDetailCo
     risk: 'low',
     recommendedBalance: '$50+',
     riskLabelKey: 'low',
+    riskShortKey: 'redSignalProRisk',
+    riskHowKey: 'redSignalPro',
     aboutKey: 'redSignalProAbout',
     howItWorksKey: 'redSignalProHow',
     bullets: ['bulletScalping', 'bulletSwings', 'bulletBalanced'],
@@ -329,6 +354,8 @@ export const STRATEGY_DETAIL_CONTENT: Record<BrandedStrategyId, StrategyDetailCo
     risk: 'highPlus',
     recommendedBalance: '$2500+',
     riskLabelKey: 'highPlus',
+    riskShortKey: 'trendBreakerRisk',
+    riskHowKey: 'trendBreaker',
     aboutKey: 'trendBreakerAbout',
     howItWorksKey: 'trendBreakerHow',
     bullets: ['bulletBreakouts', 'bulletSwings', 'bulletBalanced'],

@@ -122,13 +122,16 @@ function buildDefaultBotSettings(): BotSettingsState {
     },
     riskLevel: 'medium',
     tradeAmount: '$25',
-    duration: '1m',
+    duration: '5m',
     profitTarget: '50',
     lossLimit: '30',
   };
 }
 
 function filterPairsForMarket(ids: string[], marketTypeId: MarketTypeId): string[] {
+  if (ids.some((id) => id.trim() === '*' || id.trim().toLowerCase() === 'all')) {
+    return ['*'];
+  }
   const kept = ids.filter((symbol) => pairMatchesMarketType(symbol, marketTypeId));
   if (kept.length > 0) return kept;
   const fallback = getDefaultTradingPairIds().filter((symbol) =>
@@ -229,7 +232,7 @@ export function AiBotModalProvider({ children }: AiBotModalProviderProps) {
     await aiBotService.applyControl('apply', {
       pairs: nextPairs.length ? nextPairs : undefined,
       amount: aiBotService.parseAmount(nextSettings.tradeAmount),
-      durationSeconds: 60,
+      durationSeconds: 300,
       profitTarget: aiBotService.parseTargetAbs(nextSettings.profitTarget, 50),
       lossLimit: aiBotService.parseTargetAbs(nextSettings.lossLimit, 30),
       stakeMode: nextBranded,

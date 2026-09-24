@@ -8,7 +8,7 @@ export type CandlestickPoint = {
   time?: number;
 };
 
-export type TradeStatus = 'running' | 'profit' | 'loss' | 'unknown';
+export type TradeStatus = 'running' | 'profit' | 'loss' | 'failed' | 'unknown';
 export type TradeSource = 'bot' | 'user';
 export type TradePlatform = 'global' | 'binolla' | 'quotex';
 export type TradeListFilter = 'all' | 'live' | 'profit' | 'loss' | 'today';

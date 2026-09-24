@@ -5,6 +5,7 @@ import { useI18n } from '@i18n';
 import { HomeTilt } from '@pages/DashboardPage/HomeTilt';
 
 import { useAiBotModals } from './AiBotModalContext';
+import { AiAdvisorChat } from './AiAdvisorChat';
 import { AiBotSignalPanel } from './AiBotSignalPanel';
 import {
   TRADE_AMOUNTS,
@@ -21,7 +22,7 @@ type AiBotContentProps = {
   figmaNode: string;
 };
 
-const DEFAULT_DURATION = '1m';
+const DEFAULT_DURATION = '5m';
 
 function AiBotBackdrop() {
   return (
@@ -161,7 +162,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
           ? configuration.tradingPairIds
           : undefined,
         amount: aiBotService.parseAmount(tradeAmount),
-        durationSeconds: 60,
+        durationSeconds: 300,
         profitTarget: aiBotService.parseTargetAbs(profitTarget, 50),
         lossLimit: aiBotService.parseTargetAbs(lossLimit, 30),
         stakeMode: configuration.brandedStrategyId,
@@ -268,6 +269,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       <AiBotBackdrop />
 
       <div className={styles.content}>
+        <AiAdvisorChat pairIds={configuration.tradingPairIds} amountLabel={tradeAmount} />
         {/* Top: live signals | total balance */}
         <div className={styles.topRow}>
           <div className={styles.cardWrap}>
@@ -280,6 +282,7 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
                 strategy={configuration.strategy || data.status.strategy}
                 tradingPairIds={configuration.tradingPairIds}
                 tradingPairLabel={configuration.tradingPair}
+                marketTypeId={configuration.marketTypeId}
               />
             </HomeTilt>
           </div>
