@@ -851,7 +851,7 @@ export const en: Messages = {
 
       tradingPair: 'Trading Pair',
 
-      indicator: 'Technical Indicator',
+      indicator: 'Risk Types',
 
       strategy: 'Strategy',
 
@@ -891,13 +891,13 @@ export const en: Messages = {
 
       riskLevels: {
 
-        low: 'Fixed Risk',
+        low: 'Low',
 
-        medium: 'Progressive Risk',
+        medium: 'Medium',
 
-        high: 'Double Risk',
+        high: 'High',
 
-        highPlus: 'Maximum Risk',
+        highPlus: 'Extreme',
 
       },
 
@@ -1013,11 +1013,11 @@ export const en: Messages = {
 
       technicalIndicator: {
 
-        titlePrefix: 'Choose a ',
+        titlePrefix: '',
 
-        titleEmphasis: 'Branded Strategy',
+        titleEmphasis: 'Risk Types',
 
-        subtitle: 'Scar Alpha proprietary strategies with built-in risk profiles.',
+        subtitle: 'Choose the risk type that matches your trading style.',
 
         balanceLabel: 'Recommended balance',
 
@@ -1045,7 +1045,7 @@ export const en: Messages = {
 
         redSignalProRisk: 'Fixed trade amount with no change after a loss',
 
-        alphaMomentumRisk: 'Gradual increase in the next trade after a loss ×1.5',
+        alphaMomentumRisk: 'Increase by 50% after a loss ×1.5',
 
         scarPrecisionRisk: 'Double the next trade amount after a loss ×2',
 
@@ -1087,19 +1087,19 @@ export const en: Messages = {
 
           alphaMomentum: [
 
-            'The next trade amount is multiplied by 1.5 after every loss.',
+            'The next trade amount is increased by 50% after a losing trade, meaning ×1.5 of the previous losing trade amount.',
 
             'If the trade amount is $20 and the trade loses, the next trade becomes $30.',
 
             '$20 × 1.5 = $30',
 
-            'If the next trade also loses, the following trade becomes $45.',
+            'If the next trade wins, the increase stops and the trade amount returns to the base amount of $20.',
+
+            'If the next trade also loses, ×1.5 is applied again to the previous trade amount:',
 
             '$30 × 1.5 = $45',
 
-            'If a trade wins, the increase stops and the trade amount returns to the base amount of $20.',
-
-            '$20 → $30 → $45 → Win → $20',
+            'The process continues in the same way until a winning trade occurs, after which the trade amount returns to the base amount.',
 
           ],
 
