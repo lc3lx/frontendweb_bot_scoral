@@ -996,32 +996,158 @@
   cursor: not-allowed;
 }
 
-.advisor {
+.advisorDock {
+  position: fixed;
+  z-index: 1200;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.advisorDock > * {
+  pointer-events: auto;
+}
+
+.advisorFab {
   position: relative;
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.16), transparent 42%),
+    linear-gradient(145deg, #1a0a0c 0%, #0b0708 100%);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 24px rgba(221, 9, 18, 0.28);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.advisorFab:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 28px rgba(221, 9, 18, 0.38);
+}
+
+.advisorFab:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.advisorFabGlow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(221, 9, 18, 0.28), transparent 68%);
+  animation: advisorPulse 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.advisorFabMark {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.advisorFabBadge {
+  position: absolute;
+  z-index: 2;
+  inset-inline-end: -2px;
+  bottom: -2px;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(135deg, #dd0912, #9a0610);
+  box-shadow: 0 4px 12px rgba(221, 9, 18, 0.4);
+}
+
+.advisorPanel {
+  width: min(380px, calc(100vw - 28px));
+  max-height: min(72dvh, 560px);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px 18px 18px;
+  padding: 14px;
+  border-radius: 22px;
+  color: #f4f1f2;
+  background:
+    linear-gradient(180deg, rgba(28, 14, 16, 0.96), rgba(10, 6, 7, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(221, 9, 18, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: advisorRise 180ms ease-out;
 }
 
 .advisorHead {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.advisorBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.advisorBrandMark {
+  width: 36px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .advisorTitle {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #f4f1f2;
 }
 
 .advisorHint {
-  margin: 0;
-  font-size: 12px;
-  line-height: 16px;
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 15px;
   color: #a39a9c;
+}
+
+.advisorIconBtn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f1f2;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .advisorForm {
@@ -1030,7 +1156,8 @@
   align-items: center;
 }
 
-.advisorSelect {
+.advisorSelect,
+.advisorInput {
   flex: 1;
   min-width: 0;
   height: 40px;
@@ -1039,16 +1166,37 @@
   background: rgba(8, 4, 5, 0.72);
   color: #f4f1f2;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   padding: 0 12px;
+}
+
+.advisorPrimary {
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dd0912, #a00810);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.advisorPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .advisorLog {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 280px;
+  min-height: 140px;
+  max-height: min(38dvh, 280px);
   overflow: auto;
+  padding-inline-end: 2px;
 }
 
 .advisorBubble {
@@ -1061,6 +1209,7 @@
   color: #f4f1f2;
   font-size: 13px;
   line-height: 18px;
+  white-space: pre-wrap;
 }
 
 .advisorBubbleUser {
@@ -1076,29 +1225,55 @@
   color: #e0b15a;
 }
 
-.advisorActions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
 .advisorComposer {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.advisorInput {
-  flex: 1;
-  min-width: 0;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(221, 9, 18, 0.28);
-  background: rgba(8, 4, 5, 0.72);
-  color: #f4f1f2;
-  font: inherit;
-  font-size: 14px;
-  padding: 0 12px;
+@keyframes advisorPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes advisorRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .advisorDock {
+    inset-inline-end: max(12px, env(safe-area-inset-right));
+    bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+  }
+
+  .advisorFab {
+    width: 58px;
+    height: 58px;
+  }
+
+  .advisorFabMark {
+    width: 30px;
+    height: 24px;
+  }
+
+  .advisorPanel {
+    width: min(100vw - 24px, 420px);
+    max-height: min(68dvh, 520px);
+  }
 }
 
 .disclaimer {
@@ -1119,7 +1294,10 @@
   .controlButton,
   .ghostButton,
   .signalGridPulse,
-  .signalDoor {
+  .signalDoor,
+  .advisorFabGlow,
+  .advisorPanel,
+  .advisorFab {
     animation: none !important;
     transition: none !important;
   }

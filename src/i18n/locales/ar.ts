@@ -782,6 +782,8 @@ export const ar: Messages = {
       placeFailed: 'ما انفتحت الصفقة: {message}',
       sideUp: 'صعود',
       sideDown: 'هبوط',
+      open: 'فتح مستشار الذكاء',
+      close: 'إغلاق المستشار',
     },
 
     controls: {

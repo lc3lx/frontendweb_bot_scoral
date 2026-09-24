@@ -823,6 +823,8 @@ export type Messages = {
       placeFailed: string;
       sideUp: string;
       sideDown: string;
+      open: string;
+      close: string;
     };
 
     controls: {

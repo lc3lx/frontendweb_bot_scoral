@@ -1,4 +1,5 @@
 import logoUrl from './logos/scar-alpha-logo.svg';
+import scarAiMarkUrl from './ai/scar-ai-mark.png';
 
 import bgPatternUrl from './login/bg-pattern.svg';
 
@@ -227,6 +228,8 @@ export const tradingAssets = {
 
 
 export const aiBotAssets = {
+
+  scarAiMark: scarAiMarkUrl,
 
   iconBotLarge: iconBotLargeUrl,
 

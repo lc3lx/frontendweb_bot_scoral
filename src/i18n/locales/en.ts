@@ -785,6 +785,8 @@ export const en: Messages = {
       placeFailed: 'The trade was not opened: {message}',
       sideUp: 'up',
       sideDown: 'down',
+      open: 'Open AI advisor',
+      close: 'Close advisor',
     },
 
     controls: {

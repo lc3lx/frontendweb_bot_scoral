@@ -269,7 +269,6 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
       <AiBotBackdrop />
 
       <div className={styles.content}>
-        <AiAdvisorChat pairIds={configuration.tradingPairIds} amountLabel={tradeAmount} />
         {/* Top: live signals | total balance */}
         <div className={styles.topRow}>
           <div className={styles.cardWrap}>
@@ -514,6 +513,8 @@ export function AiBotContent({ figmaNode }: AiBotContentProps) {
 
         <p className={styles.disclaimer}>{t.aiBot.disclaimer}</p>
       </div>
+
+      <AiAdvisorChat pairIds={configuration.tradingPairIds} amountLabel={tradeAmount} />
     </div>
   );
 }

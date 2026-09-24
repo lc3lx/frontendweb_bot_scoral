@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
+import { aiBotAssets } from '@assets';
 import { useI18n } from '@i18n';
 import { tradeService } from '@services/trades';
 import { aiApi, ApiClientError, marketApi, tradesApi, type AiChatTurn } from '@shared/api';
@@ -38,6 +40,7 @@ function readAmount(label: string): number {
 export function AiAdvisorChat({ pairIds, amountLabel }: AiAdvisorChatProps) {
   const { t, locale } = useI18n();
   const copy = t.aiBot.advisor;
+  const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
   const [asset, setAsset] = useState('');
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -60,7 +63,7 @@ export function AiAdvisorChat({ pairIds, amountLabel }: AiAdvisorChatProps) {
   useEffect(() => {
     const log = logRef.current;
     if (log) log.scrollTop = log.scrollHeight;
-  }, [messages]);
+  }, [messages, open]);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +90,7 @@ export function AiAdvisorChat({ pairIds, amountLabel }: AiAdvisorChatProps) {
 
   async function analyze() {
     if (!asset || busy) return;
+    setOpen(true);
     const asked = copy.youAsked.replace('{pair}', formatPairLabel(asset));
     setMessages((prev) => [...prev, { id: nextId(), role: 'user', text: asked }]);
     setBusy(true);
@@ -189,64 +193,112 @@ export function AiAdvisorChat({ pairIds, amountLabel }: AiAdvisorChatProps) {
     }
   }
 
-  return (
-    <section className={`${styles.homeCard} ${styles.advisor}`}>
-      <div className={styles.advisorHead}>
-        <h2 className={styles.advisorTitle}>{copy.title}</h2>
-        <p className={styles.advisorHint}>{copy.hint}</p>
-      </div>
-      <div className={styles.advisorForm}>
-        <select
-          className={styles.advisorSelect}
-          aria-label={copy.pair}
-          value={asset}
-          disabled={options.length === 0 || busy}
-          onChange={(event) => setAsset(event.target.value)}
-        >
-          {options.length === 0 ? <option value="">{copy.emptyPairs}</option> : null}
-          {options.map((symbol) => (
-            <option key={symbol} value={symbol}>
-              {formatPairLabel(symbol)}
-            </option>
-          ))}
-        </select>
-        <button type="button" className={styles.ghostButton} disabled={!asset || busy} onClick={() => void analyze()}>
-          {busy ? copy.analyzing : copy.analyze}
-        </button>
-      </div>
-      <div className={styles.advisorLog} ref={logRef}>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={msg.role === 'user' ? `${styles.advisorBubble} ${styles.advisorBubbleUser}` : styles.advisorBubble}
-          >
-            <span>{msg.text}</span>
-            {msg.role === 'ai' && msg.source ? (
-              <span className={styles.advisorSource}>
-                {msg.source === 'openrouter' ? copy.sourceAi : copy.sourceRules}
-              </span>
-            ) : null}
+  const body = (
+    <div className={styles.advisorDock} data-open={open ? 'true' : 'false'}>
+      {open ? (
+        <section className={styles.advisorPanel} aria-label={copy.title}>
+          <header className={styles.advisorHead}>
+            <div className={styles.advisorBrand}>
+              <img className={styles.advisorBrandMark} src={aiBotAssets.scarAiMark} alt="" />
+              <div>
+                <h2 className={styles.advisorTitle}>{copy.title}</h2>
+                <p className={styles.advisorHint}>{copy.hint}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.advisorIconBtn}
+              aria-label={copy.close}
+              onClick={() => setOpen(false)}
+            >
+              ×
+            </button>
+          </header>
+
+          <div className={styles.advisorForm}>
+            <select
+              className={styles.advisorSelect}
+              aria-label={copy.pair}
+              value={asset}
+              disabled={options.length === 0 || busy}
+              onChange={(event) => setAsset(event.target.value)}
+            >
+              {options.length === 0 ? <option value="">{copy.emptyPairs}</option> : null}
+              {options.map((symbol) => (
+                <option key={symbol} value={symbol}>
+                  {formatPairLabel(symbol)}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className={styles.advisorPrimary}
+              disabled={!asset || busy}
+              onClick={() => void analyze()}
+            >
+              {busy ? copy.analyzing : copy.analyze}
+            </button>
           </div>
-        ))}
-      </div>
-      <form
-        className={styles.advisorComposer}
-        onSubmit={(event) => {
-          event.preventDefault();
-          void send();
-        }}
+
+          <div className={styles.advisorLog} ref={logRef}>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={
+                  msg.role === 'user'
+                    ? `${styles.advisorBubble} ${styles.advisorBubbleUser}`
+                    : styles.advisorBubble
+                }
+              >
+                <span>{msg.text}</span>
+                {msg.role === 'ai' && msg.source ? (
+                  <span className={styles.advisorSource}>
+                    {msg.source === 'openrouter' ? copy.sourceAi : copy.sourceRules}
+                  </span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+
+          <form
+            className={styles.advisorComposer}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void send();
+            }}
+          >
+            <input
+              className={styles.advisorInput}
+              value={draft}
+              placeholder={copy.chatPlaceholder}
+              disabled={busy}
+              onChange={(event) => setDraft(event.target.value)}
+            />
+            <button
+              type="submit"
+              className={styles.advisorPrimary}
+              disabled={busy || draft.trim().length === 0}
+            >
+              {copy.send}
+            </button>
+          </form>
+        </section>
+      ) : null}
+
+      <button
+        type="button"
+        className={styles.advisorFab}
+        aria-label={open ? copy.close : copy.open}
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
       >
-        <input
-          className={styles.advisorInput}
-          value={draft}
-          placeholder={copy.chatPlaceholder}
-          disabled={busy}
-          onChange={(event) => setDraft(event.target.value)}
-        />
-        <button type="submit" className={styles.ghostButton} disabled={busy || draft.trim().length === 0}>
-          {copy.send}
-        </button>
-      </form>
-    </section>
+        <span className={styles.advisorFabGlow} aria-hidden="true" />
+        <img className={styles.advisorFabMark} src={aiBotAssets.scarAiMark} alt="" />
+        <span className={styles.advisorFabBadge}>AI</span>
+      </button>
+    </div>
   );
+
+  if (typeof document === 'undefined') return body;
+  return createPortal(body, document.body);
 }
