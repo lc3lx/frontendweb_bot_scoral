@@ -15,7 +15,7 @@ module.exports = {
       name: 'scaralpha-webapp',
       cwd: __dirname,
       script: 'npx',
-      args: `serve -s dist -l tcp://0.0.0.0:${port}`,
+      args: `serve -s dist -l tcp://0.0.0.0:${port} -c serve.json`,
       interpreter: 'none',
       instances: 1,
       exec_mode: 'fork',
